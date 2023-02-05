@@ -1,0 +1,132 @@
+{{ block title }}
+Continuous double auction market
+{{ endblock }}
+{{ block content }}
+
+<p id="news" style="color: green"></p>
+
+<table class="table">
+    <tr>
+        <td>Your role</td>
+        <th id="asset_value">
+            {{ if player.informed }}Informed trader: {{ else }}Uninformed trader{{ endif }}
+        </th>
+    </tr>
+    <tr>
+        <td>Assets in your possession</td>
+        <th id="assetsHolding"></th>
+    </tr>
+    <tr>
+        <td>Cash in your possession</td>
+        <th id="cashHolding"></th>
+    </tr>
+</table>
+<style>
+#bids_table td {
+  min-width: 105px;
+}
+</style>
+<div>Price:</div>
+<input type="number" id="price">
+<div>Volume:</div>
+<input type="number" id="limitVolume">
+<button type="button" onclick="sendBidOffer()" id="bid-offer">Make bid offer</button>
+<button type="button" onclick="sendAskOffer()" id="ask-offer">Make ask offer</button>
+<br><br>
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <h4>Bids</h4>
+            <form id="bidForm">
+                <table id="bids_table"></table>
+            </form>
+        </div>
+        <div class="col-sm">
+            <h4>Asks</h4>
+            <form id='askForm'>
+                <table id="asks_table"></table>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<br><br>
+{{ include 'CDA_app/Chart.html' }}
+
+
+<script>
+
+    let my_id = js_vars.id_in_group
+    let informed = js_vars.informed
+    let capShort = js_vars.capShort
+    let capLong = js_vars.capLong
+
+    $(document).ready(function () {
+        let elBidsTable = $('#bids_table')
+        $('#elBidsTable tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected')
+            }
+            else {
+                table.$('tr.selected').removeClass('selected')
+                    $(this).addClass('selected')
+            }
+        })
+    })
+
+    let elAsksTable = $('#asks_table')
+    let elBidOffer =$('#bid-offer')
+    let elAskOffer = $('#ask-offer')
+    let elOfferPrice = $('#price')
+    let elLimitVolume = $('#limitVolume')
+    let elCashHolding = $('#cashHolding')
+    let elAssetsHolding = $('#assetsHolding')
+
+
+    function cu(amount) {
+        return `${amount} points`;
+    }
+
+    function liveRecv(data) {
+        // sanitise
+        if (data == undefined) {
+            return
+        }
+        console.log(data)
+        // javascript destructuring assignment
+        let {bids, asks, trades, assetsHolding, cashHolding, highcharts_series} = data;
+
+        elAssetsHolding.html(assetsHolding)
+        elCashHolding.html(cu(cashHolding))
+        if ( assetsHolding + capShort === 0) {
+            elAskOffer.disabled = true;
+        }
+        if ( cashHolding + capLong === 0) {
+            elBidOffer.disabled = true;
+        }
+        elBidsTable.html(bids.map(e => `<tr><td><input type='radio' id='offerID'${e[2]}></td><td>${cu(e[0])}</td><td>${e[1]}</td></tr>`).join(''))
+        elAsksTable.html(asks.map(e => `<tr><td><input type='radio' id='offerID'${e[2]}></td><td>${cu(e[0])}</td><td>${e[1]}</td></tr>`).join(''))
+        redrawChart(highcharts_series)
+    }
+
+    function sendAskOffer() {
+        liveSend({'operationType': 'limit_order', 'isBid': 0, 'price': price.value, 'limitVolume': limitVolume.value})
+    }
+    function sendBidOffer() {
+        liveSend({'operationType': 'limit_order', 'isBid': 1, 'price': price.value, 'limitVolume': limitVolume.value})
+    }
+
+    elBidOffer.bind("keydown", function (event) {
+        if (event.key === "Enter") {
+            sendOffer();
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        liveSend({});
+    });
+</script>
+
+{{ endblock }}

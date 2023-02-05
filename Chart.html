@@ -1,0 +1,48 @@
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+
+<div id="highchart">
+
+</div>
+
+<script>
+    function redrawChart(series) {
+        Highcharts.chart('highchart', {
+
+            title: {
+                text: 'Trade history'
+            },
+            yAxis: {
+                title: {
+                    text: 'Price'
+                }
+            },
+
+            xAxis: {
+                title: {
+                    text: 'Time (seconds)'
+                },
+                min: 0
+            },
+
+            plotOptions: {
+                series: {
+                    label: {
+                        enabled: false
+                    },
+                }
+            },
+
+            series: [{
+                data: series,
+                type: 'scatter'
+
+            }],
+
+            credits: {
+                enabled: false
+            }
+
+        });
+    }
+</script>
