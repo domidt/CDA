@@ -1,9 +1,4 @@
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/series-label.js"></script>
-
-<div id="highchart">
-
-</div>
+<div id="highchart" class="div_box"></div>
 
 <script>
     function redrawChart(series) {
@@ -17,12 +12,15 @@
                     text: 'Price'
                 }
             },
-
             xAxis: {
                 title: {
                     text: 'Time (seconds)'
                 },
-                min: 0
+                min: 0,
+                max: {{ C.MarketTime }},
+            },
+            legend: {
+                enabled: false
             },
 
             plotOptions: {
@@ -34,6 +32,7 @@
             },
 
             series: [{
+                name: 'Trades',
                 data: series,
                 type: 'scatter'
 
@@ -45,4 +44,5 @@
 
         });
     }
+
 </script>
