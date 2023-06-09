@@ -20,8 +20,9 @@ class C(BaseConstants):
     min_payment = cu(4)
     FV_MIN = 30
     FV_MAX = 85
-    MarketTime = 210
     decimals = 2
+    marketTime = 210
+
 
 
 class Subsession(BaseSubsession):
@@ -34,12 +35,14 @@ def vars_for_admin_report(subsession):
     groups = subsession.get_groups()
     period = subsession.round_number
     payoffs = sorted([p.payoff for p in subsession.get_players()])
+    marketTimes = sorted([g.marketTime for g in groups])
     trades = [[tx.transactionTime, tx.price] for tx in Transaction.filter() if tx.Period == period]
     bids = [[bx.BATime, bx.bestBid] for bx in BidAsks.filter() if bx.Period == period]
     bids = ['null' if b[1] is None else b for b in bids]
     asks = [[ax.BATime, ax.bestAsk] for ax in BidAsks.filter() if ax.Period == period]
     asks = ['null' if a[1] is None else a for a in asks]
     return dict(
+        marketTimes=marketTimes,
         payoffs=payoffs,
         trades=trades,
         bids=bids,
@@ -48,24 +51,23 @@ def vars_for_admin_report(subsession):
 
 
 class Group(BaseGroup):
+    marketTime = models.FloatField(initial=C.marketTime)
     marketStartTime = models.FloatField()
     marketEndTime = models.FloatField()
     assetValue = models.FloatField(decimal=C.decimals)
     bestAsk = models.FloatField(initial=None, decimal=C.decimals)
     bestBid = models.FloatField(initial=None, decimal=C.decimals)
-    MarketTime = models.IntegerField()
-
-
-def num_players(group: Group):
-    return 2
+    players_in_group = models.IntegerField()
+    NUM_traders = models.IntegerField()
+    NUM_informed = models.IntegerField()
 
 
 def num_informed(group: Group):
-    return 1
+    return group.session.config['num_informed_traders']
 
 
 def num_traders(group: Group):
-    return num_players(group=group)
+    return group.session.config['num_traders']
 
 
 def asset_value(group: Group):
@@ -82,16 +84,16 @@ def assign_types(group: Group):
     # this method describes traders characteristics like asymmetric information
     i = 0
     j = 0
-    NUM_informed = num_informed(group=group)
-    NUM_traders = num_traders(group=group)
-    NUM_players = num_players(group=group)
+    group.NUM_informed = num_informed(group=group)
+    group.NUM_traders = num_traders(group=group)
+    group.players_in_group = len(group.get_players())
     for p in players:
-        if i < NUM_informed and (random.uniform(a=0, b=1) * NUM_traders) < NUM_informed or j == NUM_traders - NUM_informed:
+        if i < group.NUM_informed and (random.uniform(a=0, b=1) * group.NUM_traders) < group.NUM_informed or j == group.NUM_traders - group.NUM_informed:
             p.active = True
             p.informed = True
             p.information = get_information(player=p)
             i += 1
-        elif j < NUM_traders and (random.uniform(a=0, b=1) * NUM_players) < NUM_traders:
+        elif j < group.NUM_traders and (random.uniform(a=0, b=1) * group.players_in_group) < group.NUM_traders or group.NUM_traders == None:
             p.active = True
             p.informed = False
             p.information = 'no information'
@@ -117,7 +119,8 @@ def allocate_endowments(group: Group):
 
 
 def get_max_time(group: Group):
-    return C.MarketTime
+    return group.session.config['market_time']
+
 
 
 class Player(BasePlayer):
@@ -781,12 +784,12 @@ class WaitingMarket(WaitPage):
     @staticmethod
     def after_all_players_arrive(group: Group):
         group.marketStartTime = round(float(time.time()), C.decimals)
-        group.MarketTime = get_max_time(group=group)
+        group.marketTime = get_max_time(group=group)
 
 
 class Market(Page):
     live_method = live_method
-    timeout_seconds = C.MarketTime
+    timeout_seconds = Group.marketTime
 
     @staticmethod
     def js_vars(player: Player):
@@ -803,7 +806,7 @@ class Market(Page):
     @staticmethod
     def get_timeout_seconds(player: Player):
         group = player.group
-        return group.marketStartTime + C.MarketTime - time.time()
+        return group.marketStartTime + group.marketTime - time.time()
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
@@ -837,9 +840,9 @@ class FinalResults(Page):
     def vars_for_template(player: Player):
         return dict(
             payoff=round(player.participant.payoff / C.NUM_ROUNDS, 0),
-            periodPayoff=round(player.in_all_rounds().payoff, C.decimals),
-            tradingProfit=round(player.in_all_rounds().tradingProfit, C.decimals),
-            wealthChange=round(player.in_all_rounds().wealthChange * 100, C.decimals),
+            periodPayoff=[round(p.payoff, C.decimals) for p in player.in_all_rounds()],
+            tradingProfit=[round(p.tradingProfit, C.decimals) for p in player.in_all_rounds()],
+            wealthChange=[round(p.wealthChange, C.decimals) for p in player.in_all_rounds()],
 
         )
 
