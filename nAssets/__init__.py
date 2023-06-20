@@ -15,7 +15,7 @@ NUM_ASSETS = len(ASSET_NAMES)
 
 
 class C(BaseConstants):
-    NAME_IN_URL = 'CDA_app'
+    NAME_IN_URL = 'nCDA'
     PLAYERS_PER_GROUP = None
     NUM_ROUNDS = 12
     base_payment = cu(25)
