@@ -4,7 +4,17 @@ SESSION_CONFIGS = [
     dict(
         name='nAssets',
         display_name='Continuous double auction',
-        app_sequence=['nAssets'],
+        app_sequence=['nAssets/CDA'],
+        num_demo_participants=4,
+        num_traders=3,
+        num_informed_traders=2,
+        market_time=210,
+        randomise_types=True,
+        ),
+    dict(
+        name='singleAsset',
+        display_name='Continuous double auction',
+        app_sequence=['singleAsset/CDA'],
         num_demo_participants=4,
         num_traders=3,
         num_informed_traders=2,
