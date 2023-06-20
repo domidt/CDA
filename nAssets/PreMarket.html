@@ -45,11 +45,12 @@ Continuous double auction market - pre market information
         <h4>Your short selling limit</h4>
         <table id="capShort" class="table_box"><thead><tr><th>Asset name</th><th>Assets in stock</th></tr></thead><tbody></tbody></table>
     </div>
-    <div class="assetValues col-sm div_box"> {{ if player.informed }}
+    {{ if player.informed }}
+    <div class="assetValues col-sm div_box">
         <h4>Asset values</h4>
         <table id="assetsValues" class="table_box"><thead><tr><th>Asset name</th><th>Value</th></tr></thead><tbody></tbody></table>
-    {{ else }} {{ endif }}
     </div>
+    {{ else }} {{ endif }}
 </div>
 
 
