@@ -18,7 +18,7 @@ Several adaption options are implemented. For example in the file settings.py in
 Furthermore, in file __init__.py you can specify the names of the assets, in the n-assets app via the list ASSET_NAMES. The Constants in the same file allow to adapt the number of periods the payout function, given by
 
 $$
-\pi=\max({base_payment + multiplier * wealthChange, min_payment_in_round}).
+\pi=\max({base\_payment + multiplier * wealthChange, min\_payment\_in\_round}).
 $$
 
 The constant do also include the limits of the random variables which determine the asset and cash endowment at the beginning of the period and constants include the number of decimals and whether short selling and buys on margin are allowed.
