@@ -11,7 +11,7 @@ pip3 install -U otree
 ```
 From here, you may add a new project, and add this app to it.
 
-Running an online or classroom session, you may follow the instructions in [ExpEcoWorkflow_course_repository](https://ploteo.github.io/ExpEcoWorkflow_course_repository/7/oTree_deployment_printout.html)
+Running an online or classroom session, you may follow the instructions in [ExpEcoWorkflow_course_repository](https://ploteo.github.io/ExpEcoWorkflow_course_repository/7/oTree_deployment_printout.html) and add a fork of this repository to your website.
 
 
 Disclaimer: The code is provided for educational and academic purposes and you agree that you use such code entirely at your own risk.
