@@ -1,0 +1,14 @@
+#results th {
+    text-align: left;
+    font-weight: normal;
+}
+
+#results td {
+    text-align: right;
+    font-weight: bold;
+}
+
+#jsError {
+    color: red;
+    margin-bottom: 30px;
+}
