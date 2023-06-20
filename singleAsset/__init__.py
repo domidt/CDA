@@ -6,7 +6,7 @@ from operator import itemgetter
 doc = """Continuous double auction market"""
 
 class C(BaseConstants):
-    NAME_IN_URL = 'CDA_app'
+    NAME_IN_URL = 'sCDA'
     PLAYERS_PER_GROUP = None
     NUM_ROUNDS = 12
     base_payment = cu(25)
