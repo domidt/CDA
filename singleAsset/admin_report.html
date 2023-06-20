@@ -1,0 +1,12 @@
+<script src="{{ static 'CDAstatic/highcharts/highcharts.js' }}"></script>
+<script src="{{ static 'CDAstatic/highcharts/highcharts_accessibility.js' }}"></script>
+
+<link rel="stylesheet" href="{{ static 'CDAstatic/styleResults.css' }}">
+
+<ul>
+    {{ for payoff in payoffs }}
+        <li>{{ payoff }}</li>
+    {{ endfor }}
+</ul>
+
+{{ include 'CDA_app/ChartReport.html' }}
