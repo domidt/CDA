@@ -1,0 +1,78 @@
+<figure class="highcharts-figure div_box">
+    <div id="adminChart"></div>
+    <p class="highcharts-description">
+        This chart visualises trading activity in means of best bid, best ask, and transaction prices.
+    </p>
+</figure>
+
+
+<script>
+
+    $(document).ready(function () {
+        drawReportChart({{ series }})
+    })
+
+    function drawReportChart(series) {
+        console.log(series)
+        //Highcharts.setOptions({
+        //    colors: ['rgba(5,141,199,0.5)', 'rgba(80,180,50,0.5)', 'rgba(237,86,27,0.5)']
+        //});
+        Highcharts.chart('adminChart', {
+            chart: {
+                type: 'scatter',
+                zoomType: 'xy'
+            },
+            title: {
+                text: 'Trading activity',
+                align: 'left'
+            },
+            yAxis: {
+                title: {
+                    text: 'Price'
+                }
+            },
+            xAxis: {
+                title: {
+                    text: 'Time (seconds)'
+                },
+                min: 0,
+                max: {{ marketTimes }},
+            },
+            legend: {
+                enabled: true
+            },
+            plotOptions: {
+                scatter: {
+                    marker: {
+                        radius: 4,
+                        symbol: 'circle',
+                        states: {
+                            hover: {
+                                enabled: true,
+                                lineColor: 'rgb(100,100,100)'
+                        }}},
+                    states: {
+                        hover: {
+                            marker: {
+                                enabled: false,
+                        }}}},
+                 series: {
+                    line: {
+                        marker: {
+                           enabled: false,
+                           radius: 0,
+                        }},
+                     states: {
+                        hover: {
+                            enabled: false
+                }
+            }}
+                        },
+            series: series,
+            credits: {
+                enabled: false
+            }
+        });
+    }
+
+</script>
