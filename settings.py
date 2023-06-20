@@ -2,7 +2,7 @@ from os import environ
 
 SESSION_CONFIGS = [
     dict(
-        name='singleAsset',
+        name='singleAsset/CDA',
         display_name='Continuous double auction',
         app_sequence=['singleAsset/CDA'],
         num_demo_participants=4,
@@ -11,7 +11,7 @@ SESSION_CONFIGS = [
         market_time=210,
         randomise_types=True,
         ),
-        name='nAssets',
+        name='nAssets/CDA',
         display_name='Continuous double auction',
         app_sequence=['nAssets/CDA'],
         num_demo_participants=4,
