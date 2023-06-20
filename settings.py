@@ -2,9 +2,18 @@ from os import environ
 
 SESSION_CONFIGS = [
     dict(
-        name='CDA',
+        name='Single Asset',
         display_name='Continuous double auction',
-        app_sequence=['CDA_app'],
+        app_sequence=['singleAsset/CDA'],
+        num_demo_participants=4,
+        num_traders=3,
+        num_informed_traders=2,
+        market_time=210,
+        randomise_types=True,
+        ),
+        name='n Assets',
+        display_name='Continuous double auction',
+        app_sequence=['nAssets/CDA'],
         num_demo_participants=4,
         num_traders=3,
         num_informed_traders=2,
