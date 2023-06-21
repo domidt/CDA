@@ -16,14 +16,14 @@ From here, you may add a new project, and add these apps to it.
 Running an online or classroom session, you may follow the instructions in [ExpEcoWorkflow_course_repository](https://ploteo.github.io/ExpEcoWorkflow_course_repository/7/oTree_deployment_printout.html) and add a fork of this repository to your website.
 
 ## Adaptions
-Several adaption options are implemented. For example in the file settings.py in SESSION_CONFIGS you can easily change the duration of a market, whether trader types are randomised between periods, the number of active/inactive as well as the number of informed/uninformed traders. These settings can also be changed ad-hoc in class when creating a session.
-Furthermore, in file __init__.py you can specify the names of the assets, in the n-assets app via the list ASSET_NAMES. The Constants in the same file allow to adapt the number of periods the payout function, given in function 'calcPeriodProfits' by
+Several adaption options are implemented. For example in the file settings.py in ``SESSION_CONFIGS`` you can easily change the duration of a market, whether trader types are randomised between periods, the number of active/inactive as well as the number of informed/uninformed traders. These settings can also be changed ad-hoc in class when creating a session.
+Furthermore, in file ``__init__.py`` you can specify the names of the assets, in the n-assets app via the list ``ASSET_NAMES``. The Constants in the same file allow to adapt the number of periods the payout function, given in function ``calcPeriodProfits`` by
 
 $$
 \pi=\max(\{\text{base payment} + \text{multiplier} * \text{wealthChange}, \text{min payment in round}\}).
 $$
 
-The constants in __init__.py do also include the limits of the random variables which determine the asset and cash endowment at the beginning of the period and constants include the number of decimals and whether short selling and buys on margin are allowed.
+The constants in ``__init__.py`` do also include the limits of the random variables which determine the asset and cash endowment at the beginning of the period and constants include the number of decimals and whether short selling and buys on margin are allowed.
 
 
 Disclaimer: The code is provided for educational and academic purposes and you agree that you use such code entirely at your own risk.
