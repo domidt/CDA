@@ -1,8 +1,10 @@
 # CDA
-This application provides a widely adaptable Continuous Double Auction (CDA) in oTree v5 via a complete implementation of an experimental asset market with mutliple continuously operating traders and multiple assets. Permission of use of this software is granted for educational and academic purpose with the requirement of citation.
+This application provides a widely adaptable Continuous Double Auction (CDA) in oTree v5 via a complete implementation of an experimental asset market with mutliple continuously operating traders and multiple assets. Permission to use this software is granted for educational and academic purpose with the requirement of citation.
 
 ## Overview
-This continuous double auction software is provided in two apps, since one covers a simplicistic version with a single asset and more convenient data export, while the other captures markets with multiple (n) assets which are summerised in variables with JSON format.
+This continuous double auction software is provided in two apps, since one covers a simplicistic version with a single asset and more convenient data export, while the other captures markets with multiple (n) assets which are summerised in variables with JSON format. 
+There are existing, well developed packages for CDA markets, notable examples are [otree_markets](https://github.com/Leeps-Lab/otree_markets) which uses [LEEPS lab's redwood framework](https://github.com/Leeps-Lab/otree-redwood), [high frequency trading](https://github.com/Leeps-Lab/high_frequency_trading/), and [otree-double-auction](https://github.com/IOP-Experiments/otree-double-auction).
+However, to the best of my knowledge, there is no software which is supported by the new oTree version 5 and thus not supported by newer python version without a virtual environment. This is why, I started to create this app primarily for classroom games.
 
 ## Installation
 This software is developed for oTree 5.10.2 using python 3.11.1. To make adaptions to it, you may need to download both softwares, which are available free of charge at [https://www.python.org/downloads/](https://www.python.org/downloads/) and oTree via: 
@@ -21,7 +23,7 @@ $$
 \pi=\max(\{\text{base payment} + \text{multiplier} * \text{wealthChange}, \text{min payment in round}\}).
 $$
 
-The constant do also include the limits of the random variables which determine the asset and cash endowment at the beginning of the period and constants include the number of decimals and whether short selling and buys on margin are allowed.
+The constants in __init__.py do also include the limits of the random variables which determine the asset and cash endowment at the beginning of the period and constants include the number of decimals and whether short selling and buys on margin are allowed.
 
 
 Disclaimer: The code is provided for educational and academic purposes and you agree that you use such code entirely at your own risk.
