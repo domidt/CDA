@@ -30,6 +30,7 @@ class C(BaseConstants):
     cash_MAX = 35*100
     decimals = 2
     marketTime = 210
+    max_asset_info_1_trader = 2
     allowLong = True
     allowShort = True
 
@@ -76,6 +77,8 @@ class Group(BaseGroup):
     players_in_group = models.IntegerField()
     numTraders = models.IntegerField()
     numInformed = models.IntegerField()
+    roleList = models.LongStringField()
+    roleStructure = models.LongStringField()
     transactions = models.LongStringField()
     marketBuyOrders = models.LongStringField()
     marketSellOrders = models.LongStringField()
@@ -100,12 +103,19 @@ def random_types(group: Group):
     return group.session.config['randomise_types']
 
 
-def num_informed(group: Group):
-    return group.session.config['num_informed_traders']
-
-
 def num_traders(group: Group):
     return group.session.config['num_traders']
+
+
+def role_structure(group: Group):
+    group.roleList = str(['all', 1, 2, 'uninformed', 'inactive'])
+    group.players_in_group = len(group.get_players())
+    group.numTraders = num_traders(group=group)
+    num_inactive = group.players_in_group - group.numTraders
+    num_single_per_asset = group.session.config['num_1informed_traders']  # 3: informed about each single asset
+    num_all_info = group.session.config['num_allinformed_traders']  # informed about all assets
+    num_uninf = group.numTraders - num_single_per_asset * len(ASSET_NAMES) - num_all_info  # uninformed traders
+    return {'period': group.round_number, 'inactive': num_inactive, 'uninformed': num_uninf, 1: num_single_per_asset, 2: num_single_per_asset, 'all': num_all_info}
 
 
 def asset_value(group: Group):
@@ -118,30 +128,33 @@ def asset_value(group: Group):
 def assign_types(group: Group):
     # this method allocates traders' types at the beginning of the session or when randomised.
     players = group.get_players()
+    group.roleStructure = str(role_structure(group=group))
+    role_list = literal_eval(group.roleList)
     if group.randomisedTypes or Subsession.round_number == 1:
-        i = 0
-        j = 0
-        group.numInformed = num_informed(group=group)
-        group.numTraders = num_traders(group=group)
-        group.players_in_group = len(group.get_players())
-        for p in players:
-            if i < group.numInformed and (random.uniform(a=0, b=1) * group.numTraders) < group.numInformed or j == group.numTraders - group.numInformed:
-                p.participant.vars['isActive'] = True
-                p.participant.vars['informed'] = True
-                i += 1
-            elif j < group.numTraders and (random.uniform(a=0, b=1) * group.players_in_group) < group.numTraders or group.numTraders == None:
-                p.participant.vars['isActive'] = True
-                p.participant.vars['informed'] = False
-                j += 1
-            else:
-                p.participant.vars['isActive'] = False
-                p.participant.vars['informed'] = False
+        ii = group.numTraders  # number of traders without type yet
+        for r in role_list:  # for each role
+            print(r)
+            k = 0  # number of players assigned this role
+            max_k = literal_eval(group.roleStructure)[r]  # number of players to be assigned with this role
+            while k < max_k:  # until enough role 'r' types are assigned
+                rand_num = round(random.uniform(a=0, b=1) * ii, 0)
+                print('rand', rand_num)
+                i = 0
+                for p in players:
+                    if i < rand_num and not p.field_maybe_none('roleID'):
+                        i += 1
+                        print('i', i)
+                        if rand_num == i:
+                            print('assignment', r)
+                            p.roleID = str(r)
+                            k += 1
+                            print('k', k, max_k)
     for p in players:
         p.allowShort = short_allowed(player=p)
         p.allowLong = long_allowed(player=p)
+        p.information = str(get_role_attr(player=p, roleID=p.roleID))
         p.isActive = p.participant.vars['isActive']
         p.informed = p.participant.vars['informed']
-        p.information = str(get_information(player=p))
 
 
 def allocate_endowments(group: Group):
@@ -214,7 +227,8 @@ def set_initial(value):
 class Player(BasePlayer):
     informed = models.BooleanField(choices=((True, 'informed'), (False, 'uninformed')))
     isActive = models.BooleanField(choices=((True, 'active'), (False, 'inactive')))
-    information = models.StringField()
+    roleID = models.StringField()
+    information = models.LongStringField()
     allowShort = models.BooleanField()
     allowLong = models.BooleanField()
     assetValues = models.LongStringField()
@@ -288,13 +302,25 @@ def cash_long_limit(player: Player):
         return 0
 
 
-def get_information(player: Player):
-    if player.informed:
-        info = player.assetValues
+def get_role_attr(player: Player, roleID):
+    asset_ids = [a for a in range(1, NUM_ASSETS + 1)]
+    info = {a: None for a in asset_ids}
+    if roleID == 'inactive':
+        player.participant.vars['isActive'] = False
+        player.participant.vars['informed'] = False
+    elif roleID in 'uninformed':
+        player.participant.vars['isActive'] = True
+        player.participant.vars['informed'] = False
     else:
-        info = {i: None for i in range(1, NUM_ASSETS + 1)}
+        player.participant.vars['isActive'] = True
+        player.participant.vars['informed'] = True
+        asset_values = literal_eval(player.assetValues)
+        if roleID == 'all':
+            info = asset_values
+        elif int(roleID) in asset_ids:
+            role_id = int(roleID)
+            info[role_id] = asset_values[role_id]
     return info
-
 
 def live_method(player: Player, data):
     print(data)
