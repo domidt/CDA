@@ -16,12 +16,12 @@
     $(document).ready(function () {
         elCashHolding.html(cu(cashHolding))
         elCapLongBody.html(cu (elCapLongBody.html()))
-        // assetValues is undefined (for js) in stages before the result
+        // for uninformed traders assetValues is undefined (for js) in stages before the result but should be visible in results
         if (typeof js_vars.assetValues !== 'undefined' && js_vars.assetValues !== null) {
             let assetValues = js_vars.assetValues
             elAssetsValuesBody.html(Object.entries(assetValues).map(e => `<tr id='assetID${e[0]}' value=${e[0]}><td value=${e[0]}>${assetNames[e[0] - 1]} is worth </td><td value=${e[1]}>${cu(e[1])}</td></tr>`).join(''))
         }
-        // otherwise var information is sent to informed traders
+        // var information is sent to informed traders
         else if (typeof js_vars.informed !== 'undefined' && js_vars.informed === true) {
             let information = js_vars.information
             let informed = js_vars.informed
@@ -41,6 +41,11 @@
             elTradingProfits.html(cu(elTradingProfits.html()))
         }
         elAssetsHoldingBody.html(Object.entries(assetsHolding).map(e => `<tr id='holdingAssetID${e[0]}' value=${e[0]}><td value=${e[1]}>${e[1]}</td><td value=${e[0]}> of ${assetNames[e[0]-1]}</td></tr>`).join(''))
+
+        $('#assetsValues tbody tr').filter(function() {
+            return isNaN($(this).children('td').eq(1).attr('value'));
+        }).html(`<td colSpan="2"> </td>`);
+
     })
 
 
