@@ -3,7 +3,7 @@ This application provides a widely adaptable Continuous Double Auction (CDA) in 
 
 ## Overview
 This continuous double auction software is provided in two apps, since one covers a simplicistic version with a single asset and more convenient data export, while the other captures markets with multiple (n) assets which are summerised in variables with JSON format. 
-There are existing, well developed packages for CDA markets, notable examples are [otree_markets](https://github.com/Leeps-Lab/otree_markets) which uses [LEEPS lab's redwood framework](https://github.com/Leeps-Lab/otree-redwood), [high frequency trading](https://github.com/Leeps-Lab/high_frequency_trading/), and [otree-double-auction](https://github.com/IOP-Experiments/otree-double-auction).
+There are existing, well developed packages for CDA markets, notable examples are [otree_markets](https://github.com/Leeps-Lab/otree_markets) which uses [LEEPS lab's redwood framework](https://github.com/Leeps-Lab/otree-redwood), [high frequency trading](https://github.com/Leeps-Lab/high_frequency_trading/), [otree-double-auction](https://github.com/IOP-Experiments/otree-double-auction), and [otree etf cda](https://github.com/jacopomagnani/otree_etf_cda).
 However, to the best of my knowledge, there is no software which is supported by the new oTree version 5 and thus not supported by newer python version without a virtual environment. This is why, I started to create this app primarily for classroom games.
 
 ## Installation
