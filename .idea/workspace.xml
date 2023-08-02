@@ -26,15 +26,21 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/domin/Documents/GitHub/CDA&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/domin/Documents/GitHub/CDA/_static&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\domin\Documents\GitHub\CDA\_static" />
+    </key>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -44,11 +50,33 @@
       <option name="presentableId" value="Default" />
       <updated>1688321583618</updated>
       <workItem from="1688321584993" duration="24372000" />
-      <workItem from="1688450283428" duration="3392000" />
+      <workItem from="1688450283428" duration="34028000" />
+      <workItem from="1689154093306" duration="1752000" />
+      <workItem from="1689201079041" duration="12000" />
+      <workItem from="1689503644581" duration="3699000" />
+      <workItem from="1689512551410" duration="1273000" />
+      <workItem from="1689519394584" duration="62000" />
+      <workItem from="1689522262258" duration="213000" />
+      <workItem from="1689522826416" duration="111000" />
+      <workItem from="1690729177307" duration="17820000" />
+      <workItem from="1690817972748" duration="103000" />
+      <workItem from="1690818159666" duration="406000" />
+      <workItem from="1690839057418" duration="6626000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/singleAssetCrowdPredictions/__init__.py</url>
+          <line>294</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

@@ -2,6 +2,22 @@ from os import environ
 
 SESSION_CONFIGS = [
     dict(
+        name='crowd',
+        display_name='Aggregation mechanisms for crowd predictions',
+        app_sequence=['singleAssetCrowdPredictions'],
+        num_demo_participants=30,
+        num_traders=30,
+        num_I3_traders=8,
+        num_I2_traders=8,
+        num_I1_traders=8,
+        num_1E_coins=8,
+        num_20c_coins=12,
+        num_5c_coins=15,
+        num_1c_coins=24,
+        market_time=210,
+        randomise_types=True,
+    ),
+    dict(
         name='nAssets',
         display_name='n assets: Continuous double auction',
         app_sequence=['nAssets'],

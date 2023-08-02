@@ -145,6 +145,7 @@ def assign_types(group: Group):
                         i += 1
                         print('i', i)
                         if rand_num == i:
+                            ii -= 1
                             print('assignment', r)
                             p.roleID = str(r)
                             k += 1
@@ -321,6 +322,7 @@ def get_role_attr(player: Player, roleID):
             role_id = int(roleID)
             info[role_id] = asset_values[role_id]
     return info
+
 
 def live_method(player: Player, data):
     print(data)
