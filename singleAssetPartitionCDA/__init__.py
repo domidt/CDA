@@ -12,7 +12,8 @@ PARTITIONS_UNIT_VALUES = [2, 1, .5, .2, .1, .05, .02, .01]
 class C(BaseConstants):
     NAME_IN_URL = 'partitionCDA'
     PLAYERS_PER_GROUP = None
-    NUM_ROUNDS = 1
+    num_trial_rounds = 1
+    NUM_ROUNDS = 2
     base_payment = cu(25)
     multiplier = 90
     min_payment_in_round = cu(0)
@@ -141,14 +142,24 @@ def define_asset_value(group: Group):
     units = {names: None for names in PARTITIONS_NAMES}
     ## the next line determine the amount of coins or each value,
     ## I initially determined them as a session_config but then students would see the corresponding number of coins.
-    units['2E'] = 10
-    units['1E'] = 8
-    units['50c'] = 8
-    units['20c'] = 24
-    units['10c'] = 12
-    units['5c'] = 12
-    units['2c'] = 12
-    units['1c'] = 24
+    if group.round_number <= C.NUM_ROUNDS - C.num_trial_rounds:
+        units['2E'] = 10
+        units['1E'] = 8
+        units['50c'] = 8
+        units['20c'] = 24
+        units['10c'] = 12
+        units['5c'] = 12
+        units['2c'] = 12
+        units['1c'] = 24
+    elif group.round_number > C.NUM_ROUNDS - C.num_trial_rounds:
+        units['2E'] = 10
+        units['1E'] = 8
+        units['50c'] = 8
+        units['20c'] = 24
+        units['10c'] = 12
+        units['5c'] = 12
+        units['2c'] = 12
+        units['1c'] = 24
     num_units = {names: units[names] for names in PARTITIONS_NAMES}
     group.valueStructureNumUnits = str(num_units)
     value_units = {PARTITIONS_NAMES[i]: PARTITIONS_UNIT_VALUES[i] for i in range(len(PARTITIONS_NAMES))}

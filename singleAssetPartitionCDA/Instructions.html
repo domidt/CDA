@@ -4,25 +4,165 @@
 
 {{ block content }}
 
-    <p>Thank you for participating in this experiment</p>
+<b>Dear participant</b>
+
+    <p>Thank you for participating in this experiment!</p>
+
+<p>
+    Please read the instructions for the experiment carefully.
+    Every statement in these instructions is truthful.
+    The size of the payment you will receive at the end of the experiment depends on how well you have understood the instructions.
+    If you have a question, please raise your hand.
+    We will then answer your question in private.
+    The experiment and the analysis of the resulting data will be anonymized.
+    From now on, please do not speak to other participants and use only those tools the experimenter provides you with.
+    If you violate these rules, you will not be paid and will be excluded from future experiments.
+    </p>
+
+<p>
+    Thank you for your attention and for participating in today’s experiment
+</p>
+
+
+<b>Structure of the experiment</b>
+<p>
+    <ol>
+    <li>Instructions for the trading screen</li>
+    <li>Trial period</li>
+    <li>Instructions for the asstes being traded</li>
+    <li>Market experiment</li>
+    <li>Disclosure of the actual value</li>
+    </ol>
+</p>
 
 <b>Background of the experiment</b>
 
 <p>
-This experiment replicates an asset market. You are a member of a group that consists of yourself and your classmates.
+    This experiment replicates an asset market.
+    You are a member of a group that consists of yourself and your classmates.
     The composition of your group will remain unchanged throughout the entire experiment and you will only interact with people from your group.
-    The experiment consists of 1 trading periods.
+    The experiment consists of 1 trial and 1 trading periods.
     </p>
 
-<b>Your role during the experiment</b>
+<b>Instructions for the trading screen</b>
+
 <p>
-    At the beginning of the experiment, a quarter participants are assigned the role of active market participants (traders) who take part in the asset markets and can buy or sell assets of a fictitious company.
-    The remaining participant is a passive market
-participant (observer ) who observes the events on the market but cannot actively
-participate in the market. The assignment to one of the roles remains unchanged
-throughout the whole experiment. You will now receive more information about
-the trader and observer roles.
+    In this experiment you can buy and sell securities corresponding the value of a jars filled with coins (€2, €1, 50, 20, 10, 5, 2, and 1 cents).
+    Following a trial period, you will receive more information about this jar.
+    You will be trading in a continuous double auction.
+    This means that every trader can act as a buyer and as a seller.
+    You can submit as many buy and sell orders as you wish by entering a price and the amount of assets you are willing to trade (with a maximum of two decimal places) and then clicking “Buy order/Sell order”.
+    Prices and the amount of assets traded are only determined by the actions of traders.
+    If you buy or sell assets, your cash and asset holdings will change accordingly.
+    Every trading period ends automatically after 5 minutes.
 </p>
+
+<b>Buyback value of the assets</b>
+
+<p>
+    At the end of each trading period, your asset holdings will be taken over by the experimenter in return for the buyback value.
+    The latter is defined by the coins contained in the jar, i.e., the summed products of coin types multiplied by coin values in the jar.
+</p>
+
+<b>Information about the coins in the jar</b>
+
+<p>
+    Before the trading period starts, some traders will receive information about the amount of some coin values in the jar; for example, the number of all 50 cent coins in the jar.
+    There is a total of four information levels (I0, I1, I2, I3).
+    Out of the participants, a quarter will receive the same information.
+    Depending on your information level, you will learn the number of none, two, or three types of coins contained in the jar.
+    You will also learn the value of these coins.
+    A participant with information level I0 learns nothing about the number of coins;
+    I1 learns the number and value of the €1 and 5 cent coins;
+    I2 the number and value of the €2 and 2 cent coins,
+    and I3 the number and value of the 50, 20 cent, and 10 cent coins.
+    Nobody learns the number or value of the 1 cent coins.
+    The information structure looks as follows:
+    </p>
+
+<table>
+    <thead>
+    <tr>
+        <th></th><th>€2</th><th>€1</th><th>50c</th><th>20c</th><th>10c</th><th>5c</th><th>2c</th><th>1c</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <th>IO</th>
+    </tr>
+    <tr>
+        <th>I1</th><td></td><td>known</td><td></td><td></td><td></td><td>known</td>
+    </tr>
+    <tr>
+        <th>I2</th><td>known</td><td></td><td></td><td></td><td></td><td></td><td>known</td>
+    </tr>
+    <tr>
+        <th>I3</th><td></td><td></td><td>known</td><td>known</td><td>known</td><td></td><td></td>
+    </tr>
+    </tbody>
+</table>
+
+<p>
+    At the start of the period, the jar of the will be handed out to be inspected by the participants (you will receive the same jar and each one can view it, handle it, etc. for 15 seconds).
+</p>
+
+<b>Euro and asset endowments at the beginning of the period</b>
+<p>
+    At the beginning of each trading period, all traders receive between {{ C.num_assets_MIN }} and {{ num_assets_MAX }} assets and a certain amount of euros to be able to make transactions (purchases and sales of assets).
+    Note that the endowments of assets and euros are newly determined at beginning of every period and are NOT carried over to the next trading period.
+    </p>
+
+<b>Credit limit</b>
+<p>
+    In addition to the initial endowment of cash at the beginning of the trading period, every trader receives a credit limit equal to the size of the initial euro endowment.
+    This means that every trader can use all the euros for buying assets, and in addition, can purchase assets by utilizing the credit limit (displayed as negative cash holdings).
+    </p>
+
+<b>Short sale of assets</b>
+<p>
+    Similar to the cash holdings, at the beginning of the trading period, every trader is provided with an endowment of assets for short sales equal to the size of the initial asset endowment.
+    This means, that every trader can sell all his assets, and in addition, can sell assets up to the short sale limit (shown by negative asset holdings).
+</p>
+
+<b>Calculation of your payout as a trader</b>
+<p>
+As a trader, your fictual payout in euros is based on one the period incomes.
+    For the calculation of a period income, the initial wealth is determined by multiplying your initial asset endowment with the buyback value and adding the initial endowment of cash.
+    As a next step, your final wealth is determined.
+    For the final wealth, the asset and cash holdings at the end of the period are used.
+    This approach is also applied in case of negative asset or taler holdings at the end of the period.
+    In other words, for the calculation of the final wealth, potentially negative taler holdings are balanced with the value of the assets and potentially negative asset holdings are balanced with the cash holdings.
+    With the mentioned values, a percentage wealth change is calculated for this period:
+</p>
+<p>
+    Wealth change (%) = (final wealth − initial wealth)/(initial wealth)</p>
+
+<p>
+The percentage wealth change is multiplied by {{ C.multiplier }} and added to a basic income of 30 euros. Please note that the period income can not become less than 0 euros.
+Therefore the calculation is:
+Period income = max(0; 30 + wealth change(%) · 90)
+Example: At the end of the period you have 60 assets and 300 taler. The buyback
+value of the asset is 50.00. Therefore your final wealth in this period is 60 · 50.00
++ 300 = 3,300. Your initial endowment in this period was for example 50 assets
+and 500 taler, which results in an initial wealth of 50 · 50.00 + 500 = 3,000. You
+have not received any compensation payments and will not have to pay penalty
+fees. This leads to a wealth change of 3,300−3,000
+3,000 =10.00% and a period income of
+30+0.1·90 = 39 euros. If, however, the wealth change of the period equals -10.00%,
+the period income will be 30+ −0.1·90=21 euros. If you do not trade any asset, the
+wealth change will be 0% and your period income will be 30 + 0.0 · 90 = 30 euros.
+
+
+<p>
+    All orders will be sorted by price, such that the best will be on top.
+    The best order can be accepted using the buttons “Buy” or “Sell”.
+    When you buy a jar, your euro balance will decrease by the price and your balance of jars will increase by 1.
+    Conversely, when you sell a jar, your euro balance will increase by the price and your balance of jars will decrease by 1.
+    Please note that you can only buy (sell) as many jars as are covered by your euro balance (jar balance).
+    Negative balances of euros or jars (short sales) thus are not permissible.
+    The computer will delete orders which are no longer covered.
+</p>
+Every asset corresponds jar filled with coins.
 
     <div id="continue">
       <button id="participationButton" name="isParticipating" value=1 class="btn btn-outline-info">I read and understand the instructions. Continue</button>
