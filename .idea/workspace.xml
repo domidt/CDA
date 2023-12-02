@@ -4,26 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bc9b68dc-2d95-433c-b2a4-618f8f984096" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/_static/cppCDAstatic/highcharts/highcharts.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_static/cppCDAstatic/highcharts/highcharts_accessibility.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_static/cppCDAstatic/script.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_static/cppCDAstatic/scriptMarket.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_static/cppCDAstatic/style.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_static/cppCDAstatic/styleResults.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/Chart.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/ChartReport.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/FinalResults.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/Instructions.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/Market.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/PreMarket.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/Results.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/admin_report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/settings.py" afterDir="false" />
-    </list>
+    <list default="true" id="bc9b68dc-2d95-433c-b2a4-618f8f984096" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -101,7 +82,7 @@
       <workItem from="1698838802205" duration="249000" />
       <workItem from="1698839078295" duration="4387000" />
       <workItem from="1699305648586" duration="2462000" />
-      <workItem from="1701099696285" duration="14200000" />
+      <workItem from="1701099696285" duration="14406000" />
     </task>
     <servers />
   </component>
