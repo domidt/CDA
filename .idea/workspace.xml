@@ -4,11 +4,37 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bc9b68dc-2d95-433c-b2a4-618f8f984096" name="Changes" comment="" />
+    <list default="true" id="bc9b68dc-2d95-433c-b2a4-618f8f984096" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/_static/cppCDAstatic/highcharts/highcharts.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_static/cppCDAstatic/highcharts/highcharts_accessibility.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_static/cppCDAstatic/script.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_static/cppCDAstatic/scriptMarket.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_static/cppCDAstatic/style.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/_static/cppCDAstatic/styleResults.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/Chart.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/ChartReport.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/FinalResults.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/Instructions.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/Market.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/PreMarket.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/Results.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/admin_report.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/settings.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -23,10 +49,11 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/domin/Documents/GitHub/CDA/_static&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/domin/Documents/GitHub/CDA&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -39,6 +66,12 @@
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\domin\Documents\GitHub\CDA\_static" />
+      <recent name="C:\Users\domin\Documents\GitHub\CDA" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\domin\Documents\GitHub\CDA\singleAssetCrowdPartitions" />
+      <recent name="C:\Users\domin\Documents\GitHub\CDA\singleAssetCrowdPredictions" />
+      <recent name="C:\Users\domin\Documents\GitHub\CDA\_static\cpCDAstatic" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -61,22 +94,18 @@
       <workItem from="1690729177307" duration="17820000" />
       <workItem from="1690817972748" duration="103000" />
       <workItem from="1690818159666" duration="406000" />
-      <workItem from="1690839057418" duration="6626000" />
+      <workItem from="1690839057418" duration="7097000" />
+      <workItem from="1692692606918" duration="114000" />
+      <workItem from="1694020092004" duration="9544000" />
+      <workItem from="1698761803006" duration="22214000" />
+      <workItem from="1698838802205" duration="249000" />
+      <workItem from="1698839078295" duration="4387000" />
+      <workItem from="1699305648586" duration="2462000" />
+      <workItem from="1701099696285" duration="14200000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/singleAssetCrowdPredictions/__init__.py</url>
-          <line>294</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

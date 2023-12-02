@@ -2,6 +2,18 @@ from os import environ
 
 SESSION_CONFIGS = [
     dict(
+        name='crowdPartitions',
+        display_name='Aggregation mechanisms for crowd predictions on partitions',
+        app_sequence=['singleAssetPartitionCDA'],
+        num_demo_participants=4,
+        est_num_traders=30,
+        num_shares_in_market=100,
+        market_time=210,
+        randomise_types=True,
+        short_selling=True,
+        margin_buying=True,
+    ),
+    dict(
         name='crowd',
         display_name='Aggregation mechanisms for crowd predictions',
         app_sequence=['singleAssetCrowdPredictions'],
