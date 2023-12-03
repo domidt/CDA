@@ -1034,7 +1034,7 @@ class Results(Page):
     @staticmethod
     def vars_for_template(player: Player):
         return dict(
-            assetValue=player.assetValue,
+            assetValue=round(player.assetValue, C.decimals),
             initialEndowment=round(player.initialEndowment, C.decimals),
             endEndowment=round(player.endEndowment, C.decimals),
             tradingProfit=round(player.tradingProfit, C.decimals),
@@ -1045,7 +1045,7 @@ class Results(Page):
     @staticmethod
     def js_vars(player: Player):
         return dict(
-            assetValue=player.assetValue,
+            assetValue=round(player.assetValue, C.decimals),
         )
 
 
