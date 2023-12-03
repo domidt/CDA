@@ -7,7 +7,13 @@
     <list default="true" id="bc9b68dc-2d95-433c-b2a4-618f8f984096" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nAssets/Market.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssets/Market.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/singleAsset/Market.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAsset/Market.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/singleAssetCrowdPredictions/Market.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetCrowdPredictions/Market.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/singleAssetPartitionCDA/FinalResults.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/FinalResults.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/singleAssetPartitionCDA/Instructions.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/Instructions.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/singleAssetPartitionCDA/Market.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/Market.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/singleAssetPartitionCDA/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/__init__.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -87,7 +93,7 @@
       <workItem from="1698838802205" duration="249000" />
       <workItem from="1698839078295" duration="4387000" />
       <workItem from="1699305648586" duration="2462000" />
-      <workItem from="1701099696285" duration="19943000" />
+      <workItem from="1701099696285" duration="27228000" />
     </task>
     <servers />
   </component>

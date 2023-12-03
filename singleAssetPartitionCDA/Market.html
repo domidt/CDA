@@ -102,7 +102,7 @@ Continuous double auction market
         <input type="number" class="form-control small-numbers" inputmode="numeric" id="transactionBidVolume" min="1" style="display: inline-block;">
         <button type="button" onclick="sendAcc(is_bid=1)" id="bidAccept" class="otree-btn-next btn btn-primary">Accept sale</button>
         <table id="bidsTable" class="table_box"><thead><tr><th>Volume</th><th>Price</th></tr></thead><tbody></tbody></table>
-        <button type="button" onclick="cancelLimit(is_bid=1)" id="cancelBidLimit" class="btn btn-outline-danger">Cancel own limit order</button>
+        <button type="button" onclick="cancelLimit(is_bid=1)" id="cancelBidLimit" class="btn btn-outline-danger">Withdraw own limit order</button>
         <div class="otree-form-errors alert alert-danger" id="errorBidMarket" style="display: none; text-align: left; margin-top: 35px;">
             <p>Please provide all necessary information to accept a bid offer</p>
             <ol>
@@ -113,17 +113,17 @@ Continuous double auction market
             <button type="button" id="accBidError" class="btn btn-outline-danger">I understood</button>
         </div>
         <div class="otree-form-errors alert alert-danger" id="errorBidCancel" style="display: none; text-align: left; margin-top: 35px;">
-            <p>If you wish to cancel one of your own (red-framed) bid offers, please select it first.</p>
+            <p>If you wish to withdraw one of your own (red-framed) bid offers, please select it first.</p>
             <button type="button" id="cancelBidError" class="btn btn-outline-danger">I understood</button>
         </div>
     </div>
     <div class="market_ask col-sm div_box">
         <h4>Asks</h4>
-        <p style="text-align: center">Please, select the limit order and specify the volume you would like to sell here</p>
+        <p style="text-align: center">Please, select the limit order and specify the volume you would like to purchase here</p>
         <input type="number" class="form-control small-numbers" inputmode="numeric" id="transactionAskVolume" min="1" style="display: inline-block">
         <button type="button" onclick="sendAcc(is_bid=0)" id="askAccept" class="otree-btn-next btn btn-primary">Accept purchase</button>
         <table id="asksTable" class="table_box"><thead><tr><th>Volume</th><th>Price</th></tr></thead><tbody></tbody></table>
-        <button type="button" onclick="cancelLimit(is_bid=0)" id="cancelAskLimit" class="btn btn-outline-danger">Cancel own limit order</button>
+        <button type="button" onclick="cancelLimit(is_bid=0)" id="cancelAskLimit" class="btn btn-outline-danger">Withdraw own limit order</button>
         <div class="otree-form-errors alert alert-danger" id="errorAskMarket" style="display: none; text-align: left; margin-top: 35px">
             <p>Please provide all necessary information to accept an ask offer</p>
             <ol>
@@ -135,7 +135,7 @@ Continuous double auction market
             <button type="button" id="accAskError" class="btn btn-outline-danger">I understood</button>
         </div>
         <div class="otree-form-errors alert alert-danger" id="errorAskCancel" style="display: none; text-align: left; margin-top: 35px;">
-            <p>If you wish to cancel one of your own (red-framed) ask offers, please select it first.</p>
+            <p>If you wish to withdraw one of your own (red-framed) ask offers, please select it first.</p>
             <button type="button" id="cancelAskError" class="btn btn-outline-danger">I understood</button>
         </div>
     </div>

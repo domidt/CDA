@@ -134,7 +134,11 @@ def assign_types(group: Group):
                         if rand_num == i:
                             ii -= 1
                             p.roleID = str(r)
+                            p.participant.vars['roleID'] = str(r)
                             k += 1
+    else:
+        for p in players:
+            p.roleID = p.participant.vars['roleID']
 
 
 def define_asset_value(group: Group):
@@ -152,14 +156,14 @@ def define_asset_value(group: Group):
         units['2c'] = 12
         units['1c'] = 24
     elif group.round_number > C.NUM_ROUNDS - C.num_trial_rounds:
-        units['2E'] = 10
-        units['1E'] = 8
-        units['50c'] = 8
+        units['2E'] = 26
+        units['1E'] = 39
+        units['50c'] = 10
         units['20c'] = 24
-        units['10c'] = 12
+        units['10c'] = 39
         units['5c'] = 12
-        units['2c'] = 12
-        units['1c'] = 24
+        units['2c'] = 7
+        units['1c'] = 8
     num_units = {names: units[names] for names in PARTITIONS_NAMES}
     group.valueStructureNumUnits = str(num_units)
     value_units = {PARTITIONS_NAMES[i]: PARTITIONS_UNIT_VALUES[i] for i in range(len(PARTITIONS_NAMES))}
@@ -172,9 +176,13 @@ def define_asset_value(group: Group):
 
 
 def count_participants(group: Group):
-    for p in group.get_players():
-        if p.isParticipating == 1:
-            group.numParticipants += 1
+    if group.round_number == 1:
+        for p in group.get_players():
+            if p.isParticipating == 1:
+                group.numParticipants += 1
+    else:
+        group.numParticipants = group.session.vars['numParticipants']
+    group.session.vars['numParticipants'] = group.numParticipants
 
 
 def initiate_group(group: Group):
@@ -945,6 +953,7 @@ class WaitToStart(WaitPage):
     def after_all_players_arrive(group: Group):
         group.randomisedTypes = random_types(group=group)
         initiate_group(group=group)
+        print('initiate group', group.roleStructure)
         players = group.get_players()
         for p in players:
             initiate_player(player=p)
