@@ -313,7 +313,7 @@ def initiate_player(player: Player):
 
 def set_player_info(player: Player):
     ## before this function, role_structure and within this function get_role_att is run
-    player.information = str(get_role_attr(player=player, role_id=player.roleID))
+    player.information = str(get_role_attr(player=player, role_id=player.field_maybe_none('roleID')))
     player.isActive = player.participant.vars['isActive']
     player.informed = player.participant.vars['informed']
 
