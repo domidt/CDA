@@ -157,13 +157,13 @@ def define_asset_value(group: Group):
         units['1c'] = 24
     elif group.round_number > C.NUM_ROUNDS - C.num_trial_rounds:
         units['2E'] = 26
-        units['1E'] = 39
+        units['1E'] = 32
         units['50c'] = 10
-        units['20c'] = 24
-        units['10c'] = 39
-        units['5c'] = 12
-        units['2c'] = 7
-        units['1c'] = 8
+        units['20c'] = 27
+        units['10c'] = 38
+        units['5c'] = 9
+        units['2c'] = 12
+        units['1c'] = 7
     num_units = {names: units[names] for names in PARTITIONS_NAMES}
     group.valueStructureNumUnits = str(num_units)
     value_units = {PARTITIONS_NAMES[i]: PARTITIONS_UNIT_VALUES[i] for i in range(len(PARTITIONS_NAMES))}
@@ -351,7 +351,6 @@ def live_method(player: Player, data):
         operationType=key,
     )
     bids = sorted([[offer.price, offer.remainingVolume, offer.offerID, offer.makerID] for offer in offers if offer.isActive and offer.isBid], reverse=True, key=itemgetter(0))
-    print('bids', bids)
     # to do limit amount of offers in table
     asks = sorted([[offer.price, offer.remainingVolume, offer.offerID, offer.makerID] for offer in offers if offer.isActive and not offer.isBid], key=itemgetter(0))
     msgs = News.filter(group=group)
@@ -460,7 +459,6 @@ def limit_order(player: Player, data):
     group = player.group
     period = group.round_number
     if not (data['isBid'] >= 0 and data['limitPrice'] and data['limitVolume']):
-        print('Player', player.id_in_group, 'placed an odd limit order', data)
         News.create(
             player=player,
             playerID=maker_id,
@@ -474,7 +472,6 @@ def limit_order(player: Player, data):
     is_bid = bool(data['isBid'] == 1)
     limit_volume = int(data['limitVolume'])
     if not (price > 0 and limit_volume > 0):
-        print('Player', maker_id, 'placed an odd order', data)
         News.create(
             player=player,
             playerID=maker_id,
@@ -748,7 +745,7 @@ def transaction(player: Player, data):
     remaining_volume = int(limit_entry.remainingVolume)
     limit_volume = int(limit_entry.limitVolume)
     if not (price > 0 and transaction_volume > 0): # check whether data is valid
-        print('Player', taker_id, 'tried to accept via an odd order', data)
+        ## print('Player', taker_id, 'tried to accept via an odd order', data)
         News.create(
             player=player,
             playerID=maker_id,
@@ -953,7 +950,6 @@ class WaitToStart(WaitPage):
     def after_all_players_arrive(group: Group):
         group.randomisedTypes = random_types(group=group)
         initiate_group(group=group)
-        print('initiate group', group.roleStructure)
         players = group.get_players()
         for p in players:
             initiate_player(player=p)
