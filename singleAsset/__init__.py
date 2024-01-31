@@ -56,7 +56,6 @@ class Group(BaseGroup):
     numAssets = models.IntegerField(initial=0)
     numParticipants = models.IntegerField(initial=0)
     estNumTraders = models.IntegerField()
-    numInformed = models.IntegerField()
     numActiveParticipants = models.IntegerField(initial=0)
     assetNames = models.LongStringField()
     aggAssetsValue = models.FloatField()
@@ -87,6 +86,36 @@ def num_traders(group: Group):
     return group.session.config['est_num_traders']
 
 
+def assign_types(group: Group):
+    # this method allocates traders' types at the beginning of the session or when randomised.
+    ## this code is run when all participants arrived via the initiate group function
+    players = group.get_players()
+    if group.randomisedTypes or Subsession.round_number == 1:
+        ii = group.numParticipants  # number of traders without type yet
+        role_structure = {'observer': 0, 'trader': ii}
+        for r in ['observer', 'trader']:  # for each role
+            k = 0  # number of players assigned this role
+            max_k = role_structure[r]  # number of players to be assigned with this role
+            while k < max_k and ii > 0:  # until enough role 'r' types are assigned
+                rand_num = round(random.uniform(a=0, b=1) * ii, 0)
+                i = 0
+                for p in players:
+                    if p.isParticipating and i < rand_num and not p.field_maybe_none('roleID'):
+                        i += 1
+                        if rand_num == i:
+                            ii -= 1
+                            p.roleID = str(r)
+                            p.participant.vars['roleID'] = str(r)
+                            k += 1
+                    if not p.isParticipating and not p.field_maybe_none('roleID'):
+                        p.roleID = str('not participating')
+                        p.participant.vars['roleID'] = str('not participating')
+    else:
+        for p in players:
+            p.roleID = p.participant.vars['roleID']
+
+
+
 def define_asset_value(group: Group):
     ## this method describes the BBV structure of an experiment and shares the information in the players table.
     asset_value = round(random.uniform(a=C.FV_MIN, b=C.FV_MAX), C.decimals)
@@ -110,6 +139,7 @@ def initiate_group(group: Group):
     ## this code is run when everyone arrived and the market is about to start
     count_participants(group=group)
     define_asset_value(group=group)
+    assign_types(group=group)
 
 
 def get_max_time(group: Group):
@@ -117,9 +147,9 @@ def get_max_time(group: Group):
 
 
 class Player(BasePlayer):
-    informed = models.BooleanField(choices=((True, 'informed'), (False, 'uninformed')))
     isParticipating = models.BooleanField(choices=((True, 'active'), (False, 'inactive')), initial=0)  ## describes whether this participant is participating in this round, i.e., whether they pressed the 'next' button.
     isObserver = models.BooleanField(choices=((True, 'active'), (False, 'inactive')), initial=0)  ## describes a participant role as active trader or observer
+    roleID = models.StringField()
     allowShort = models.BooleanField(initial=True)
     allowLong = models.BooleanField(initial=True)
     assetValue = models.FloatField()
@@ -192,22 +222,35 @@ def cash_long_limit(player: Player):
         return 0
 
 
+def assign_role_attr(player: Player, role_id):
+    group = player.group
+    if role_id == 'observer':
+        player.participant.vars['isObserver'] = True
+    elif role_id == 'trader':
+        player.participant.vars['isObserver'] = False
+
+
 def initiate_player(player: Player):
     group = player.group
     ## isObserver and isParticipating are set here since there is no function which assigns roles. These variables can be useful to exclude slow or inactive participants from role assignments.
-    if player.round_number == 1:
-        player.participant.vars['isParticipating'] = player.isParticipating
-    initial_cash = cash_endowment(player=player)
-    player.initialCash = initial_cash
-    player.cashHolding = initial_cash
-    player.allowLong = long_allowed(player=player)
-    player.capLong = cash_long_limit(player=player)
-    initial_assets = asset_endowment(player=player)
-    player.initialAssets = initial_assets
-    group.numAssets += player.initialAssets
-    player.assetsHolding = initial_assets
-    player.allowShort = short_allowed(player=player)
-    player.capShort = asset_short_limit(player=player)
+    if not player.isObserver:
+        initial_cash = cash_endowment(player=player)
+        player.initialCash = initial_cash
+        player.cashHolding = initial_cash
+        player.allowLong = long_allowed(player=player)
+        player.capLong = cash_long_limit(player=player)
+        initial_assets = asset_endowment(player=player)
+        player.initialAssets = initial_assets
+        group.numAssets += player.initialAssets
+        player.assetsHolding = initial_assets
+        player.allowShort = short_allowed(player=player)
+        player.capShort = asset_short_limit(player=player)
+
+
+def set_player(player: Player):
+    ## before this function, role_structure and within this function get_role_att is run
+    assign_role_attr(player=player, role_id=player.field_maybe_none('roleID'))
+    player.isObserver = player.participant.vars['isObserver']
 
 
 def live_method(player: Player, data):
@@ -288,7 +331,10 @@ def calcPeriodProfits (player: Player):
     player.initialEndowment = initial_endowment
     player.endEndowment = end_endowment
     player.tradingProfit = end_endowment - initial_endowment
-    player.wealthChange = (end_endowment - initial_endowment) / initial_endowment
+    if not player.isObserver:
+        player.wealthChange = (end_endowment - initial_endowment) / initial_endowment
+    else:
+        player.wealthChange = 0
     player.payoff = max(C.base_payment + C.multiplier * player.wealthChange, C.min_payment_in_round)
 
 
@@ -350,6 +396,16 @@ def limit_order(player: Player, data):
     maker_id = player.id_in_group
     group = player.group
     period = group.round_number
+    if player.isObserver:
+        News.create(
+            player=player,
+            playerID=maker_id,
+            group=group,
+            Period=period,
+            msg='Order rejected: you are an observer who cannot place a limit order.',
+            msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
+        )
+        return
     if not (data['isBid'] >= 0 and data['limitPrice'] and data['limitVolume']):
         News.create(
             player=player,
@@ -495,13 +551,23 @@ def cancel_limit(player: Player, data):
     maker_id = int(data['makerID'])
     group = player.group
     period = group.round_number
+    if player.isObserver:
+        News.create(
+            player=player,
+            playerID=maker_id,
+            group=group,
+            Period=period,
+            msg='Order rejected: you are an observer who cannot withdraw a limit order.',
+            msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
+        )
+        return
     if maker_id != player.id_in_group:
         News.create(
             player=player,
             playerID=maker_id,
             group=group,
             Period=period,
-            msg='Order rejected: you can cancel your own orders only.',
+            msg='Order rejected: you can withdraw your own orders only.',
             msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
         )
         return
@@ -509,7 +575,7 @@ def cancel_limit(player: Player, data):
     # update Limit db entry
     offers = [o for o in Limit.filter(group=group) if o.offerID == offer_id]
     if not offers or len(offers) != 1:
-        print('Error: too few or too many limits found while cancelling.')
+        print('Error: too few or too many limits found while withdrawing.')
         return
     offers[0].isActive = False
     is_bid = offers[0].isBid
@@ -626,6 +692,16 @@ def transaction(player: Player, data):
     taker_id = player.id_in_group
     group = player.group
     period = group.round_number
+    if player.isObserver:
+        News.create(
+            player=player,
+            playerID=taker_id,
+            group=group,
+            Period=period,
+            msg='Order rejected: you are an observer who cannot accept a market order.',
+            msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
+        )
+        return
     limit_entry = Limit.filter(group=group, offerID=offer_id)
     if len(limit_entry) > 1:
         print('Limit entry is not well-defined: multiple entries with the same ID')
@@ -656,7 +732,7 @@ def transaction(player: Player, data):
     if not is_bid and player.cashHolding + player.capLong - player.cashOffered - transaction_volume * price < 0:
         News.create(
             player=player,
-            playerID=maker_id,
+            playerID=taker_id,
             group=group,
             Period=period,
             msg='Order rejected: insufficient cash available.',
@@ -668,7 +744,7 @@ def transaction(player: Player, data):
     if is_bid and player.assetsHolding + player.capShort - player.assetsOffered - transaction_volume < 0:
         News.create(
             player=player,
-            playerID=maker_id,
+            playerID=taker_id,
             group=group,
             Period=period,
             msg='Order rejected: insufficient assets available.',
@@ -678,7 +754,7 @@ def transaction(player: Player, data):
     elif maker_id == taker_id:
         News.create(
             player=player,
-            playerID=maker_id,
+            playerID=taker_id,
             group=group,
             Period=period,
             msg='Order rejected: own limit orders cannot be transacted.',
@@ -724,12 +800,12 @@ def transaction(player: Player, data):
     player.subsession.transactionID += 1
     # to prevent duplicates in orderID
     while len(Transaction.filter(group=group, offerID=transaction_id)) > 0:
-        transaction_id += + 1
+        transaction_id += 1
     order_id = player.subsession.orderID + 1
     player.subsession.orderID += 1
     # to prevent duplicates in orderID
     while len(Order.filter(group=group, offerID=order_id)) > 0:
-        order_id += + 1
+        order_id += 1
     transaction_time = round(float(time.time() - group.marketStartTime), C.decimals)
     limit_entry.transactedVolume += transaction_volume
     limit_entry.isActive = is_active
@@ -844,6 +920,7 @@ class WaitToStart(WaitPage):
         initiate_group(group=group)
         players = group.get_players()
         for p in players:
+            set_player(player=p)
             p.assetValue = group.assetValue
             initiate_player(player=p)
 
@@ -875,6 +952,7 @@ class Market(Page):
     def js_vars(player: Player):
         group = player.group
         return dict(
+            id_in_group=player.id_in_group,
             allowShort=player.allowShort,
             capShort=player.capShort,
             capLong=player.capLong,  # round(player.capLong, 2)

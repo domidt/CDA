@@ -32,6 +32,7 @@ class Subsession(BaseSubsession):
 
 
 def vars_for_admin_report(subsession):
+    ## this function defines the values sent to the admin report page
     groups = subsession.get_groups()
     period = subsession.round_number
     payoffs = sorted([p.payoff for p in subsession.get_players()])
@@ -59,6 +60,7 @@ class Group(BaseGroup):
     numParticipants = models.IntegerField(initial=0)
     estNumTraders = models.IntegerField()
     numInformed = models.IntegerField()
+    numActiveParticipants = models.IntegerField(initial=0)
     assetNames = models.LongStringField()
     aggAssetsValue = models.FloatField()
     assetValue = models.FloatField()
@@ -102,8 +104,8 @@ def define_role_structure(group: Group):
     num_I3 = int(round(1/4 * num_participants, 0))  # informed about 5c, 20c, and E1
     num_I2 = int(round(1/4 * num_participants, 0))  # informed about 20c and E1
     num_I1 = int(round(1/4 * num_participants, 0))  # informed about 1E
-    num_I0 = max(0, num_participants - num_I3 - num_I2 - num_I1)  # uninformed traders
-    num_observer = 0
+    num_observer = 1
+    num_I0 = max(0, num_participants - num_I3 - num_I2 - num_I1 - num_observer)  # uninformed traders
     group.roleStructure = str({'observer': num_observer, 'I0': num_I0, 'I1': num_I1, 'I2': num_I2, 'I3': num_I3})
 
 
@@ -148,8 +150,8 @@ def assign_types(group: Group):
 def define_asset_value(group: Group):
     ## this code is run when all participants are ready and the market is about to start via the initiate group function
     units = {names: None for names in PARTITIONS_NAMES}
-    ## the next line determine the amount of coins or each value,
-    if group.round_number >= C.NUM_ROUNDS - C.num_trial_rounds:
+    ## the next lines determine the amount of coins or each value in each round,
+    if group.round_number >= C.NUM_ROUNDS - C.num_trial_rounds and group.round_number < C.num_trial_rounds + 5:
         units['2E'] = 10
         units['1E'] = 8
         units['50c'] = 8
@@ -158,6 +160,15 @@ def define_asset_value(group: Group):
         units['5c'] = 12
         units['2c'] = 12
         units['1c'] = 24
+    elif group.round_number >= C.NUM_ROUNDS - C.num_trial_rounds + 5:
+        units['2E'] = 26
+        units['1E'] = 32
+        units['50c'] = 10
+        units['20c'] = 27
+        units['10c'] = 38
+        units['5c'] = 9
+        units['2c'] = 12
+        units['1c'] = 7
     elif group.round_number < C.NUM_ROUNDS - C.num_trial_rounds:
         for u in PARTITIONS_NAMES:
             units[u] = int(round(random() * 20, 0))
@@ -398,7 +409,10 @@ def calcPeriodProfits (player: Player):
     player.initialEndowment = initial_endowment
     player.endEndowment = end_endowment
     player.tradingProfit = end_endowment - initial_endowment
-    player.wealthChange = (end_endowment - initial_endowment) / initial_endowment
+    if not player.isObserver:
+        player.wealthChange = (end_endowment - initial_endowment) / initial_endowment
+    else:
+        player.wealthChange = 0
     player.payoff = max(C.base_payment + C.multiplier * player.wealthChange, C.min_payment_in_round)
 
 
@@ -460,6 +474,16 @@ def limit_order(player: Player, data):
     maker_id = player.id_in_group
     group = player.group
     period = group.round_number
+    if player.isObserver:
+        News.create(
+            player=player,
+            playerID=maker_id,
+            group=group,
+            Period=period,
+            msg='Order rejected: you are an observer who cannot place a limit order.',
+            msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
+        )
+        return
     if not (data['isBid'] >= 0 and data['limitPrice'] and data['limitVolume']):
         News.create(
             player=player,
@@ -605,13 +629,23 @@ def cancel_limit(player: Player, data):
     maker_id = int(data['makerID'])
     group = player.group
     period = group.round_number
+    if player.isObserver:
+        News.create(
+            player=player,
+            playerID=maker_id,
+            group=group,
+            Period=period,
+            msg='Order rejected: you are an observer who cannot withdraw a limit order.',
+            msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
+        )
+        return
     if maker_id != player.id_in_group:
         News.create(
             player=player,
             playerID=maker_id,
             group=group,
             Period=period,
-            msg='Order rejected: you can cancel your own orders only.',
+            msg='Order rejected: you can withdraw your own orders only.',
             msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
         )
         return
@@ -619,7 +653,7 @@ def cancel_limit(player: Player, data):
     # update Limit db entry
     offers = [o for o in Limit.filter(group=group) if o.offerID == offer_id]
     if not offers or len(offers) != 1:
-        print('Error: too few or too many limits found while cancelling.')
+        print('Error: too few or too many limits found while withdrawing.')
         return
     offers[0].isActive = False
     is_bid = offers[0].isBid
@@ -736,6 +770,16 @@ def transaction(player: Player, data):
     taker_id = player.id_in_group
     group = player.group
     period = group.round_number
+    if player.isObserver:
+        News.create(
+            player=player,
+            playerID=taker_id,
+            group=group,
+            Period=period,
+            msg='Order rejected: you are an observer who cannot accept a market order.',
+            msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
+        )
+        return
     limit_entry = Limit.filter(group=group, offerID=offer_id)
     if len(limit_entry) > 1:
         print('Limit entry is not well-defined: multiple entries with the same ID')

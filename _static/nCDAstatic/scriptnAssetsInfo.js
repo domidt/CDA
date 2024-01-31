@@ -1,3 +1,5 @@
+    const COIN_LABEL = "&euro;"  // "taler" , "\$", points
+
     let elInformationBody = $('#information tbody')
     // set endowment table
     $(document).ready(function () {
@@ -13,7 +15,6 @@
         }
 
         $('#assetsValue tbody tr, #information tbody tr').filter(function() {
-            console.log($(this).children('td').eq(0))
             return isNaN($(this).children('td').eq(0).attr('value'));
         }).html(`<td colSpan="2"> </td>`);
 

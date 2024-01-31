@@ -1,8 +1,9 @@
 {{ block global_scripts }}
+        <script src="{{ static 'script.js' }}"></script>
         <script src="{{ static 'nCDAstatic/script.js' }}"></script>
         <script src="{{ static 'scriptMarket.js' }}"></script>
         <script src="{{ static 'nCDAstatic/scriptnAssetsMarket.js' }}"></script>
-        <script src="{{ static 'scriptSAssetInfo.js' }}"></script>
+        <script src="{{ static 'nCDAstatic/scriptnAssetsInfo.js' }}"></script>
         <script src="{{ static 'highcharts/highcharts.js' }}"></script>
         <script src="{{ static 'highcharts/highcharts_accessibility.js' }}"></script>
 {{ endblock }}
@@ -20,38 +21,44 @@ Continuous double auction market
     <div id="jsError">ERROR: this page runs only with javascript enabled</div>
 </noscript>
 
-<div id="endowmentDiv" style="margin-bottom: 35px">
-<table id="endowmentTable">
+<div id="endowmentDiv" class="endowment-container row" style="margin-bottom: 35px">
+    <div class="endowment-div col-sm div_box">
+    <table id="endowmentTable">
     <tr>
         <th>Your role</th>
         <td id="traderRole">
-            {{ if not player.isObserver }} Inactive observer {{ elif player.informed }} Informed trader {{ else }} Uninformed trader {{ endif }}
+            {{ if player.isObserver }} Inactive observer {{ elif player.informed }} Informed trader {{ else }} Uninformed trader {{ endif }}
         </td>
     </tr>
-        <th>Assets in your possession</th>
-        <td id="assetsHolding">{{ player.assetsHolding }}</td>
-    </tr>
-    <tr> {{ if player.allowShort }}
-        <th>Your short selling limit</th>
-        <td id="capShort">
-            {{ player.capShort }}
-        </td>
-    {{ else }} {{ endif }}</tr>
+        {{ if not player.isObserver }}
     <tr>
-        <th>Cash in your possession</th>
+        <th>Initial money endowment</th>
         <td id="cashHolding">{{ player.cashHolding }}</td>
     </tr>
-    <tr> {{ if player.allowShort }}
+        {{ if player.allowLong }}
+    <tr>
         <th>Your credit limit</th>
         <td id="capLong">{{ player.capLong }}</td>
-    {{ else }} {{ endif }}</tr>
-</table>
-       </div>
+    </tr>
+        {{ else }} {{ endif }}
+    </table>
+    </div>
+    <div class="holdings col-sm div_box">
+        <h4>Initial asset endowment</h4>
+        <table id="assetsHoldings" class="table_box"><thead><tr><th>Asset name</th><th>Assets in stock</th></tr></thead><tbody></tbody></table>
+    </div>
+    {{ if player.allowShort }}
+    <div class="capShort col-sm div_box">
+        <h4>Your short selling limit</h4>
+        <table id="capShort" class="table_box"><thead><tr><th>Asset name</th><th>Assets in stock</th></tr></thead><tbody></tbody></table>
+    </div>
+        {{ else }} {{ endif }}
     {{ if player.informed }}
     <div class="assetValues col-sm div_box">
         <h4>Your information about coins</h4>
-        <table id="information" class="table_box"><thead><tr><th>Amount</th><th>Nominal value</th><th>Product</th></tr></thead><tbody></tbody></table>
+        <table id="information" class="table_box"><thead><tr><th>Asset</th><th>Amount</th><th>Nominal value</th><th>Product</th></tr></thead><tbody></tbody></table>
     </div>
+    {{ else }} {{ endif }}
     {{ else }} {{ endif }}
 </div>
 

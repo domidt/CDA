@@ -4,60 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bc9b68dc-2d95-433c-b2a4-618f8f984096" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/_parameter/assets.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_parameter/assetsInRound.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_parameter/assetsPartitions.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_static/scriptSAssetInfo.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_static/scriptSAssetResults.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/_templates/instructions.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nAssets/Instructions.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nAssetsPartitionCDA/Instructions.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nAssetsPartitionCDA/admin_report.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/singleAsset/Instructions.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_static/cpCDAstatic/highcharts/highcharts.js" beforeDir="false" afterPath="$PROJECT_DIR$/_static/highcharts/highcharts.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_static/cpCDAstatic/highcharts/highcharts_accessibility.js" beforeDir="false" afterPath="$PROJECT_DIR$/_static/highcharts/highcharts_accessibility.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_static/cpCDAstatic/script.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/_static/cpCDAstatic/scriptMarket.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/_static/cpCDAstatic/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/_static/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_static/cpCDAstatic/styleResults.css" beforeDir="false" afterPath="$PROJECT_DIR$/_static/styleResults.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_static/cppCDAstatic/highcharts/highcharts.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/_static/cppCDAstatic/highcharts/highcharts_accessibility.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/_static/cppCDAstatic/script.js" beforeDir="false" afterPath="$PROJECT_DIR$/_static/script.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_static/cppCDAstatic/scriptMarket.js" beforeDir="false" afterPath="$PROJECT_DIR$/_static/sCDAstatic/scriptSAssetMarket.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_static/cppCDAstatic/style.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/_static/cppCDAstatic/styleResults.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/_static/nCDAstatic/script.js" beforeDir="false" afterPath="$PROJECT_DIR$/_static/nCDAstatic/script.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_static/nCDAstatic/scriptMarket.js" beforeDir="false" afterPath="$PROJECT_DIR$/_static/nCDAstatic/scriptnAssetsMarket.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_static/sCDAstatic/scriptMarket.js" beforeDir="false" afterPath="$PROJECT_DIR$/_static/scriptMarket.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nAssets/Market.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssets/Market.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nAssets/PreMarket.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssets/PreMarket.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nAssets/Results.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssets/Results.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nAssets/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nAssets/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAsset/FinalResults.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAsset/FinalResults.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAsset/Market.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAsset/Market.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAsset/PreMarket.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAsset/PreMarket.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAsset/Results.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAsset/Results.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAsset/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/singleAsset/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAsset/admin_report.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAsset/admin_report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetCrowdPredictions/Chart.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsPartitionCDA/Chart.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetCrowdPredictions/ChartReport.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsPartitionCDA/ChartReport.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetCrowdPredictions/FinalResults.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsPartitionCDA/FinalResults.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetCrowdPredictions/Market.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsPartitionCDA/Market.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetCrowdPredictions/PreMarket.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsPartitionCDA/PreMarket.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetCrowdPredictions/Results.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsPartitionCDA/Results.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetCrowdPredictions/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsPartitionCDA/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetCrowdPredictions/admin_report.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetPartitionCDA/Instructions.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/Instructions.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetPartitionCDA/Market.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/Market.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetPartitionCDA/PreMarket.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/PreMarket.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetPartitionCDA/Results.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/Results.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetPartitionCDA/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetPartitionCDA/admin_report.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetPartitionCDA/admin_report.html" afterDir="false" />
-    </list>
+    <list default="true" id="bc9b68dc-2d95-433c-b2a4-618f8f984096" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -79,6 +26,9 @@
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
   <component name="ProjectId" id="2S1kgE2C0H97n5Z89PdYVkiNHmJ" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -90,7 +40,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/Users/domin/Documents/GitHub/CDA/nAssets",
+    "last_opened_file_path": "C:/Users/dschmidt/Documents/GitHub/CDA/_static/nCDAstatic",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -103,17 +53,18 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\dschmidt\Documents\GitHub\CDA\_static\nCDAstatic" />
       <recent name="C:\Users\domin\Documents\GitHub\CDA\nAssets" />
       <recent name="C:\Users\domin\Documents\GitHub\CDA" />
       <recent name="C:\Users\domin\Documents\GitHub\CDA\singleAsset" />
       <recent name="C:\Users\domin\Documents\GitHub\CDA\_static" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\dschmidt\Documents\GitHub\CDA\_static\sCDAstatic" />
       <recent name="C:\Users\domin\Documents\GitHub\CDA\_static\sCDAstatic" />
       <recent name="C:\Users\domin\Documents\GitHub\CDA\_static" />
       <recent name="C:\Users\domin\Documents\GitHub\CDA" />
       <recent name="C:\Users\domin\Documents\GitHub\CDA\singleAssetCrowdPartitions" />
-      <recent name="C:\Users\domin\Documents\GitHub\CDA\singleAssetCrowdPredictions" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -155,6 +106,8 @@
       <workItem from="1705963351917" duration="3594000" />
       <workItem from="1706458114591" duration="2872000" />
       <workItem from="1706567395776" duration="18164000" />
+      <workItem from="1706698601435" duration="1509000" />
+      <workItem from="1706700127633" duration="16297000" />
     </task>
     <servers />
   </component>

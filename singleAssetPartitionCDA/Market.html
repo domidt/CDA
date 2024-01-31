@@ -20,16 +20,18 @@ Continuous double auction market
     <div id="jsError">ERROR: this page runs only with javascript enabled</div>
 </noscript>
 
-<div class="info-container row">
-<div id="endowmentDiv" class="col-sm div_box" style="margin-bottom: 35px">
-<table id="endowmentTable">
+<div id="endowmentDiv" class="endowment-container row" style="margin-bottom: 35px">
+    <div class="endowment-div col-sm div_box">
+    <table id="endowmentTable">
     <tr>
         <th>Your role</th>
         <td id="traderRole">
-            {{ if player.informed }} Informed trader {{ else }} Uninformed trader {{ endif }}
+            {{ if player.isObserver }} Inactive observer {{ elif player.informed }} Informed trader {{ else }} Uninformed trader {{ endif }}
         </td>
     </tr>
-        <th>Assets in your possession</th>
+        {{ if not player.isObserver }}
+    <tr>
+        <th>Initial asset endowment</th>
         <td id="assetsHolding">{{ player.assetsHolding }}</td>
     </tr>
     <tr> {{ if player.allowShort }}
@@ -37,17 +39,21 @@ Continuous double auction market
         <td id="capShort">
             {{ player.capShort }}
         </td>
-    {{ else }} {{ endif }}</tr>
+        {{ else }} {{ endif }}
+    </tr>
     <tr>
-        <th>Cash in your possession</th>
+        <th>Initial money endowment</th>
         <td id="cashHolding">{{ player.cashHolding }}</td>
     </tr>
-    <tr> {{ if player.allowShort }}
+    <tr> {{ if player.allowLong }}
         <th>Your credit limit</th>
-        <td id="capLong">{{ player.capLong }}</td>
-    {{ else }} {{ endif }}</tr>
-</table>
-       </div>
+        <td id="capLong">
+            {{ player.capLong }}
+        </td>
+        {{ else }} {{ endif }}
+    </tr>
+    </table>
+    </div>
     {{ if player.informed }}
     <div class="assetValues col-sm div_box">
         <h4>Your information about coins</h4>
