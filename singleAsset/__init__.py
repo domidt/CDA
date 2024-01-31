@@ -8,7 +8,8 @@ doc = """Continuous double auction market"""
 class C(BaseConstants):
     NAME_IN_URL = 'sCDA'
     PLAYERS_PER_GROUP = None
-    NUM_ROUNDS = 12
+    num_trial_rounds = 1
+    NUM_ROUNDS = 12  ## incl. trial periods
     base_payment = cu(25)
     multiplier = 90
     min_payment_in_round = cu(0)
@@ -17,12 +18,8 @@ class C(BaseConstants):
     FV_MAX = 85
     num_assets_MIN = 20
     num_assets_MAX = 35
-    cash_MIN = 20*100
-    cash_MAX = 35*100
     decimals = 2
-    marketTime = 210
-    allowLong = True
-    allowShort = True
+    marketTime = 210  ## needed to initialize variables but exchanged by session_config
 
 
 class Subsession(BaseSubsession):
@@ -32,17 +29,18 @@ class Subsession(BaseSubsession):
 
 
 def vars_for_admin_report(subsession):
+    ## this function defines the values sent to the admin report page
     groups = subsession.get_groups()
     period = subsession.round_number
     payoffs = sorted([p.payoff for p in subsession.get_players()])
-    marketTimes = sorted([g.marketTime for g in groups])
+    market_times = sorted([g.marketTime for g in groups])
     trades = [[tx.transactionTime, tx.price] for tx in Transaction.filter() if tx.Period == period]
     bids = [[bx.BATime, bx.bestBid] for bx in BidAsks.filter() if bx.Period == period]
     bids = ['null' if b[1] is None else b for b in bids]
     asks = [[ax.BATime, ax.bestAsk] for ax in BidAsks.filter() if ax.Period == period]
     asks = ['null' if a[1] is None else a for a in asks]
     return dict(
-        marketTimes=marketTimes,
+        marketTimes=market_times,
         payoffs=payoffs,
         trades=trades,
         bids=bids,
@@ -55,14 +53,16 @@ class Group(BaseGroup):
     marketStartTime = models.FloatField()
     marketEndTime = models.FloatField()
     randomisedTypes = models.BooleanField()
-    numAssets = models.IntegerField()
+    numAssets = models.IntegerField(initial=0)
+    numParticipants = models.IntegerField(initial=0)
+    estNumTraders = models.IntegerField()
+    numInformed = models.IntegerField()
+    numActiveParticipants = models.IntegerField(initial=0)
     assetNames = models.LongStringField()
+    aggAssetsValue = models.FloatField()
     assetValue = models.FloatField()
     bestAsk = models.FloatField()
     bestBid = models.FloatField()
-    players_in_group = models.IntegerField()
-    numTraders = models.IntegerField()
-    numInformed = models.IntegerField()
     transactions = models.IntegerField(initial=0, min=0)
     marketBuyOrders = models.IntegerField(initial=0, min=0)
     marketSellOrders = models.IntegerField(initial=0, min=0)
@@ -78,45 +78,13 @@ class Group(BaseGroup):
     cancellations = models.IntegerField(initial=0, min=0)
     cancelledVolume = models.IntegerField(initial=0, min=0)
 
+
 def random_types(group: Group):
     return group.session.config['randomise_types']
 
 
-def num_informed(group: Group):
-    return group.session.config['num_informed_traders']
-
-
 def num_traders(group: Group):
-    return group.session.config['num_traders']
-
-
-def assign_types(group: Group):
-    # this method allocates traders' types at the beginning of the session or when randomised.
-    players = group.get_players()
-    if group.randomisedTypes or Subsession.round_number == 1:
-        i = 0
-        j = 0
-        group.numInformed = num_informed(group=group)
-        group.numTraders = num_traders(group=group)
-        group.players_in_group = len(group.get_players())
-        for p in players:
-            if i < group.numInformed and (random.uniform(a=0, b=1) * group.numTraders) < group.numInformed or j == group.numTraders - group.numInformed:
-                p.participant.vars['isActive'] = True
-                p.participant.vars['informed'] = True
-                i += 1
-            elif j < group.numTraders and (random.uniform(a=0, b=1) * group.players_in_group) < group.numTraders or group.numTraders == None:
-                p.participant.vars['isActive'] = True
-                p.participant.vars['informed'] = False
-                j += 1
-            else:
-                p.participant.vars['isActive'] = False
-                p.participant.vars['informed'] = False
-    for p in players:
-        p.allowShort = short_allowed(player=p)
-        p.allowLong = long_allowed(player=p)
-        p.isActive = p.participant.vars['isActive']
-        p.informed = p.participant.vars['informed']
-        p.information = str(get_information(player=p))
+    return group.session.config['est_num_traders']
 
 
 def define_asset_value(group: Group):
@@ -125,17 +93,23 @@ def define_asset_value(group: Group):
     group.assetValue = asset_value
 
 
-def allocate_endowments(group: Group):
-    players = group.get_players()
-    for p in players:
-        initialCash = cash_endowment(player=p)
-        p.initialCash = initialCash
-        p.cashHolding = initialCash
-        p.capLong = cash_long_limit(player=p)
-        initialAssets = asset_endowment(player=p)
-        p.initialAssets = initialAssets
-        p.assetsHolding = initialAssets
-        p.capShort = asset_short_limit(player=p)
+def count_participants(group: Group):
+    if group.round_number == 1:
+        for p in group.get_players():
+            if p.isParticipating == 1:
+                group.numParticipants += 1
+    else:  ## since player.isParticipating is not newly assign with a value by a click or a timeout, I take the value from the previous round
+        for p in group.get_players():
+            pr = p.in_round(group.round_number - 1)
+            p.isParticipating = pr.isParticipating
+        group.numParticipants = group.session.vars['numParticipants']
+    group.session.vars['numParticipants'] = group.numParticipants
+
+
+def initiate_group(group: Group):
+    ## this code is run when everyone arrived and the market is about to start
+    count_participants(group=group)
+    define_asset_value(group=group)
 
 
 def get_max_time(group: Group):
@@ -144,16 +118,16 @@ def get_max_time(group: Group):
 
 class Player(BasePlayer):
     informed = models.BooleanField(choices=((True, 'informed'), (False, 'uninformed')))
-    isActive = models.BooleanField(choices=((True, 'active'), (False, 'inactive')))
-    information = models.StringField()
-    allowShort = models.BooleanField()
-    allowLong = models.BooleanField()
+    isParticipating = models.BooleanField(choices=((True, 'active'), (False, 'inactive')), initial=0)  ## describes whether this participant is participating in this round, i.e., whether they pressed the 'next' button.
+    isObserver = models.BooleanField(choices=((True, 'active'), (False, 'inactive')), initial=0)  ## describes a participant role as active trader or observer
+    allowShort = models.BooleanField(initial=True)
+    allowLong = models.BooleanField(initial=True)
     assetValue = models.FloatField()
     initialCash = models.FloatField(initial=0, decimal=C.decimals)
-    initialAssets = models.IntegerField()
+    initialAssets = models.IntegerField(initial=0)
     initialEndowment = models.FloatField(initial=0, decimal=C.decimals)
     cashHolding = models.FloatField(initial=0, decimal=C.decimals)
-    assetsHolding = models.IntegerField()
+    assetsHolding = models.IntegerField(initial=0)
     endEndowment = models.FloatField(initial=0, decimal=C.decimals)
     capLong = models.FloatField(initial=0, min=0, decimal=C.decimals)
     capShort = models.IntegerField(initial=0, min=0)
@@ -190,11 +164,13 @@ def asset_endowment(player: Player):
 
 
 def short_allowed(player: Player):
-    return C.allowShort
+    group = player.group
+    return group.session.config['short_selling']
 
 
 def long_allowed(player: Player):
-    return C.allowLong
+    group = player.group
+    return group.session.config['margin_buying']
 
 
 def asset_short_limit(player: Player):
@@ -205,7 +181,8 @@ def asset_short_limit(player: Player):
 
 
 def cash_endowment(player: Player):
-    return float(round(random.uniform(a=C.cash_MIN, b=C.cash_MAX), C.decimals))
+    group = player.group
+    return float(round(random.uniform(a=C.num_assets_MIN, b=C.num_assets_MAX) * group.assetValue, C.decimals))  ## the multiplication with the asset value garanties a cash to asset ratio of 1 in the market
 
 
 def cash_long_limit(player: Player):
@@ -215,16 +192,25 @@ def cash_long_limit(player: Player):
         return 0
 
 
-def get_information(player: Player):
-    if player.informed:
-        info = player.assetValue
-    else:
-        info = None
-    return info
+def initiate_player(player: Player):
+    group = player.group
+    ## isObserver and isParticipating are set here since there is no function which assigns roles. These variables can be useful to exclude slow or inactive participants from role assignments.
+    if player.round_number == 1:
+        player.participant.vars['isParticipating'] = player.isParticipating
+    initial_cash = cash_endowment(player=player)
+    player.initialCash = initial_cash
+    player.cashHolding = initial_cash
+    player.allowLong = long_allowed(player=player)
+    player.capLong = cash_long_limit(player=player)
+    initial_assets = asset_endowment(player=player)
+    player.initialAssets = initial_assets
+    group.numAssets += player.initialAssets
+    player.assetsHolding = initial_assets
+    player.allowShort = short_allowed(player=player)
+    player.capShort = asset_short_limit(player=player)
 
 
 def live_method(player: Player, data):
-    print(data)
     if not data or 'operationType' not in data:
         return
     key = data['operationType']
@@ -257,7 +243,6 @@ def live_method(player: Player, data):
         operationType=key,
     )
     bids = sorted([[offer.price, offer.remainingVolume, offer.offerID, offer.makerID] for offer in offers if offer.isActive and offer.isBid], reverse=True, key=itemgetter(0))
-    print('bids', bids)
     # to do limit amount of offers in table
     asks = sorted([[offer.price, offer.remainingVolume, offer.offerID, offer.makerID] for offer in offers if offer.isActive and not offer.isBid], key=itemgetter(0))
     msgs = News.filter(group=group)
@@ -366,7 +351,6 @@ def limit_order(player: Player, data):
     group = player.group
     period = group.round_number
     if not (data['isBid'] >= 0 and data['limitPrice'] and data['limitVolume']):
-        print('Player', player.id_in_group, 'placed an odd limit order', data)
         News.create(
             player=player,
             playerID=maker_id,
@@ -380,7 +364,6 @@ def limit_order(player: Player, data):
     is_bid = bool(data['isBid'] == 1)
     limit_volume = int(data['limitVolume'])
     if not (price > 0 and limit_volume > 0):
-        print('Player', maker_id, 'placed an odd order', data)
         News.create(
             player=player,
             playerID=maker_id,
@@ -654,7 +637,7 @@ def transaction(player: Player, data):
     remaining_volume = int(limit_entry.remainingVolume)
     limit_volume = int(limit_entry.limitVolume)
     if not (price > 0 and transaction_volume > 0): # check whether data is valid
-        print('Player', taker_id, 'tried to accept via an odd order', data)
+        ## print('Player', taker_id, 'tried to accept via an odd order', data)
         News.create(
             player=player,
             playerID=maker_id,
@@ -845,29 +828,35 @@ class BidAsks(ExtraModel):
 
 
 # PAGES
+class Instructions(Page):
+    form_model = 'player'
+    form_fields = ['isParticipating']
+
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.round_number == 1
+
+
 class WaitToStart(WaitPage):
     @staticmethod
     def after_all_players_arrive(group: Group):
         group.randomisedTypes = random_types(group=group)
-        define_asset_value(group=group)
+        initiate_group(group=group)
         players = group.get_players()
         for p in players:
             p.assetValue = group.assetValue
-        assign_types(group=group)
-        allocate_endowments(group=group)
+            initiate_player(player=p)
 
 
 class PreMarket(Page):
     @staticmethod
-    def vars_for_template(player: Player):
+    def js_vars(player: Player):
+        group = player.group
         return dict(
-            information=player.information,
-            isActive=player.isActive,
-            initialCash=player.initialCash,
-            initialAssets1=player.initialAssets,
             allowShort=player.allowShort,
             capShort=player.capShort,
             capLong=player.capLong,
+            cashHolding=player.cashHolding,
         )
 
 
@@ -883,22 +872,14 @@ class Market(Page):
     timeout_seconds = Group.marketTime
 
     @staticmethod
-    def vars_for_template(player: Player):
+    def js_vars(player: Player):
+        group = player.group
         return dict(
             allowShort=player.allowShort,
             capShort=player.capShort,
             capLong=player.capLong,  # round(player.capLong, 2)
             cashHolding=player.cashHolding,
             assetsHolding=player.assetsHolding,
-        )
-
-
-    @staticmethod
-    def js_vars(player: Player):
-        return dict(
-            id_in_group=player.id_in_group,
-            informed=player.informed,
-            information=player.information,
         )
 
     @staticmethod
@@ -919,7 +900,7 @@ class Results(Page):
     @staticmethod
     def vars_for_template(player: Player):
         return dict(
-            assetValue=player.assetValue,
+            assetValue=round(player.assetValue, C.decimals),
             initialEndowment=round(player.initialEndowment, C.decimals),
             endEndowment=round(player.endEndowment, C.decimals),
             tradingProfit=round(player.tradingProfit, C.decimals),
@@ -941,9 +922,8 @@ class FinalResults(Page):
             periodPayoff=[round(p.payoff, C.decimals) for p in player.in_all_rounds()],
             tradingProfit=[round(p.tradingProfit, C.decimals) for p in player.in_all_rounds()],
             wealthChange=[round(p.wealthChange, C.decimals) for p in player.in_all_rounds()],
-
         )
 
 
 
-page_sequence = [WaitToStart, PreMarket, WaitingMarket, Market, ResultsWaitPage, Results, FinalResults, ResultsWaitPage]
+page_sequence = [Instructions, WaitToStart, PreMarket, WaitingMarket, Market, ResultsWaitPage, Results, FinalResults, ResultsWaitPage]

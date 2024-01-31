@@ -8,14 +8,13 @@
     let elCapLongBody = $('#capLong')
 
     let assetNames = js_vars.assetNames
-    let numAssets = js_vars.numAssets
     let cashHolding = js_vars.cashHolding
     let assetsHolding = js_vars.assetsHolding
 
     // set endowment table
     $(document).ready(function () {
         elCashHolding.html(cu(cashHolding))
-        elCapLongBody.html(cu (elCapLongBody.html()))
+        elCapLongBody.html(cu(elCapLongBody.html()))
         // for uninformed traders assetValues is undefined (for js) in stages before the result but should be visible in results
         if (typeof js_vars.assetValues !== 'undefined' && js_vars.assetValues !== null) {
             let assetValues = js_vars.assetValues

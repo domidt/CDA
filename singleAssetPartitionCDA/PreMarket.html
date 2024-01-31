@@ -1,9 +1,10 @@
 {{ block global_scripts }}
-        <script src="{{ static 'cppCDAstatic/script.js' }}"></script>
+        <script src="{{ static 'script.js' }}"></script>
+        <script src="{{ static 'scriptSAssetInfo.js' }}"></script>
 {{ endblock }}
 
 {{ block global_styles }}
-        <link rel="stylesheet" href="{{ static 'cppCDAstatic/styleResults.css' }}">
+        <link rel="stylesheet" href="{{ static 'styleResults.css' }}">
 {{ endblock }}
 
 {{ block title }}
@@ -11,6 +12,9 @@ Continuous double auction market - pre market information
 {{ endblock }}
 
 {{ block content }}
+<noscript>
+    <div id="jsError">ERROR: this page runs only with javascript enabled</div>
+</noscript>
 
 <p>Soon round nr. {{ player.round_number }} starts.</p>
 
@@ -21,7 +25,7 @@ Continuous double auction market - pre market information
     <tr>
         <th>Your role</th>
         <td id="traderRole">
-            {{ if not player.isActive }} Inactive observer {{ elif player.informed }} Informed trader {{ else }} Uninformed trader {{ endif }}
+            {{ if not player.isObserver }} Inactive observer {{ elif player.informed }} Informed trader {{ else }} Uninformed trader {{ endif }}
         </td>
     </tr>
     <tr>
@@ -30,11 +34,12 @@ Continuous double auction market - pre market information
     </tr>
     <tr> {{ if player.allowShort }}
         <th>Your short selling limit</th>
-        <td id="capShort"> {{ player.capShort }} </td>
+        <td id="capShort"> {{ player.capShort }}
+        </td>
     {{ else }} {{ endif }}
     </tr>
     <tr>
-        <th>Cash in your possession</th>
+        <th>Initial money endowment</th>
         <td id="cashHolding">{{ player.cashHolding }}</td>
     </tr>
     <tr> {{ if player.allowShort }}

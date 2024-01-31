@@ -1,11 +1,13 @@
 {{ block global_scripts }}
-        <script src="{{ static 'sCDAstatic/scriptMarket.js' }}"></script>
-        <script src="{{ static 'sCDAstatic/highcharts/highcharts.js' }}"></script>
-        <script src="{{ static 'sCDAstatic/highcharts/highcharts_accessibility.js' }}"></script>
+        <script src="{{ static 'script.js' }}"></script>
+        <script src="{{ static 'scriptMarket.js' }}"></script>
+        <script src="{{ static 'sCDAstatic/scriptSAssetMarket.js' }}"></script>
+        <script src="{{ static 'highcharts/highcharts.js' }}"></script>
+        <script src="{{ static 'highcharts/highcharts_accessibility.js' }}"></script>
 {{ endblock }}
 
 {{ block global_styles }}
-        <link rel="stylesheet" href="{{ static 'sCDAstatic/style.css' }}">
+        <link rel="stylesheet" href="{{ static 'style.css' }}">
 {{ endblock }}
 
 {{ block title }}
@@ -22,14 +24,9 @@ Continuous double auction market
     <tr>
         <th>Your role</th>
         <td id="traderRole">
-            {{ if player.informed }} Informed trader {{ else }} Uninformed trader {{ endif }}
+            {{ if player.isActive }} Trader {{ else }} inactive observer {{ endif }}
         </td>
     </tr>
-    <tr id="informationRow"> {{ if player.informed }}
-        <th>Your information</th>
-        <td> <span id="informationValue">{{ player.information }}</span></td>
-    {{ else }} {{ endif }}</tr>
-    <tr>
         <th>Assets in your possession</th>
         <td id="assetsHolding">{{ player.assetsHolding }}</td>
     </tr>
@@ -98,7 +95,7 @@ Continuous double auction market
         <input type="number" class="form-control small-numbers" inputmode="numeric" id="transactionBidVolume" min="1" style="display: inline-block;">
         <button type="button" onclick="sendAcc(is_bid=1)" id="bidAccept" class="otree-btn-next btn btn-primary">Accept sale</button>
         <table id="bidsTable" class="table_box"><thead><tr><th>Volume</th><th>Price</th></tr></thead><tbody></tbody></table>
-        <button type="button" onclick="cancelLimit(is_bid=1)" id="cancelBidLimit" class="btn btn-outline-danger">Cancel own limit order</button>
+        <button type="button" onclick="cancelLimit(is_bid=1)" id="cancelBidLimit" class="btn btn-outline-danger">Withdraw own limit order</button>
         <div class="otree-form-errors alert alert-danger" id="errorBidMarket" style="display: none; text-align: left; margin-top: 35px;">
             <p>Please provide all necessary information to accept a bid offer</p>
             <ol>
@@ -109,7 +106,7 @@ Continuous double auction market
             <button type="button" id="accBidError" class="btn btn-outline-danger">I understood</button>
         </div>
         <div class="otree-form-errors alert alert-danger" id="errorBidCancel" style="display: none; text-align: left; margin-top: 35px;">
-            <p>If you wish to cancel one of your own (red-framed) bid offers, please select it first.</p>
+            <p>If you wish to withdraw one of your own (red-framed) bid offers, please select it first.</p>
             <button type="button" id="cancelBidError" class="btn btn-outline-danger">I understood</button>
         </div>
     </div>
@@ -119,7 +116,7 @@ Continuous double auction market
         <input type="number" class="form-control small-numbers" inputmode="numeric" id="transactionAskVolume" min="1" style="display: inline-block">
         <button type="button" onclick="sendAcc(is_bid=0)" id="askAccept" class="otree-btn-next btn btn-primary">Accept purchase</button>
         <table id="asksTable" class="table_box"><thead><tr><th>Volume</th><th>Price</th></tr></thead><tbody></tbody></table>
-        <button type="button" onclick="cancelLimit(is_bid=0)" id="cancelAskLimit" class="btn btn-outline-danger">Cancel own limit order</button>
+        <button type="button" onclick="cancelLimit(is_bid=0)" id="cancelAskLimit" class="btn btn-outline-danger">Withdraw own limit order</button>
         <div class="otree-form-errors alert alert-danger" id="errorAskMarket" style="display: none; text-align: left; margin-top: 35px">
             <p>Please provide all necessary information to accept an ask offer</p>
             <ol>
@@ -131,7 +128,7 @@ Continuous double auction market
             <button type="button" id="accAskError" class="btn btn-outline-danger">I understood</button>
         </div>
         <div class="otree-form-errors alert alert-danger" id="errorAskCancel" style="display: none; text-align: left; margin-top: 35px;">
-            <p>If you wish to cancel one of your own (red-framed) ask offers, please select it first.</p>
+            <p>If you wish to withdraw one of your own (red-framed) ask offers, please select it first.</p>
             <button type="button" id="cancelAskError" class="btn btn-outline-danger">I understood</button>
         </div>
     </div>

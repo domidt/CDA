@@ -1,5 +1,9 @@
+{{ block global_scripts }}
+        <script src="{{ static 'script.js' }}"></script>
+{{ endblock }}
+
 {{ block global_styles }}
-        <link rel="stylesheet" href="{{ static 'sCDAstatic/styleResults.css' }}">
+        <link rel="stylesheet" href="{{ static 'styleResults.css' }}">
 {{ endblock }}
 
 {{ block title }}
@@ -7,28 +11,29 @@ Continuous double auction market - pre market information
 {{ endblock }}
 
 {{ block content }}
+<noscript>
+    <div id="jsError">ERROR: this page runs only with javascript enabled</div>
+</noscript>
 
 <p>Soon round nr. {{ player.round_number }} starts.</p>
 
-    <table id="results" class="table_box">
+<div id="endowmentDiv" class="endowment-container row" style="margin-bottom: 35px" >
+    <div class="endowment-div col-sm div_box">
+
+    <table id="endowmentTable">
     <tr>
         <th>Your role</th>
         <td id="traderRole">
-            {{ if not player.isActive }} Inactive observer {{ elif player.informed }} Informed trader {{ else }} Uninformed trader {{ endif }}
+            {{ if not player.isObserver }} Inactive observer {{ else }} Trader {{ endif }}
         </td>
     </tr>
-    <tr id="informationRow"> {{ if player.informed }}
-        <th>Your information</th>
-        <td> {{ if player.informed }} The asset is worth {{ else }} {{ endif }}<span id="informationValue">{{ player.information }}</span></td>
-    {{ else }} {{ endif }}</tr>
     <tr>
         <th>Initial asset endowment</th>
         <td id="assetsHolding">{{ player.assetsHolding }}</td>
     </tr>
     <tr> {{ if player.allowShort }}
         <th>Your short selling limit</th>
-        <td id="capShort">
-            {{ player.capShort }}
+        <td id="capShort"> {{ player.capShort }}
         </td>
     {{ else }} {{ endif }}
     </tr>
@@ -42,6 +47,8 @@ Continuous double auction market - pre market information
     {{ else }} {{ endif }}
     </tr>
     </table>
+    </div>
+</div>
 
     {{ next_button }}
 {{ endblock }}

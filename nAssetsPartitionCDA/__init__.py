@@ -6,15 +6,18 @@ from ast import literal_eval
 
 doc = """Continuous double auction market with information partitions"""
 
+
+ASSET_NAMES = ['A', 'B', 'C', 'D']
+NUM_ASSETS = len(ASSET_NAMES)
 PARTITIONS_NAMES = ['2E', '1E', '50c', '20c', '10c', '5c', '2c', '1c']
 PARTITIONS_UNIT_VALUES = [2, 1, .5, .2, .1, .05, .02, .01]
 
 
 class C(BaseConstants):
-    NAME_IN_URL = 'sPartitionCDA'
+    NAME_IN_URL = 'npartitionCDA'
     PLAYERS_PER_GROUP = None
     num_trial_rounds = 1
-    NUM_ROUNDS = 2  ## incl. trial periods
+    NUM_ROUNDS = 12  ## incl. trial periods
     base_payment = cu(25)
     multiplier = 90
     min_payment_in_round = cu(0)
@@ -29,6 +32,18 @@ class Subsession(BaseSubsession):
     offerID = models.IntegerField(initial=0)
     orderID = models.IntegerField(initial=0)
     transactionID = models.IntegerField(initial=0)
+    assetID = models.IntegerField(initial=0)
+
+
+class AssetsInRound(ExtraModel):
+    round_number = models.IntegerField()
+    assetID = models.IntegerField()
+
+
+class AssetsPartitions(ExtraModel):
+    assetID = models.IntegerField()
+    partitionID = models.IntegerField()
+    amount = models.IntegerField()
 
 
 def vars_for_admin_report(subsession):
@@ -36,12 +51,13 @@ def vars_for_admin_report(subsession):
     period = subsession.round_number
     payoffs = sorted([p.payoff for p in subsession.get_players()])
     market_times = sorted([g.marketTime for g in groups])
-    trades = [[tx.transactionTime, tx.price] for tx in Transaction.filter() if tx.Period == period]
-    bids = [[bx.BATime, bx.bestBid] for bx in BidAsks.filter() if bx.Period == period]
-    bids = ['null' if b[1] is None else b for b in bids]
-    asks = [[ax.BATime, ax.bestAsk] for ax in BidAsks.filter() if ax.Period == period]
-    asks = ['null' if a[1] is None else a for a in asks]
+    trades = sorted([[tx.price, tx.transactionVolume, tx.transactionTime, tx.assetID] for tx in Transaction.filter() if tx.Period == period and tx.group in groups], reverse=True, key=itemgetter(2))
+    bids = sorted([[bx.bestBid, bx.BATime, bx.assetID] for bx in BidAsks.filter() if bx.Period == period and bx.group in groups], reverse=True, key=itemgetter(2))
+    bids = ['null' if b[0] is None else b for b in bids]
+    asks = sorted([[ax.bestBid, ax.BATime, ax.assetID] for ax in BidAsks.filter() if ax.Period == period and ax.group in groups], reverse=True, key=itemgetter(2))
+    asks = ['null' if a[0] is None else a for a in asks]
     return dict(
+        numAssets=NUM_ASSETS,
         marketTimes=market_times,
         payoffs=payoffs,
         trades=trades,
@@ -55,34 +71,37 @@ class Group(BaseGroup):
     marketStartTime = models.FloatField()
     marketEndTime = models.FloatField()
     randomisedTypes = models.BooleanField()
-    numAssets = models.IntegerField(initial=0)
+    numAssets = models.LongStringField()
     numParticipants = models.IntegerField(initial=0)
     estNumTraders = models.IntegerField()
     numInformed = models.IntegerField()
     assetNames = models.LongStringField()
-    aggAssetsValue = models.FloatField()
-    assetValue = models.FloatField()
+    assetNamesInRound = models.LongStringField()
+    numAssetsInRound = models.IntegerField(initial=0)
+    aggAssetsValue = models.LongStringField()
+    assetValues = models.LongStringField()
     valueStructureNumUnits = models.LongStringField()
     valueStructureValueUnits = models.LongStringField()
-    bestAsk = models.FloatField()
-    bestBid = models.FloatField()
+    bestAsks = models.LongStringField()
+    bestBids = models.LongStringField()
+    assetsInRound = models.LongStringField()
     roleList = models.LongStringField()
     roleStructure = models.LongStringField()
     roleInfoStructure = models.LongStringField()
-    transactions = models.IntegerField(initial=0, min=0)
-    marketBuyOrders = models.IntegerField(initial=0, min=0)
-    marketSellOrders = models.IntegerField(initial=0, min=0)
-    transactedVolume = models.IntegerField(initial=0, min=0)
-    marketBuyVolume = models.IntegerField(initial=0, min=0)
-    marketSellVolume = models.IntegerField(initial=0, min=0)
-    limitOrders = models.IntegerField(initial=0, min=0)
-    limitBuyOrders = models.IntegerField(initial=0, min=0)
-    limitSellOrders = models.IntegerField(initial=0, min=0)
-    limitVolume = models.IntegerField(initial=0, min=0)
-    limitBuyVolume = models.IntegerField(initial=0, min=0)
-    limitSellVolume = models.IntegerField(initial=0, min=0)
-    cancellations = models.IntegerField(initial=0, min=0)
-    cancelledVolume = models.IntegerField(initial=0, min=0)
+    transactions = models.LongStringField()
+    marketBuyOrders = models.LongStringField()
+    marketSellOrders = models.LongStringField()
+    transactedVolume = models.LongStringField()
+    marketBuyVolume = models.LongStringField()
+    marketSellVolume = models.LongStringField()
+    limitOrders = models.LongStringField()
+    limitBuyOrders = models.LongStringField()
+    limitSellOrders = models.LongStringField()
+    limitVolume = models.LongStringField()
+    limitBuyVolume = models.LongStringField()
+    limitSellVolume = models.LongStringField()
+    cancellations = models.LongStringField()
+    cancelledVolume = models.LongStringField()
 
 
 def random_types(group: Group):
@@ -93,26 +112,44 @@ def num_traders(group: Group):
     return group.session.config['est_num_traders']
 
 
+def define_assets_in_round(group: Group):
+    ## this function defines the assets available to trade in each round
+    assets_in_round = read_csv('_parameters/assetsInRound.csv', AssetsInRound)
+    group.assetsInRound = str([r['assetID'] for r in assets_in_round if r['round_number'] == group.round_number])
+    group.assetNamesInRound = str([ASSET_NAMES[r['assetID'] - 1] for r in assets_in_round if r['round_number'] == group.round_number])
+    for r in assets_in_round:
+        if r['round_number'] == group.round_number:
+            group.numAssetsInRound += 1
+
+
 def define_role_structure(group: Group):
     ## this code is run when all individuals arrived
     group.roleList = str(['I3', 'I2', 'I1', 'I0', 'observer'])  # ordered accourding to importance, i.e., the are filled accordingly
     est_num_traders = num_traders(group=group)
     group.estNumTraders = est_num_traders
     num_participants = group.numParticipants
-    num_I3 = int(round(1/4 * num_participants, 0))  # informed about 5c, 20c, and E1
-    num_I2 = int(round(1/4 * num_participants, 0))  # informed about 20c and E1
-    num_I1 = int(round(1/4 * num_participants, 0))  # informed about 1E
+    num_I3 = int(round(1/4*num_participants, 0))  # informed about A: 5c, 20c, and E1; and B: E1
+    num_I2 = int(round(1/4*num_participants, 0))  # informed about A; 20c, and E1; and B: 5c, 20c, and E1
+    num_I1 = int(round(1/4*num_participants, 0))  # informed about A; 1E; and B: 20c, and E1
     num_I0 = max(0, num_participants - num_I3 - num_I2 - num_I1)  # uninformed traders
     num_observer = 0
     group.roleStructure = str({'observer': num_observer, 'I0': num_I0, 'I1': num_I1, 'I2': num_I2, 'I3': num_I3})
 
 
 def define_role_information_structure(group: Group):
-    ## for each role, this function specifies the partitions a role is informed
-    group.roleInfoStructure = str({'I0': {'2E': 0, '1E': 0, '50c': 0, '20c': 0, '10c': 0, '5c': 0, '2c': 0, '1c': 0},
-                                   'I1': {'2E': 0, '1E': 1, '50c': 0, '20c': 0, '10c': 0, '5c': 1, '2c': 0, '1c': 0},
-                                   'I2': {'2E': 1, '1E': 0, '50c': 0, '20c': 0, '10c': 0, '5c': 0, '2c': 1, '1c': 0},
-                                   'I3': {'2E': 0, '1E': 0, '50c': 1, '20c': 1, '10c': 1, '5c': 0, '2c': 0, '1c': 0}
+    ## for each role, this function specifies the partitions a role is informed for each asset
+    group.roleInfoStructure = str({'I0': {1: {'2E': 0, '1E': 0, '50c': 0, '20c': 0, '10c': 0, '5c': 0, '2c': 0, '1c': 0},
+                                          2: {'2E': 0, '1E': 0, '50c': 0, '20c': 0, '10c': 0, '5c': 0, '2c': 0, '1c': 0}
+                                          },
+                                   'I1': {1: {'2E': 0, '1E': 1, '50c': 0, '20c': 0, '10c': 0, '5c': 0, '2c': 0, '1c': 0},
+                                          2: {'2E': 0, '1E': 1, '50c': 0, '20c': 1, '10c': 0, '5c': 0, '2c': 0, '1c': 0}
+                                          },
+                                   'I2': {1: {'2E': 0, '1E': 1, '50c': 0, '20c': 1, '10c': 0, '5c': 0, '2c': 0, '1c': 0},
+                                          2: {'2E': 0, '1E': 1, '50c': 0, '20c': 1, '10c': 0, '5c': 1, '2c': 0, '1c': 0}
+                                          },
+                                   'I3': {1: {'2E': 0, '1E': 1, '50c': 0, '20c': 1, '10c': 0, '5c': 1, '2c': 0, '1c': 0},
+                                          2: {'2E': 0, '1E': 1, '50c': 0, '20c': 0, '10c': 0, '5c': 0, '2c': 0, '1c': 0}
+                                          },
                                    })
 
 
@@ -147,27 +184,22 @@ def assign_types(group: Group):
 
 def define_asset_value(group: Group):
     ## this code is run when all participants are ready and the market is about to start via the initiate group function
-    units = {names: None for names in PARTITIONS_NAMES}
-    ## the next line determine the amount of coins or each value,
-    if group.round_number >= C.NUM_ROUNDS - C.num_trial_rounds:
-        units['2E'] = 10
-        units['1E'] = 8
-        units['50c'] = 8
-        units['20c'] = 24
-        units['10c'] = 12
-        units['5c'] = 12
-        units['2c'] = 12
-        units['1c'] = 24
-    elif group.round_number < C.NUM_ROUNDS - C.num_trial_rounds:
-        for u in PARTITIONS_NAMES:
-            units[u] = int(round(random() * 20, 0))
-    num_units = {names: units[names] for names in PARTITIONS_NAMES}
+    asset_ids = group.assetsInRound
+    assets_partition = read_csv('_parameters/assetsPartitions.csv', AssetsPartitions)
+    units = {r['assetID']: {r['partitionID']: r['amount']} for r in assets_partition if r['assetID'] in asset_ids}
+    ## the next line determine the amount of coins or each value and each asset
+    num_units = {asset_id: {PARTITIONS_NAMES[partition_id - 1]: 0 for partition_id in range(1, len(PARTITIONS_NAMES) + 1)} for asset_id in asset_ids}
+    for asset_id in asset_ids:
+        for p in range(1, len(PARTITIONS_NAMES) + 1):
+            num_units[asset_id][PARTITIONS_NAMES[p - 1]] = units[asset_id][p]
     group.valueStructureNumUnits = str(num_units)
-    value_units = {PARTITIONS_NAMES[i]: PARTITIONS_UNIT_VALUES[i] for i in range(len(PARTITIONS_NAMES))}
+    value_units = {asset_id: {PARTITIONS_NAMES[i]: PARTITIONS_UNIT_VALUES[i]} for i, asset_id in zip(range(len(PARTITIONS_NAMES)), range(1, NUM_ASSETS + 1))}
     group.valueStructureValueUnits = str(value_units)
     total_value = 0
-    for name in PARTITIONS_NAMES:
-        total_value += value_units[name] * num_units[name]
+    asset_values = {}
+    for asset_id in range(1, NUM_ASSETS + 1):
+        for name in PARTITIONS_NAMES:
+            total_value += value_units[name] * num_units[name]
     group.aggAssetsValue = total_value
     group.assetValue = group.aggAssetsValue  ## / group.numAssets ## The asset should actually just have the value according to the outstanding assets, but this information is negligable for a in-class
 
@@ -188,14 +220,67 @@ def count_participants(group: Group):
 def initiate_group(group: Group):
     ## this code is run when everyone arrived and the market is about to start
     count_participants(group=group)
+    define_assets_in_round(group=group)
     define_asset_value(group=group)
     define_role_structure(group=group)
     define_role_information_structure(group=group)
     assign_types(group=group)
+    group.numAssets = str(set_initial(0, group.assetsInRound))
 
 
 def get_max_time(group: Group):
     return group.session.config['market_time']
+
+
+def initialize_vars(group: Group):
+    # set initial values in groups to zero resp. None
+    asset_ids = group.assetsInRound
+    group.transactions = str(set_initial(0, asset_ids))
+    group.marketBuyOrders = str(set_initial(0, asset_ids))
+    group.marketSellOrders = str(set_initial(0, asset_ids))
+    group.transactedVolume = str(set_initial(0, asset_ids))
+    group.marketBuyVolume = str(set_initial(0, asset_ids))
+    group.marketSellVolume = str(set_initial(0, asset_ids))
+    group.limitOrders = str(set_initial(0, asset_ids))
+    group.limitBuyOrders = str(set_initial(0, asset_ids))
+    group.limitSellOrders = str(set_initial(0, asset_ids))
+    group.limitVolume = str(set_initial(0, asset_ids))
+    group.limitBuyVolume = str(set_initial(0, asset_ids))
+    group.limitSellVolume = str(set_initial(0, asset_ids))
+    group.cancellations = str(set_initial(0, asset_ids))
+    group.cancelledVolume = str(set_initial(0, asset_ids))
+    group.bestAsks = str(set_initial(None, asset_ids))
+    group.bestBids = str(set_initial(None, asset_ids))
+    # set initial values in players to zero
+    players = group.get_players()
+    for p in players:
+        p.assetsOffered = str(set_initial(0, asset_ids))
+        p.transactions = str(set_initial(0, asset_ids))
+        p.marketOrders = str(set_initial(0, asset_ids))
+        p.marketBuyOrders = str(set_initial(0, asset_ids))
+        p.marketSellOrders = str(set_initial(0, asset_ids))
+        p.transactedVolume = str(set_initial(0, asset_ids))
+        p.marketOrderVolume = str(set_initial(0, asset_ids))
+        p.marketBuyVolume = str(set_initial(0, asset_ids))
+        p.marketSellVolume = str(set_initial(0, asset_ids))
+        p.limitOrders = str(set_initial(0, asset_ids))
+        p.limitBuyOrders = str(set_initial(0, asset_ids))
+        p.limitSellOrders = str(set_initial(0, asset_ids))
+        p.limitVolume = str(set_initial(0, asset_ids))
+        p.limitBuyVolume = str(set_initial(0, asset_ids))
+        p.limitSellVolume = str(set_initial(0, asset_ids))
+        p.limitOrderTransactions = str(set_initial(0, asset_ids))
+        p.limitBuyOrderTransactions = str(set_initial(0, asset_ids))
+        p.limitSellOrderTransactions = str(set_initial(0, asset_ids))
+        p.limitVolumeTransacted = str(set_initial(0, asset_ids))
+        p.limitBuyVolumeTransacted = str(set_initial(0, asset_ids))
+        p.limitSellVolumeTransacted = str(set_initial(0, asset_ids))
+        p.cancellations = str(set_initial(0, asset_ids))
+        p.cancelledVolume = str(set_initial(0, asset_ids))
+
+
+def set_initial(value, ids):
+    return {id: value for id in ids}
 
 
 class Player(BasePlayer):
@@ -206,45 +291,47 @@ class Player(BasePlayer):
     information = models.LongStringField()
     allowShort = models.BooleanField(initial=True)
     allowLong = models.BooleanField(initial=True)
-    assetValue = models.FloatField()
+    assetValues = models.LongStringField()
     initialCash = models.FloatField(initial=0, decimal=C.decimals)
-    initialAssets = models.IntegerField(initial=0)
+    initialAssets = models.LongStringField()
     initialEndowment = models.FloatField(initial=0, decimal=C.decimals)
     cashHolding = models.FloatField(initial=0, decimal=C.decimals)
-    assetsHolding = models.IntegerField(initial=0)
+    assetsHolding = models.LongStringField()
     endEndowment = models.FloatField(initial=0, decimal=C.decimals)
     capLong = models.FloatField(initial=0, min=0, decimal=C.decimals)
-    capShort = models.IntegerField(initial=0, min=0)
-    transactions = models.IntegerField(initial=0, min=0)
-    marketOrders = models.IntegerField(initial=0, min=0)
-    marketBuyOrders = models.IntegerField(initial=0, min=0)
-    marketSellOrders = models.IntegerField(initial=0, min=0)
-    transactedVolume = models.IntegerField(initial=0, min=0)
-    marketOrderVolume = models.IntegerField(initial=0, min=0)
-    marketBuyVolume = models.IntegerField(initial=0, min=0)
-    marketSellVolume = models.IntegerField(initial=0, min=0)
-    limitOrders = models.IntegerField(initial=0, min=0)
-    limitBuyOrders = models.IntegerField(initial=0, min=0)
-    limitSellOrders = models.IntegerField(initial=0, min=0)
-    limitVolume = models.IntegerField(initial=0, min=0)
-    limitBuyVolume = models.IntegerField(initial=0, min=0)
-    limitSellVolume = models.IntegerField(initial=0, min=0)
-    limitOrderTransactions = models.IntegerField(initial=0, min=0)
-    limitBuyOrderTransactions = models.IntegerField(initial=0, min=0)
-    limitSellOrderTransactions = models.IntegerField(initial=0, min=0)
-    limitVolumeTransacted = models.IntegerField(initial=0, min=0)
-    limitBuyVolumeTransacted = models.IntegerField(initial=0, min=0)
-    limitSellVolumeTransacted = models.IntegerField(initial=0, min=0)
-    cancellations = models.IntegerField(initial=0, min=0)
-    cancelledVolume = models.IntegerField(initial=0, min=0)
+    capShort = models.LongStringField()
+    transactions = models.LongStringField()
+    marketOrders = models.LongStringField()
+    marketBuyOrders = models.LongStringField()
+    marketSellOrders = models.LongStringField()
+    transactedVolume = models.LongStringField()
+    marketOrderVolume = models.LongStringField()
+    marketBuyVolume = models.LongStringField()
+    marketSellVolume = models.LongStringField()
+    limitOrders = models.LongStringField()
+    limitBuyOrders = models.LongStringField()
+    limitSellOrders = models.LongStringField()
+    limitVolume = models.LongStringField()
+    limitBuyVolume = models.LongStringField()
+    limitSellVolume = models.LongStringField()
+    limitOrderTransactions = models.LongStringField()
+    limitBuyOrderTransactions = models.LongStringField()
+    limitSellOrderTransactions = models.LongStringField()
+    limitVolumeTransacted = models.LongStringField()
+    limitBuyVolumeTransacted = models.LongStringField()
+    limitSellVolumeTransacted = models.LongStringField()
+    cancellations = models.LongStringField()
+    cancelledVolume = models.LongStringField()
     cashOffered = models.FloatField(initial=0, min=0, decimal=C.decimals)
-    assetsOffered = models.IntegerField(initial=0, min=0)
+    assetsOffered = models.LongStringField()
     tradingProfit = models.FloatField(initial=0)
     wealthChange = models.FloatField(initial=0)
 
 
 def asset_endowment(player: Player):
-    return int(random.uniform(a=C.num_assets_MIN, b=C.num_assets_MAX))
+    group = player.group
+    asset_ids = group.assetsInRound
+    return {asset_id: int(random.uniform(a=C.num_assets_MIN, b=C.num_assets_MAX)) for asset_id in asset_ids}
 
 
 def short_allowed(player: Player):
@@ -259,14 +346,21 @@ def long_allowed(player: Player):
 
 def asset_short_limit(player: Player):
     if player.allowShort:
-        return player.initialAssets
+        return literal_eval(player.initialAssets)
     else:
         return 0
 
 
 def cash_endowment(player: Player):
     group = player.group
-    return float(round(random.uniform(a=C.num_assets_MIN, b=C.num_assets_MAX) * group.assetValue, C.decimals))  ## the multiplication with the asset value garanties a cash to asset ratio of 1 in the market
+    assets_in_round = group.assetsInRound
+    sum_asset_value = 0
+    num_assets = 0
+    for i in assets_in_round:
+        num_assets += 1
+        sum_asset_value += literal_eval(group.assetValues)[i]
+    avg_asset_value = sum_asset_value / num_assets
+    return float(round(random.uniform(a=C.num_assets_MIN, b=C.num_assets_MAX) * avg_asset_value, C.decimals))  ## the multiplication with the asset value garanties a cash to asset ratio of 1 in the market
 
 
 def cash_long_limit(player: Player):
@@ -278,10 +372,11 @@ def cash_long_limit(player: Player):
 
 def get_role_attr(player: Player, role_id):
     group = player.group
+    asset_ids = group.assetsInRound
     role_info_structure = literal_eval(group.roleInfoStructure)
     num_units = literal_eval(group.valueStructureNumUnits)
     value_units = literal_eval(group.valueStructureValueUnits)
-    info = {name: [value_units[name], num_units[name], value_units[name] * num_units[name]] for name in PARTITIONS_NAMES}
+    info = {a: {name: [value_units[name], num_units[name], value_units[name] * num_units[name]] for name in PARTITIONS_NAMES} for a in asset_ids}
     if role_id == 'observer':
         player.participant.vars['isObserver'] = True
         player.participant.vars['informed'] = False
@@ -291,14 +386,16 @@ def get_role_attr(player: Player, role_id):
     elif role_id in group.roleList:
         player.participant.vars['isObserver'] = False
         player.participant.vars['informed'] = True
-        for partition in PARTITIONS_NAMES:
-            if role_info_structure[role_id][partition] != 1:
-                info[partition] = [None, None, None]
+        for a in asset_ids:
+            for partition in PARTITIONS_NAMES:
+                if role_info_structure[role_id][a][partition] != 1:
+                    info[a][partition] = [None, None, None]
     return info
 
 
 def initiate_player(player: Player):
     group = player.group
+    num_assets = literal_eval(group.numAssets)
     if not player.isObserver:
         initial_cash = cash_endowment(player=player)
         player.initialCash = initial_cash
@@ -306,11 +403,13 @@ def initiate_player(player: Player):
         player.allowLong = long_allowed(player=player)
         player.capLong = cash_long_limit(player=player)
         initial_assets = asset_endowment(player=player)
-        player.initialAssets = initial_assets
-        group.numAssets += player.initialAssets
-        player.assetsHolding = initial_assets
+        player.initialAssets = str(initial_assets)
+        for i in group.assetsInRound:
+            num_assets[i] += initial_assets[i]
+        player.assetsHolding = str(initial_assets)
         player.allowShort = short_allowed(player=player)
-        player.capShort = asset_short_limit(player=player)
+        player.capShort = str(asset_short_limit(player=player))
+    group.numAssets = str(num_assets)
 
 
 def set_player_info(player: Player):
@@ -337,64 +436,92 @@ def live_method(player: Player, data):
     offers = Limit.filter(group=group)
     transactions = Transaction.filter(group=group)
     if transactions:
-        highcharts_series = [[tx.transactionTime, tx.price] for tx in Transaction.filter(group=group)]
+        for i in range(1, NUM_ASSETS + 1):
+            hc_data = [{'x': tx.transactionTime, 'y': tx.price, 'name': ASSET_NAMES[tx.assetID - 1]} for tx in Transaction.filter(group=group, assetID=i)]
+            highcharts_series.append({'name': ASSET_NAMES[i - 1], 'data': hc_data})
     else:
         highcharts_series = []
-    best_bid = group.field_maybe_none('bestBid')
-    best_ask = group.field_maybe_none('bestAsk')
-    BidAsks.create(# observe Bids and Asks of respective asset before the request
-        group=group,
-        Period=period,
-        orderID=group.subsession.orderID,
-        bestBid=best_bid,
-        bestAsk=best_ask,
-        BATime=round(float(time.time() - player.group.marketStartTime), C.decimals),
-        timing='before',
-        operationType=key,
-    )
-    bids = sorted([[offer.price, offer.remainingVolume, offer.offerID, offer.makerID] for offer in offers if offer.isActive and offer.isBid], reverse=True, key=itemgetter(0))
+    best_bids = literal_eval(group.field_maybe_none('bestBids'))
+    best_asks = literal_eval(group.field_maybe_none('bestAsks'))
+    for i in range(1, NUM_ASSETS + 1):
+        if best_bids[i]:
+            best_bid = best_bids[i]
+        else:
+            best_bid = None
+        if best_asks[i]:
+            best_ask = best_asks[i]
+        else:
+            best_ask = None
+        BidAsks.create(# observe Bids and Asks of respective asset before the request
+            group=group,
+            Period=period,
+            orderID=group.subsession.orderID,
+            assetID=i,
+            assetName=ASSET_NAMES[i - 1],
+            bestBid=best_bid,
+            bestAsk=best_ask,
+            BATime=round(float(time.time() - player.group.marketStartTime), C.decimals),
+            timing='before',
+            operationType=key,
+        )
+    bids = sorted([[offer.price, offer.remainingVolume, offer.offerID, offer.makerID, offer.assetID, False] for offer in offers if offer.isActive and offer.isBid], reverse=True, key=itemgetter(0))
     # to do limit amount of offers in table
-    asks = sorted([[offer.price, offer.remainingVolume, offer.offerID, offer.makerID] for offer in offers if offer.isActive and not offer.isBid], key=itemgetter(0))
+    asks = sorted([[offer.price, offer.remainingVolume, offer.offerID, offer.makerID, offer.assetID, False] for offer in offers if offer.isActive and not offer.isBid], key=itemgetter(0))
     msgs = News.filter(group=group)
-    if asks:
-        best_ask = asks[0][0]
-        group.bestAsk = best_ask
-    else:
-        best_ask = None
-    if bids:
-        best_bid = bids[0][0]
-        group.bestBid = best_bid
-    else:
-        best_bid = None
-    BidAsks.create(# observe Bids and Asks after the request
-        group=group,
-        Period=period,
-        orderID=group.subsession.orderID,
-        bestBid=best_bid,
-        bestAsk=best_ask,
-        BATime=round(float(time.time() - player.group.marketStartTime), C.decimals),
-        timing='after',
-        operationType=key,
-    )
+    for i in range(1, NUM_ASSETS + 1):
+        asks_asset = [[p, vol, offer_id, maker_ID, asset_ID, is_best] for p, vol, offer_id, maker_ID, asset_ID, is_best in asks if asset_ID == i]
+        if asks_asset:
+            best_ask = asks_asset[0][0]
+        else:
+            best_ask = None
+        best_asks[i] = best_ask
+        bids_asset = [[p, vol, offer_id, maker_ID, asset_ID, is_best] for p, vol, offer_id, maker_ID, asset_ID, is_best in bids if asset_ID == i]
+        if bids_asset:
+            best_bid = bids_asset[0][0]
+        else:
+            best_bid = None
+        best_bids[i] = best_bid
+        BidAsks.create(# observe Bids and Asks after the request
+            group=group,
+            Period=period,
+            orderID=group.subsession.orderID,
+            assetID=i,
+            assetName=ASSET_NAMES[i - 1],
+            bestBid=best_bid,
+            bestAsk=best_ask,
+            BATime=round(float(time.time() - player.group.marketStartTime), C.decimals),
+            timing='after',
+            operationType=key,
+        )
+    group.bestAsks = str(best_asks)
+    group.bestBids = str(best_bids)
     if key == 'market_start':
         players = [player]
     return {
         p.id_in_group: dict(
             bids=bids,
             asks=asks,
-            trades=sorted([[t.price, t.transactionVolume, t.transactionTime, t.sellerID] for t in transactions if (t.makerID == p.id_in_group or t.takerID == p.id_in_group)], reverse = True, key=itemgetter(2)),
+            trades=sorted([[t.price, t.transactionVolume, t.transactionTime, t.sellerID, t.assetID] for t in transactions if (t.makerID == p.id_in_group or t.takerID == p.id_in_group)], reverse=True, key=itemgetter(2)),
             cashHolding=p.cashHolding,
-            assetsHolding=p.assetsHolding,
+            assetsHolding=literal_eval(p.assetsHolding),
             highcharts_series=highcharts_series,
-            news=sorted([[m.msg, m.msgTime, m.playerID] for m in msgs if m.playerID == p.id_in_group], reverse=True, key=itemgetter(1))
+            news=sorted([[m.msg, m.msgTime, m.playerID] for m in msgs if m.playerID == p.id_in_group], reverse=True, key=itemgetter(1)),
+            bestAsks=literal_eval(group.field_maybe_none('bestAsks')),
+            bestBids=literal_eval(group.field_maybe_none('bestBids')),
         )
         for p in players
     }
 
 
 def calcPeriodProfits (player: Player):
-    initial_endowment = player.initialCash + player.assetValue * player.initialAssets
-    end_endowment = player.cashHolding + player.assetValue * player.assetsHolding
+    asset_values = literal_eval(player.assetValues)
+    initial_assets = literal_eval(player.initialAssets)
+    assets_holding = literal_eval(player.assetsHolding)
+    initial_endowment = player.initialCash
+    end_endowment = player.cashHolding
+    for i in range(1, NUM_ASSETS + 1):
+        initial_endowment += asset_values[i] * initial_assets[i]
+        end_endowment += asset_values[i] * assets_holding[i]
     player.initialEndowment = initial_endowment
     player.endEndowment = end_endowment
     player.tradingProfit = end_endowment - initial_endowment
@@ -402,30 +529,42 @@ def calcPeriodProfits (player: Player):
     player.payoff = max(C.base_payment + C.multiplier * player.wealthChange, C.min_payment_in_round)
 
 
+def accumulate_orders(var, asset_id):
+    a = literal_eval(var)
+    a[asset_id] += 1
+    return str(a)
+
+
+def accumulate_volume(var, asset_id, new_volume):
+    a = literal_eval(var)
+    a[asset_id] += new_volume
+    return str(a)
+
+
 def custom_export(players):
     # Export all ExtraModels for Limits
-    yield ['TableName', 'sessionID', 'offerID', 'group', 'Period', 'maker', 'price', 'limitVolume', 'isBid', 'offerID', 'orderID', 'offerTime', 'remainingVolume', 'isActive', 'bestAskBefore', 'bestBidBefore', 'bestAskAfter', 'bestBidAfter']
+    yield ['TableName', 'sessionID', 'offerID', 'group', 'Period', 'assetID', 'assetName', 'maker', 'price', 'limitVolume', 'isBid', 'offerID', 'orderID', 'offerTime', 'remainingVolume', 'isActive', 'bestAskBefore', 'bestBidBefore', 'bestAskAfter', 'bestBidAfter']
     limits = Limit.filter()
     for l in limits:
-        yield ['Limits', l.group.session.code, l.offerID, l.group.id_in_subsession, l.group.round_number, l.makerID, l.price, l.limitVolume, l.isBid, l.orderID, l.offerTime, l.remainingVolume, l.isActive, l.bestAskBefore, l.bestBidBefore, l.bestAskAfter, l.bestBidAfter]
+        yield ['Limits', l.group.session.code, l.offerID, l.group.id_in_subsession, l.group.round_number, l.assetID, l.assetName, l.makerID, l.price, l.limitVolume, l.isBid, l.orderID, l.offerTime, l.remainingVolume, l.isActive, l.bestAskBefore, l.bestBidBefore, l.bestAskAfter, l.bestBidAfter]
 
     # Export all ExtraModels for Trades
-    yield ['TableName', 'sessionID', 'transactionID', 'group', 'Period', 'maker', 'taker', 'price', 'transactionVolume', 'limitVolume', 'sellerID', 'buyerID', 'isBid', 'offerID', 'orderID', 'offerTime', 'transactionTime', 'remainingVolume', 'isActive', 'bestAskBefore', 'bestBidBefore', 'bestAskAfter', 'bestBidAfter']
+    yield ['TableName', 'sessionID', 'transactionID', 'group', 'Period', 'assetID', 'assetName', 'maker', 'taker', 'price', 'transactionVolume', 'limitVolume', 'sellerID', 'buyerID', 'isBid', 'offerID', 'orderID', 'offerTime', 'transactionTime', 'remainingVolume', 'isActive', 'bestAskBefore', 'bestBidBefore', 'bestAskAfter', 'bestBidAfter']
     trades = Transaction.filter()
     for t in trades:
-        yield ['Transactions', t.group.session.code, t.transactionID, t.group.id_in_subsession, t.group.round_number, t.makerID, t.takerID, t.price, t.transactionVolume, t.limitVolume, t.sellerID, t.buyerID, t.isBid, t.offerID, t.orderID, t.offerTime, t.transactionTime, t.remainingVolume, t.isActive, t.bestAskBefore, t.bestBidBefore, t.bestAskAfter, t.bestBidAfter]
+        yield ['Transactions', t.group.session.code, t.transactionID, t.group.id_in_subsession, t.group.round_number, t.assetID, t.assetName, t.makerID, t.takerID, t.price, t.transactionVolume, t.limitVolume, t.sellerID, t.buyerID, t.isBid, t.offerID, t.orderID, t.offerTime, t.transactionTime, t.remainingVolume, t.isActive, t.bestAskBefore, t.bestBidBefore, t.bestAskAfter, t.bestBidAfter]
 
     # Export all ExtraModels for Orders
-    yield ['TableName', 'sessionID', 'orderID', 'orderType', 'group', 'Period', 'maker', 'taker', 'price', 'transactionVolume', 'limitVolume', 'sellerID', 'buyerID', 'isBid', 'offerID', 'transactionID', 'offerTime', 'transactionTime', 'remainingVolume', 'isActive', 'bestAskBefore', 'bestBidBefore', 'bestAskAfter', 'bestBidAfter']
+    yield ['TableName', 'sessionID', 'orderID', 'orderType', 'group', 'Period', 'assetID', 'assetName', 'maker', 'taker', 'price', 'transactionVolume', 'limitVolume', 'sellerID', 'buyerID', 'isBid', 'offerID', 'transactionID', 'offerTime', 'transactionTime', 'remainingVolume', 'isActive', 'bestAskBefore', 'bestBidBefore', 'bestAskAfter', 'bestBidAfter']
     orders = Order.filter()
     for o in orders:
-        yield ['Orders', o.group.session.code, o.orderID, o.orderType, o.group.id_in_subsession, o.group.round_number, o.makerID, o.takerID, o.price, o.transactionVolume, o.limitVolume, o.sellerID, o.buyerID, o.isBid, o.offerID, o.transactionID, o.offerTime, o.transactionTime, o.remainingVolume, o.isActive, o.bestAskBefore, o.bestBidBefore, o.bestAskAfter, o.bestBidAfter]
+        yield ['Orders', o.group.session.code, o.orderID, o.orderType, o.group.id_in_subsession, o.group.round_number, o.assetID, o.assetName, o.makerID, o.takerID, o.price, o.transactionVolume, o.limitVolume, o.sellerID, o.buyerID, o.isBid, o.offerID, o.transactionID, o.offerTime, o.transactionTime, o.remainingVolume, o.isActive, o.bestAskBefore, o.bestBidBefore, o.bestAskAfter, o.bestBidAfter]
 
     # Export all ExtraModels for BidAsk
-    yield ['TableName', 'sessionID', 'orderID', 'operationType', 'group', 'Period', 'bestAsk', 'bestBid', 'BATime', 'timing']
+    yield ['TableName', 'sessionID', 'orderID', 'operationType', 'group', 'Period', 'assetID', 'assetName', 'bestAsk', 'bestBid', 'BATime', 'timing']
     bidasks = BidAsks.filter()
     for b in bidasks:
-        yield ['BidAsks', b.group.session.code, b.orderID, b.operationType, b.group.id_in_subsession, b.group.round_number, b.bestAsk, b.bestBid, b.BATime, b.timing]
+        yield ['BidAsks', b.group.session.code, b.orderID, b.operationType, b.group.id_in_subsession, b.group.round_number, b.assetID, b.assetName, b.bestAsk, b.bestBid, b.BATime, b.timing]
 
     # Export all ExtraModels for News
     yield ['TableName', 'sessionID', 'message', 'group', 'Period', 'playerID', 'msgTime']
@@ -440,6 +579,8 @@ class Limit(ExtraModel):
     makerID = models.IntegerField()
     group = models.Link(Group)
     Period = models.IntegerField()
+    assetID = models.IntegerField()
+    assetName = models.StringField()
     maker = models.Link(Player)
     limitVolume = models.IntegerField()
     price = models.FloatField(decimal=C.decimals)
@@ -460,7 +601,8 @@ def limit_order(player: Player, data):
     maker_id = player.id_in_group
     group = player.group
     period = group.round_number
-    if not (data['isBid'] >= 0 and data['limitPrice'] and data['limitVolume']):
+    assets_in_round = group.assetsInRound
+    if not (data['isBid'] >= 0 and data['limitPrice'] and data['limitVolume'] and data['assetID']):
         News.create(
             player=player,
             playerID=maker_id,
@@ -473,12 +615,16 @@ def limit_order(player: Player, data):
     price = round(float(data['limitPrice']), C.decimals)
     is_bid = bool(data['isBid'] == 1)
     limit_volume = int(data['limitVolume'])
+    asset_id = int(data['assetID'])
+    asset_name = str(ASSET_NAMES[asset_id - 1])
     if not (price > 0 and limit_volume > 0):
         News.create(
             player=player,
             playerID=maker_id,
             group=group,
             Period=period,
+            assetID=asset_id,
+            assetName=asset_name,
             msg='Order rejected: misspecified price or volume.',
             msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
         )
@@ -489,18 +635,42 @@ def limit_order(player: Player, data):
             playerID=maker_id,
             group=group,
             Period=period,
+            assetID=asset_id,
+            assetName=asset_name,
             msg='Order rejected: insufficient cash available.',
             msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
         )
         return
-    best_ask_before = group.field_maybe_none('bestAsk')
-    best_bid_before = group.field_maybe_none('bestBid')
-    if not is_bid and player.assetsHolding + player.capShort - player.assetsOffered - limit_volume < 0:
+    if not asset_id in assets_in_round:
         News.create(
             player=player,
             playerID=maker_id,
             group=group,
             Period=period,
+            assetID=asset_id,
+            assetName=asset_name,
+            msg='Order rejected: misspecified asset.',
+            msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
+        )
+        return
+    assets_holdings = literal_eval(player.assetsHolding)
+    cap_shorts = literal_eval(player.capShort)
+    assets_offers = literal_eval(player.assetsOffered)
+    best_asks_before = literal_eval(group.field_maybe_none('bestAsks'))
+    best_bids_before = literal_eval(group.field_maybe_none('bestBids'))
+    assets_holding = assets_holdings[asset_id]
+    cap_short = cap_shorts[asset_id]
+    assets_offered = assets_offers[asset_id]
+    best_ask_before = best_asks_before[asset_id]
+    best_bid_before = best_bids_before[asset_id]
+    if not is_bid and assets_holding + cap_short - assets_offered - limit_volume < 0:
+        News.create(
+            player=player,
+            playerID=maker_id,
+            group=group,
+            Period=period,
+            assetID=asset_id,
+            assetName=asset_name,
             msg='Order rejected: insufficient assets available.',
             msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
         )
@@ -511,6 +681,8 @@ def limit_order(player: Player, data):
             playerID=maker_id,
             group=group,
             Period=period,
+            assetID=asset_id,
+            assetName=asset_name,
             msg='Order rejected: there is a limit order with the same or a more interesting price available in the order book.',
             msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
         )
@@ -546,6 +718,8 @@ def limit_order(player: Player, data):
         makerID=maker_id,
         group=group,
         Period=period,
+        assetID=asset_id,
+        assetName=asset_name,
         limitVolume=limit_volume,
         price=price,
         transactedVolume=0,
@@ -565,6 +739,8 @@ def limit_order(player: Player, data):
         makerID=maker_id,
         group=group,
         Period=period,
+        assetID=asset_id,
+        assetName=asset_name,
         limitVolume=limit_volume,
         price=price,
         transactedVolume=0,
@@ -580,22 +756,23 @@ def limit_order(player: Player, data):
         bestAskAfter=best_ask_after,
         bestBidAfter=best_bid_after,
     )
-    player.limitOrders += 1
-    player.limitVolume += limit_volume
-    group.limitOrders += 1
-    group.limitVolume += limit_volume
+    player.limitOrders = accumulate_orders(player.limitOrders, asset_id)
+    player.limitVolume = accumulate_volume(player.limitVolume, asset_id, limit_volume)
+    group.limitOrders = accumulate_orders(group.limitOrders, asset_id)
+    group.limitVolume = accumulate_volume(group.limitVolume, asset_id, limit_volume)
     if is_bid:
         player.cashOffered += limit_volume * price
-        player.limitBuyOrders += 1
-        player.limitBuyVolume += limit_volume
-        group.limitBuyOrders += 1
-        group.limitBuyVolume += limit_volume
+        player.limitBuyOrders = accumulate_orders(player.limitBuyOrders, asset_id)
+        player.limitBuyVolume = accumulate_volume(player.limitBuyVolume, asset_id, limit_volume)
+        group.limitBuyOrders = accumulate_orders(player.limitBuyOrders, asset_id)
+        group.limitBuyVolume = accumulate_volume(group.limitBuyVolume, asset_id, limit_volume)
     else:
-        player.assetsOffered += limit_volume
-        player.limitSellOrders += 1
-        player.limitSellVolume += limit_volume
-        group.limitSellOrders += 1
-        group.limitSellVolume += limit_volume
+        assets_offers[asset_id] += limit_volume
+        player.limitSellOrders = accumulate_orders(player.limitSellOrders, asset_id)
+        player.limitSellVolume = accumulate_volume(player.limitSellVolume, asset_id, limit_volume)
+        group.limitSellOrders = accumulate_orders(group.limitSellOrders, asset_id)
+        group.limitSellVolume = accumulate_volume(group.limitSellVolume, asset_id, limit_volume)
+        player.assetsOffered = str(assets_offers)
 
 
 def cancel_limit(player: Player, data):
@@ -628,6 +805,8 @@ def cancel_limit(player: Player, data):
     price = offers[0].price
     transacted_volume = offers[0].transactedVolume
     offer_time = offers[0].offerTime
+    asset_id = offers[0].assetID
+    asset_name = offers[0].assetName
     if price != float(data['limitPrice']) or is_bid != bool(data['isBid'] == 1):
         print('Odd request when player', maker_id, 'cancelled an order', data)
     order_id = player.subsession.orderID + 1
@@ -635,11 +814,13 @@ def cancel_limit(player: Player, data):
     # to prevent duplicates in orderID
     while len(Order.filter(group=group, offerID=order_id)) > 0:
         order_id += 1
-    best_ask_before = group.field_maybe_none('bestAsk')
-    best_bid_before = group.field_maybe_none('bestBid')
+    best_asks = literal_eval(group.field_maybe_none('bestAsks'))
+    best_bids = literal_eval(group.field_maybe_none('bestBids'))
+    best_ask_before = best_asks[asset_id]
+    best_bid_before = best_bids[asset_id]
     limitoffers = Limit.filter(group=group)
-    best_bid_after = max([offer.price for offer in limitoffers if offer.isActive and offer.isBid] or [-1])
-    best_ask_after = min([offer.price for offer in limitoffers if offer.isActive and not offer.isBid] or [-1])
+    best_bid_after = max([offer.price for offer in limitoffers if offer.isActive and offer.assetID == asset_id and offer.isBid] or [-1])
+    best_ask_after = min([offer.price for offer in limitoffers if offer.isActive and offer.assetID == asset_id and not offer.isBid] or [-1])
     if not best_ask_before:
         best_ask_before = -1
     if not best_bid_before:
@@ -650,6 +831,8 @@ def cancel_limit(player: Player, data):
         makerID=maker_id,
         group=group,
         Period=period,
+        assetID=asset_id,
+        assetName=asset_name,
         limitVolume=limit_volume,
         price=price,
         transactedVolume=transacted_volume,
@@ -665,14 +848,14 @@ def cancel_limit(player: Player, data):
         bestAskAfter=best_ask_after,
         bestBidAfter=best_bid_after,
     )
-    player.cancellations += 1
-    player.cancelledVolume += remaining_volume
-    group.cancellations += 1
-    group.cancelledVolume += remaining_volume
+    player.cancellations = accumulate_orders(player.cancellations, asset_id)
+    player.cancelledVolume = accumulate_volume(player.cancelledVolume, asset_id, remaining_volume)
+    group.cancellations = accumulate_orders(group.cancellations, asset_id)
+    group.cancelledVolume = accumulate_volume(group.cancelledVolume, asset_id, remaining_volume)
     if is_bid:
         player.cashOffered -= remaining_volume * price
     else:
-        player.assetsOffered -= remaining_volume
+        player.assetsOffered = accumulate_volume(player.assetsOffered, asset_id, -remaining_volume)
 
 
 class Order(ExtraModel):
@@ -685,6 +868,8 @@ class Order(ExtraModel):
     buyerID = models.IntegerField()
     group = models.Link(Group)
     Period = models.IntegerField()
+    assetID = models.IntegerField()
+    assetName = models.StringField()
     limitVolume = models.IntegerField()
     transactionVolume = models.IntegerField()
     transactedVolume = models.IntegerField()
@@ -713,6 +898,8 @@ class Transaction(ExtraModel):
     buyerID = models.IntegerField()
     group = models.Link(Group)
     Period = models.IntegerField()
+    assetID = models.IntegerField()
+    assetName = models.StringField()
     transactionVolume = models.IntegerField()
     limitVolume = models.IntegerField()
     remainingVolume = models.IntegerField()
@@ -746,12 +933,16 @@ def transaction(player: Player, data):
     maker_id = int(limit_entry.makerID)
     remaining_volume = int(limit_entry.remainingVolume)
     limit_volume = int(limit_entry.limitVolume)
+    asset_id = int(limit_entry.assetID)
+    asset_name = str(limit_entry.assetName)
     if not (price > 0 and transaction_volume > 0): # check whether data is valid
         News.create(
             player=player,
             playerID=taker_id,
             group=group,
             Period=period,
+            assetID=asset_id,
+            assetName=asset_name,
             msg='Order rejected: misspecified volume.',
             msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
         )
@@ -772,14 +963,24 @@ def transaction(player: Player, data):
             msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
         )
         return
-    best_ask_before = group.field_maybe_none('bestAsk')
-    best_bid_before = group.field_maybe_none('bestBid')
-    if is_bid and player.assetsHolding + player.capShort - player.assetsOffered - transaction_volume < 0:
+    assets_holdings = literal_eval(player.assetsHolding)
+    cap_shorts = literal_eval(player.capShort)
+    assets_offers = literal_eval(player.assetsOffered)
+    best_asks_before = literal_eval(group.field_maybe_none('bestAsks'))
+    best_bids_before = literal_eval(group.field_maybe_none('bestBids'))
+    assets_holding = assets_holdings[asset_id]
+    cap_short = cap_shorts[asset_id]
+    assets_offered = assets_offers[asset_id]
+    best_ask_before = best_asks_before[asset_id]
+    best_bid_before = best_bids_before[asset_id]
+    if is_bid and assets_holding + cap_short - assets_offered - transaction_volume < 0:
         News.create(
             player=player,
             playerID=taker_id,
             group=group,
             Period=period,
+            assetID=asset_id,
+            assetName=asset_name,
             msg='Order rejected: insufficient assets available.',
             msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
         )
@@ -790,6 +991,8 @@ def transaction(player: Player, data):
             playerID=taker_id,
             group=group,
             Period=period,
+            assetID=asset_id,
+            assetName=asset_name,
             msg='Order rejected: own limit orders cannot be transacted.',
             msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
         )
@@ -800,6 +1003,8 @@ def transaction(player: Player, data):
             playerID=taker_id,
             group=group,
             Period=period,
+            assetID=asset_id,
+            assetName=asset_name,
             msg='Order rejected: there is a better offer available.',
             msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
         )
@@ -810,23 +1015,23 @@ def transaction(player: Player, data):
     if is_bid:
         [buyer, seller] = [maker, player]
         maker.cashOffered -= transaction_volume * price
-        maker.limitBuyOrderTransactions += 1
-        maker.limitBuyVolumeTransacted += transaction_volume
-        player.marketSellOrders += 1
-        player.marketSellVolume += transaction_volume
-        group.marketSellOrders += 1
-        group.marketSellVolume += transaction_volume
+        maker.limitBuyOrderTransactions = accumulate_orders(maker.limitBuyOrderTransactions, asset_id)
+        maker.limitBuyVolumeTransacted = accumulate_volume(maker.limitBuyVolumeTransacted, asset_id, transaction_volume)
+        player.marketSellOrders = accumulate_orders(player.marketSellOrders, asset_id)
+        player.marketSellVolume = accumulate_volume(player.marketSellVolume, asset_id, transaction_volume)
+        group.marketSellOrders = accumulate_orders(group.marketSellOrders, asset_id)
+        group.marketSellVolume = accumulate_volume(group.marketSellVolume, asset_id, transaction_volume)
         seller_id = player.id_in_group
         buyer_id = maker.id_in_group
     else:
         [buyer, seller] = [player, maker]
-        maker.assetsOffered -= transaction_volume  # undo offer holdings
-        maker.limitSellOrderTransactions += 1
-        maker.limitSellVolumeTransacted += transaction_volume
-        player.marketBuyOrders += 1
-        player.marketBuyVolume += transaction_volume
-        group.marketBuyOrders += 1
-        group.marketBuyVolume += transaction_volume
+        maker.assetsOffered = accumulate_volume(maker.assetsOffered, asset_id, -transaction_volume)  # undo offer holdings
+        maker.limitSellOrderTransactions = accumulate_orders(maker.limitSellOrderTransactions, asset_id)
+        maker.limitSellVolumeTransacted = accumulate_volume(maker.limitSellVolumeTransacted, asset_id, transaction_volume)
+        player.marketBuyOrders = accumulate_orders(player.marketBuyOrders, asset_id)
+        player.marketBuyVolume = accumulate_volume(player.marketBuyVolume, asset_id, transaction_volume)
+        group.marketBuyOrders = accumulate_orders(group.marketBuyOrders, asset_id)
+        group.marketBuyVolume = accumulate_volume(group.marketBuyVolume, asset_id, transaction_volume)
         seller_id = maker.id_in_group
         buyer_id = seller.id_in_group
     transaction_id = player.subsession.transactionID + 1
@@ -846,18 +1051,18 @@ def transaction(player: Player, data):
     limit_entry.remainingVolume -= transaction_volume
     buyer.cashHolding -= transaction_volume * price
     seller.cashHolding += transaction_volume * price
-    buyer.transactions += 1
-    buyer.transactedVolume += transaction_volume
-    buyer.assetsHolding += transaction_volume
-    seller.transactions += 1
-    seller.transactedVolume += transaction_volume
-    seller.assetsHolding -= transaction_volume
-    maker.limitOrderTransactions += 1
-    maker.limitVolumeTransacted += transaction_volume
-    player.marketOrders += 1
-    player.marketOrderVolume += transaction_volume
-    group.transactions += 1
-    group.transactedVolume += transaction_volume
+    buyer.transactions = accumulate_orders(buyer.transactions, asset_id)
+    buyer.transactedVolume = accumulate_volume(buyer.transactedVolume, asset_id, transaction_volume)
+    buyer.assetsHolding = accumulate_volume(buyer.assetsHolding, asset_id, transaction_volume)
+    seller.transactions = accumulate_orders(seller.transactions, asset_id)
+    seller.transactedVolume = accumulate_volume(seller.transactedVolume, asset_id, transaction_volume)
+    seller.assetsHolding = accumulate_volume(seller.assetsHolding, asset_id, -transaction_volume)
+    maker.limitOrderTransactions = accumulate_orders(maker.limitOrderTransactions, asset_id)
+    maker.limitVolumeTransacted = accumulate_volume(maker.limitVolumeTransacted, asset_id, transaction_volume)
+    player.marketOrders = accumulate_orders(player.marketOrders, asset_id)
+    player.marketOrderVolume = accumulate_volume(player.marketOrderVolume, asset_id, transaction_volume)
+    group.transactions = accumulate_orders(group.transactions, asset_id)
+    group.transactedVolume = accumulate_volume(group.transactedVolume, asset_id, transaction_volume)
     limitOffers = Limit.filter(group=group)
     best_bid_after = max([offer.price for offer in limitOffers if offer.isActive and offer.isBid] or [-1])
     best_ask_after = min([offer.price for offer in limitOffers if offer.isActive and not offer.isBid] or [-1])
@@ -875,6 +1080,8 @@ def transaction(player: Player, data):
         buyerID=buyer_id,
         group=group,
         Period=period,
+        assetID=asset_id,
+        assetName=asset_name,
         price=price,
         transactionVolume=transaction_volume,
         remainingVolume=remaining_volume - transaction_volume,
@@ -898,6 +1105,8 @@ def transaction(player: Player, data):
         takerID=taker_id,
         sellerID=seller_id,
         buyerID=buyer_id,
+        assetID=asset_id,
+        assetName=asset_name,
         limitVolume=limit_volume,
         price=price,
         transactedVolume=transacted_volume,
@@ -920,6 +1129,8 @@ class News(ExtraModel):
     playerID = models.IntegerField()
     group = models.Link(Group)
     Period = models.IntegerField()
+    assetID = models.IntegerField()
+    assetName = models.StringField()
     msg = models.StringField()
     msgTime = models.FloatField()
 
@@ -927,6 +1138,8 @@ class News(ExtraModel):
 class BidAsks(ExtraModel):
     group = models.Link(Group)
     Period = models.IntegerField()
+    assetID = models.IntegerField()
+    assetName = models.StringField()
     assetValue = models.StringField()
     orderID = models.IntegerField()
     bestBid = models.FloatField()
@@ -954,8 +1167,8 @@ class WaitToStart(WaitPage):
         players = group.get_players()
         for p in players:
             set_player_info(player=p)
+            p.assetValues = group.assetValues
             initiate_player(player=p)
-            p.assetValue = group.assetValue
 
 
 class PreMarket(Page):
@@ -967,9 +1180,13 @@ class PreMarket(Page):
             informed=player.informed,
             information=literal_eval(player.information),
             allowShort=player.allowShort,
-            capShort=player.capShort,
+            capShort=literal_eval(player.capShort),
             capLong=player.capLong,
             cashHolding=player.cashHolding,
+            assetsHolding=literal_eval(player.assetsHolding),
+            numAssetsInRound=group.numAssetsInRound,
+            assetNames=ASSET_NAMES,
+            assetNamesInRound=group.assetNamesInRound,
         )
 
 
@@ -992,11 +1209,13 @@ class Market(Page):
             informed=player.informed,
             information=literal_eval(player.information),
             allowShort=player.allowShort,
-            capShort=player.capShort,
+            capShort=literal_eval(player.capShort),
             capLong=player.capLong,  # round(player.capLong, 2)
             cashHolding=player.cashHolding,
-            assetsHolding=player.assetsHolding,
-            numAssets=group.numAssets,
+            assetsHolding=literal_eval(player.assetsHolding),
+            numAssetsInRound=group.numAssetsInRound,
+            assetNames=ASSET_NAMES,
+            assetNamesInRound=group.assetNamesInRound,
         )
 
     @staticmethod
@@ -1017,7 +1236,6 @@ class Results(Page):
     @staticmethod
     def vars_for_template(player: Player):
         return dict(
-            assetValue=round(player.assetValue, C.decimals),
             initialEndowment=round(player.initialEndowment, C.decimals),
             endEndowment=round(player.endEndowment, C.decimals),
             tradingProfit=round(player.tradingProfit, C.decimals),
@@ -1027,8 +1245,13 @@ class Results(Page):
 
     @staticmethod
     def js_vars(player: Player):
+        group = player.group
         return dict(
-            assetValue=round(player.assetValue, C.decimals),
+            cashHolding=player.cashHolding,
+            assetsHolding=literal_eval(player.assetsHolding),
+            numAssetsInRound=group.numAssetsInRound,
+            assetNamesInRound=group.assetNamesInRound,
+            assetValues=literal_eval(player.assetValues)
         )
 
 
@@ -1045,7 +1268,6 @@ class FinalResults(Page):
             periodPayoff=[round(p.payoff, C.decimals) for p in player.in_all_rounds()],
             tradingProfit=[round(p.tradingProfit, C.decimals) for p in player.in_all_rounds()],
             wealthChange=[round(p.wealthChange, C.decimals) for p in player.in_all_rounds()],
-
         )
 
 

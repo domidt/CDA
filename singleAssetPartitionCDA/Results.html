@@ -1,5 +1,5 @@
 {{ block global_styles }}
-        <link rel="stylesheet" href="{{ static 'sCDAstatic/styleResults.css' }}">
+        <link rel="stylesheet" href="{{ static 'style.css' }}">
 {{ endblock }}
 
 {{ block title }}
@@ -8,7 +8,7 @@ Continuous double auction market - results
 
 {{ block content }}
 
-<p>In this round (nr. {{ player.round_number }}) the buy back value amounts to {{ player.assetValue }} and you payoff is {{ player.payoff }}.</p>
+<p>In this round (nr. {{ player.round_number }}) the buy back value amounts to {{ assetValue }} and you payoff is {{ payoff }}.</p>
 
     <table id="results" class="table_box">
         <tr><th>Actual value</th><td>{{ assetValue }}</td></tr>
