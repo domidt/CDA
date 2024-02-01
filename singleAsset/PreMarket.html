@@ -44,14 +44,15 @@ Continuous double auction market - pre market information
     </tr>
     <tr> {{ if player.allowLong }}
         <th>Your credit limit</th>
-        <td id="capLong">{{ player.capLong }}</td>
+        <td id="capLong">
+            {{ player.capLong }}
+        </td>
         {{ else }} {{ endif }}
     </tr>
-        {{ else }} {{ endif }}
+    {{ else }} {{ endif }}
     </table>
     </div>
 </div>
-
 
     {{ next_button }}
 {{ endblock }}

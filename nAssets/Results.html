@@ -1,10 +1,10 @@
 {{ block global_scripts }}
         <script src="{{ static 'script.js' }}"></script>
-        <script src="{{ static 'scriptSAssetResults.js' }}"></script>
+        <script src="{{ static 'nCDAstatic/scriptnAssets.js' }}"></script>
 {{ endblock }}
 
 {{ block global_styles }}
-        <link rel="stylesheet" href="{{ static 'style.css' }}">
+        <link rel="stylesheet" href="{{ static 'styleResults.css' }}">
 {{ endblock }}
 
 {{ block title }}
@@ -16,11 +16,11 @@ Continuous double auction market - results
     <div id="jsError">ERROR: this page runs only with javascript enabled</div>
 </noscript>
 
-<p  style="margin-bottom: 35px">In this round (nr. {{ player.round_number }}) your payoff is {{ player.payoff }}.</p>
+<p>In this round (nr. {{ player.round_number }}), your payoff is {{ payoff }}.</p>
 
-<div id="resultDiv" class="result-container row" style="margin-bottom: 35px" >
+<div id="resultsDiv" class="results-container row" style="margin-bottom: 35px" >
     <div class="result-div col-sm div_box">
-    <table id="resultTable">
+    <table id="resultsTable">
         <tr>
             <th>Cash in your possession</th>
             <td id="cashHolding">{{ player.cashHolding }}</td>

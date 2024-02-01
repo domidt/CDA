@@ -1,6 +1,6 @@
 {{ block global_scripts }}
         <script src="{{ static 'script.js' }}"></script>
-        <script src="{{ static 'nCDAstatic/script.js' }}"></script>
+        <script src="{{ static 'nCDAstatic/scriptnAssets.js' }}"></script>
         <script src="{{ static 'nCDAstatic/scriptnAssetsInfo.js' }}"></script>
 {{ endblock }}
 
@@ -36,31 +36,33 @@ Continuous double auction market - pre market information
         {{ if player.allowLong }}
     <tr>
         <th>Your credit limit</th>
-        <td id="capLong">{{ player.capLong }}</td>
+        <td id="capLong">
+            {{ player.capLong }}
+        </td>
     </tr>
+        {{ else }} {{ endif }}
         {{ else }} {{ endif }}
     </table>
     </div>
+        {{ if not player.isObserver }}
     <div class="holdings col-sm div_box">
         <h4>Initial asset endowment</h4>
-        <table id="assetsHoldings" class="table_box"><thead><tr><th>Asset name</th><th>Assets in stock</th></tr></thead><tbody></tbody></table>
+        <table id="assetsHoldings" class="table_box"><thead><tr><th></th></tr></thead><tbody></tbody></table>
     </div>
     {{ if player.allowShort }}
     <div class="capShort col-sm div_box">
         <h4>Your short selling limit</h4>
-        <table id="capShort" class="table_box"><thead><tr><th>Asset name</th><th>Assets in stock</th></tr></thead><tbody></tbody></table>
+        <table id="capShort" class="table_box"><thead><tr><th></th></tr></thead><tbody></tbody></table>
     </div>
+        {{ else }} {{ endif }}
         {{ else }} {{ endif }}
     {{ if player.informed }}
     <div class="assetValues col-sm div_box">
         <h4>Your information about coins</h4>
-        <table id="information" class="table_box"><thead><tr><th>Asset</th><th>Amount</th><th>Nominal value</th><th>Product</th></tr></thead><tbody></tbody></table>
+        <table id="information" class="table_box"><thead><tr><th>Asset name</th><th>Amount</th><th>Nominal value</th><th>Product</th></tr></thead><tbody></tbody></table>
     </div>
-    {{ else }} {{ endif }}
     {{ else }} {{ endif }}
 </div>
 
     {{ next_button }}
 {{ endblock }}
-
-

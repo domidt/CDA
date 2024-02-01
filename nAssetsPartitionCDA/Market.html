@@ -1,6 +1,6 @@
 {{ block global_scripts }}
         <script src="{{ static 'script.js' }}"></script>
-        <script src="{{ static 'nCDAstatic/script.js' }}"></script>
+        <script src="{{ static 'nCDAstatic/scriptnAssets.js' }}"></script>
         <script src="{{ static 'scriptMarket.js' }}"></script>
         <script src="{{ static 'nCDAstatic/scriptnAssetsMarket.js' }}"></script>
         <script src="{{ static 'nCDAstatic/scriptnAssetsInfo.js' }}"></script>
@@ -32,7 +32,7 @@ Continuous double auction market
     </tr>
         {{ if not player.isObserver }}
     <tr>
-        <th>Initial money endowment</th>
+        <th>Money holding</th>
         <td id="cashHolding">{{ player.cashHolding }}</td>
     </tr>
         {{ if player.allowLong }}
@@ -44,13 +44,13 @@ Continuous double auction market
     </table>
     </div>
     <div class="holdings col-sm div_box">
-        <h4>Initial asset endowment</h4>
-        <table id="assetsHoldings" class="table_box"><thead><tr><th>Asset name</th><th>Assets in stock</th></tr></thead><tbody></tbody></table>
+        <h4>Asset holding</h4>
+        <table id="assetsHoldings" class="table_box"><thead><tr><th></th><th></th></tr></thead><tbody></tbody></table>
     </div>
     {{ if player.allowShort }}
     <div class="capShort col-sm div_box">
         <h4>Your short selling limit</h4>
-        <table id="capShort" class="table_box"><thead><tr><th>Asset name</th><th>Assets in stock</th></tr></thead><tbody></tbody></table>
+        <table id="capShort" class="table_box"><thead><tr><th></th><th></th></tr></thead><tbody></tbody></table>
     </div>
         {{ else }} {{ endif }}
     {{ if player.informed }}

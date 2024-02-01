@@ -30,7 +30,7 @@ Continuous double auction market
     </tr>
         {{ if not player.isObserver }}
     <tr>
-        <th>Initial asset endowment</th>
+        <th>Asset holding</th>
         <td id="assetsHolding">{{ player.assetsHolding }}</td>
     </tr>
     <tr> {{ if player.allowShort }}
@@ -41,7 +41,7 @@ Continuous double auction market
         {{ else }} {{ endif }}
     </tr>
     <tr>
-        <th>Initial money endowment</th>
+        <th>Money holding</th>
         <td id="cashHolding">{{ player.cashHolding }}</td>
     </tr>
     <tr> {{ if player.allowLong }}

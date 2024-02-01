@@ -1,5 +1,5 @@
 {{ block global_styles }}
-        <link rel="stylesheet" href="{{ static 'style.css' }}">
+        <link rel="stylesheet" href="{{ static 'styleResults.css' }}">
 {{ endblock }}
 
 {{ block title }}
@@ -8,9 +8,11 @@ Continuous double auction market - results
 
 {{ block content }}
 
-<p>In this round (nr. {{ player.round_number }}) the buy back value amounts to {{ assetValue }} and you payoff is {{ payoff }}.</p>
+<p>In this round (nr. {{ player.round_number }}), the buy back value amounts to {{ assetValue }} and your payoff is {{ payoff }}.</p>
 
-    <table id="results" class="table_box">
+<div id="resultsDiv" class="results-container row" style="margin-bottom: 35px" >
+    <div class="result-div col-sm div_box">
+    <table id="resultsTable">
         <tr><th>Actual value</th><td>{{ assetValue }}</td></tr>
         <tr><th>Your initial wealth</th><td>{{ initialEndowment }}</td></tr>
         <tr><th>Your final wealth</th><td>{{ endEndowment }}</td></tr>
@@ -18,6 +20,8 @@ Continuous double auction market - results
         <tr><th>Wealth change (in %)</th><td>{{ wealthChange }}</td></tr>
         <tr><th>Your payoff</th><td>{{ payoff }}</td></tr>
     </table>
+    </div>
+</div>
 
     {{ next_button }}
 {{ endblock }}

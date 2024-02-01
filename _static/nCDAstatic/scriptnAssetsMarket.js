@@ -27,8 +27,7 @@
         $('#bidsTable tbody tr, #asksTable tbody tr').filter(function() {
             return $(this).children('td').eq(2).attr('value') === $('#marketAssetID').val();
         }).show();
-    }
-    )
+    })
 
 
     function liveRecv(data) {
@@ -47,9 +46,7 @@
         }).html(`<td colSpan="2"> No offers available </td>`);
 
         elAssetsHoldingBody.html(Object.entries(assetsHolding).map(e => `<tr id='holdingAssetID${e[0]}' value=${e[0]}><td value=${e[1]}>${e[1]}</td><td value=${e[0]}> of ${assetNames[e[0]-1]}</td></tr>`).join(''))
-        //if ( cashHolding + capLong == 0) {
-        //    elBidOffer.disabled = true;
-        //}
+
         // value describes the offerID and data-value the makerID
         elBidsTableBody.html(bids.map(e => `<tr id='offerID${e[2]}' value=${e[2]} data-value=${e[3]} data-custom="1" data-model-name=${e[4]}><td value=${e[1]}>${e[1]} for </td><td value=${e[0]}>${cu(e[0])} of </td><td value=${e[4]}>${assetNames[e[4] - 1]}</td></tr>`).join(''))
         elAsksTableBody.html(asks.map(e => `<tr id='offerID${e[2]}' value=${e[2]} data-value=${e[3]} data-custom="0" data-model-name=${e[4]}><td value=${e[1]}>${e[1]} for </td><td value=${e[0]}>${cu(e[0])} of </td><td value=${e[4]}>${assetNames[e[4] - 1]}</td></tr>`).join(''))

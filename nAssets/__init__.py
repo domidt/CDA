@@ -155,7 +155,7 @@ def define_assets_in_round(group: Group):
 
 def define_asset_value(group: Group):
     ## this method describes the BBV structure of an this round.
-    asset_ids = group.assetsInRound
+    asset_ids = literal_eval(group.assetsInRound)
     values = {a: round(random.uniform(a=C.FV_MIN, b=C.FV_MAX), C.decimals) for a in asset_ids}
     group.assetValues = str(values)
 
@@ -178,7 +178,9 @@ def initiate_group(group: Group):
     define_assets_in_round(group=group)
     define_asset_value(group=group)
     assign_types(group=group)
-    group.numAssets = str(set_initial(0, group.assetsInRound))
+    initialize_vars(group=group)
+    assets_in_round = literal_eval(group.assetsInRound)
+    group.numAssets = str(set_initial(0, assets_in_round))
 
 
 def get_max_time(group: Group):
@@ -187,7 +189,7 @@ def get_max_time(group: Group):
 
 def initialize_vars(group: Group):
     # set initial values in groups to zero resp. None
-    asset_ids = group.assetsInRound
+    asset_ids = literal_eval(group.assetsInRound)
     group.transactions = str(set_initial(0, asset_ids))
     group.marketBuyOrders = str(set_initial(0, asset_ids))
     group.marketSellOrders = str(set_initial(0, asset_ids))
@@ -281,7 +283,7 @@ class Player(BasePlayer):
 
 def asset_endowment(player: Player):
     group = player.group
-    asset_ids = group.assetsInRound
+    asset_ids = literal_eval(group.assetsInRound)
     return {asset_id: int(random.uniform(a=C.num_assets_MIN, b=C.num_assets_MAX)) for asset_id in asset_ids}
 
 
@@ -299,13 +301,13 @@ def asset_short_limit(player: Player):
     if player.allowShort:
         return literal_eval(player.initialAssets)
     else:
-        asset_ids = player.group.assetsInRound
+        asset_ids = literal_eval(player.group.assetsInRound)
         return set_initial(0, asset_ids)
 
 
 def cash_endowment(player: Player):
     group = player.group
-    assets_in_round = group.assetsInRound
+    assets_in_round = literal_eval(group.assetsInRound)
     sum_asset_value = 0
     num_assets = 0
     for i in assets_in_round:
@@ -342,7 +344,8 @@ def initiate_player(player: Player):
         player.capLong = cash_long_limit(player=player)
         initial_assets = asset_endowment(player=player)
         player.initialAssets = str(initial_assets)
-        for i in group.assetsInRound:
+        assets_in_round = literal_eval(group.assetsInRound)
+        for i in assets_in_round:
             num_assets[i] += initial_assets[i]
         player.assetsHolding = str(initial_assets)
         player.allowShort = short_allowed(player=player)
@@ -380,6 +383,7 @@ def live_method(player: Player, data):
         highcharts_series = []
     best_bids = literal_eval(group.field_maybe_none('bestBids'))
     best_asks = literal_eval(group.field_maybe_none('bestAsks'))
+    print(best_bids)
     for i in range(1, NUM_ASSETS + 1):
         if best_bids[i]:
             best_bid = best_bids[i]
@@ -456,7 +460,8 @@ def calcPeriodProfits (player: Player):
     assets_holding = literal_eval(player.assetsHolding)
     initial_endowment = player.initialCash
     end_endowment = player.cashHolding
-    for i in range(1, NUM_ASSETS + 1):
+    assets_in_round = literal_eval(player.group.assetsInRound)
+    for i in assets_in_round:
         initial_endowment += asset_values[i] * initial_assets[i]
         end_endowment += asset_values[i] * assets_holding[i]
     player.initialEndowment = initial_endowment
@@ -551,7 +556,7 @@ def limit_order(player: Player, data):
             msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
         )
         return
-    assets_in_round = group.assetsInRound
+    assets_in_round = literal_eval(group.assetsInRound)
     if not (data['isBid'] >= 0 and data['limitPrice'] and data['limitVolume'] and data['assetID']):
         News.create(
             player=player,
@@ -1155,7 +1160,7 @@ class PreMarket(Page):
             assetsHolding=literal_eval(player.assetsHolding),
             numAssetsInRound=group.numAssetsInRound,
             assetNames=ASSET_NAMES,
-            assetNamesInRound=group.assetNamesInRound,
+            assetNamesInRound=literal_eval(group.assetNamesInRound),
         )
 
 
@@ -1182,7 +1187,7 @@ class Market(Page):
             assetsHolding=literal_eval(player.assetsHolding),
             numAssetsInRound=group.numAssetsInRound,
             assetNames=ASSET_NAMES,
-            assetNamesInRound=group.assetNamesInRound,
+            assetNamesInRound=literal_eval(group.assetNamesInRound),
         )
 
     @staticmethod
@@ -1207,7 +1212,7 @@ class Results(Page):
             endEndowment=round(player.endEndowment, C.decimals),
             tradingProfit=round(player.tradingProfit, C.decimals),
             wealthChange=round(player.wealthChange*100, C.decimals),
-            payoff=round(player.payoff, C.decimals),
+            payoff=cu(round(player.payoff, C.decimals)),
         )
 
     @staticmethod
@@ -1217,7 +1222,7 @@ class Results(Page):
             cashHolding=player.cashHolding,
             assetsHolding=literal_eval(player.assetsHolding),
             numAssetsInRound=group.numAssetsInRound,
-            assetNamesInRound=group.assetNamesInRound,
+            assetNamesInRound=literal_eval(group.assetNamesInRound),
             assetValues=literal_eval(player.assetValues)
         )
 
@@ -1231,7 +1236,7 @@ class FinalResults(Page):
     @staticmethod
     def vars_for_template(player: Player):
         return dict(
-            payoff=round(player.participant.payoff / C.NUM_ROUNDS, 0),
+            payoff=cu(round(player.participant.payoff / C.NUM_ROUNDS, 0)),
             periodPayoff=[round(p.payoff, C.decimals) for p in player.in_all_rounds()],
             tradingProfit=[round(p.tradingProfit, C.decimals) for p in player.in_all_rounds()],
             wealthChange=[round(p.wealthChange, C.decimals) for p in player.in_all_rounds()],

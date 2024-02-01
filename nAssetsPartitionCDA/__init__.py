@@ -1240,7 +1240,7 @@ class Results(Page):
             endEndowment=round(player.endEndowment, C.decimals),
             tradingProfit=round(player.tradingProfit, C.decimals),
             wealthChange=round(player.wealthChange*100, C.decimals),
-            payoff=round(player.payoff, C.decimals),
+            payoff=cu(round(player.payoff, C.decimals)),
         )
 
     @staticmethod
@@ -1264,7 +1264,7 @@ class FinalResults(Page):
     @staticmethod
     def vars_for_template(player: Player):
         return dict(
-            payoff=round(player.participant.payoff / C.NUM_ROUNDS, 0),
+            payoff=cu(round(player.participant.payoff / C.NUM_ROUNDS, 0)),
             periodPayoff=[round(p.payoff, C.decimals) for p in player.in_all_rounds()],
             tradingProfit=[round(p.tradingProfit, C.decimals) for p in player.in_all_rounds()],
             wealthChange=[round(p.wealthChange, C.decimals) for p in player.in_all_rounds()],

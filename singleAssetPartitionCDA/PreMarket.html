@@ -1,6 +1,6 @@
 {{ block global_scripts }}
         <script src="{{ static 'script.js' }}"></script>
-        <script src="{{ static 'scriptSAssetInfo.js' }}"></script>
+        <script src="{{ static 'sCDAstatic/scriptSAssetInfo.js' }}"></script>
 {{ endblock }}
 
 {{ block global_styles }}
@@ -18,7 +18,7 @@ Continuous double auction market - pre market information
 
 <p>Soon, round nr. {{ player.round_number }} starts.</p>
 
-<div id="endowmentDiv" class="endowment-container row" style="margin-bottom: 35px" >
+<div id="endowmentDiv" class="endowment-container row" style="margin-bottom: 35px">
     <div class="endowment-div col-sm div_box">
     <table id="endowmentTable">
     <tr>
@@ -43,13 +43,15 @@ Continuous double auction market - pre market information
         <th>Initial money endowment</th>
         <td id="cashHolding">{{ player.cashHolding }}</td>
     </tr>
-    <tr> {{ if player.allowLong }}
+         {{ if player.allowLong }}
+    <tr>
         <th>Your credit limit</th>
         <td id="capLong">
             {{ player.capLong }}
         </td>
-        {{ else }} {{ endif }}
     </tr>
+        {{ else }} {{ endif }}
+        {{ else }} {{ endif }}
     </table>
     </div>
     {{ if player.informed }}
