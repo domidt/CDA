@@ -44,20 +44,22 @@ def vars_for_admin_report(subsession):
     ## this function defines the values sent to the admin report page
     groups = subsession.get_groups()
     period = subsession.round_number
+    num_assets_in_round = sorted([g.numAssetsInRound for g in groups])
     payoffs = sorted([p.payoff for p in subsession.get_players()])
     market_times = sorted([g.marketTime for g in groups])
-    trades = sorted([[tx.price, tx.transactionVolume, tx.transactionTime, tx.assetID] for tx in Transaction.filter() if tx.Period == period and tx.group in groups], reverse=True, key=itemgetter(2))
-    bids = sorted([[bx.bestBid, bx.BATime, bx.assetID] for bx in BidAsks.filter() if bx.Period == period and bx.group in groups], reverse=True, key=itemgetter(2))
-    bids = ['null' if b[0] is None else b for b in bids]
-    asks = sorted([[ax.bestBid, ax.BATime, ax.assetID] for ax in BidAsks.filter() if ax.Period == period and ax.group in groups], reverse=True, key=itemgetter(2))
-    asks = ['null' if a[0] is None else a for a in asks]
+    highcharts_series = []
+    for i in range(1, NUM_ASSETS + 1):
+        trade_data = [{'x': tx.transactionTime, 'y': tx.price, 'name': ASSET_NAMES[tx.assetID - 1]} for tx in Transaction.filter() if tx.Period == period and tx.group in groups and tx.assetID == i]
+        highcharts_series.append({'name': ASSET_NAMES[i - 1], 'data': trade_data, 'type': 'scatter', 'id': 'trades', 'marker': {'symbol': 'circle'}})
+        bids_data = [{'x': b.BATime, 'y': b.bestBid, 'name': ASSET_NAMES[b.assetID - 1]} for b in BidAsks.filter() if b.Period == period and b.group in groups and b.assetID == i and b.BATime and b.bestBid]
+        highcharts_series.append({'name': 'Bids ' + ASSET_NAMES[i - 1], 'data': bids_data, 'type': 'line', 'id': 'bids', 'lineWidth': 2})
+        asks_data = [{'x': a.BATime, 'y': a.bestAsk, 'name': ASSET_NAMES[a.assetID - 1]} for a in BidAsks.filter() if a.Period == period and a.group in groups and a.assetID == i and a.BATime and a.bestAsk]
+        highcharts_series.append({'name': 'Asks ' + ASSET_NAMES[i - 1], 'data': asks_data, 'type': 'line', 'id': 'bids', 'lineWidth': 2})
     return dict(
-        numAssets=NUM_ASSETS,
+        numAssetsInRound=num_assets_in_round,
         marketTimes=market_times,
         payoffs=payoffs,
-        trades=trades,
-        bids=bids,
-        asks=asks,
+        series=highcharts_series,
     )
 
 
@@ -362,7 +364,6 @@ def set_player(player: Player):
 
 
 def live_method(player: Player, data):
-    print(data)
     if not data or 'operationType' not in data:
         return
     key = data['operationType']
@@ -1191,6 +1192,7 @@ class Market(Page):
             numAssetsInRound=group.numAssetsInRound,
             assetNames=ASSET_NAMES,
             assetNamesInRound=literal_eval(group.assetNamesInRound),
+            assetsInRound=literal_eval(group.assetsInRound),
         )
 
     @staticmethod

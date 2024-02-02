@@ -3,6 +3,7 @@
     let elBestAsksTableBody = $('#bestAsksTable tbody')
     let elTradesTableBody = $('#tradesTable tbody')
 
+    let assetsInRound = js_vars.assetsInRound
     let assetNamesInRound = js_vars.assetNamesInRound
     let numAssetsInRound = js_vars.numAssetsInRound
 
@@ -17,7 +18,7 @@
 
     $(document).ready(function () {
         for (let i = 0; i < numAssetsInRound; i++) {
-            $('#limitBidAssetID, #limitAskAssetID, #marketAssetID').append(newOption(i + 1, assetNamesInRound[i]));
+            $('#limitBidAssetID, #limitAskAssetID, #marketAssetID').append(newOption(assetsInRound[i], assetNamesInRound[i]));
         }
     })
 
@@ -87,6 +88,7 @@
         let limitPrice = (is_bid == 0) ? $('#limitAskPrice').val() : $('#limitBidPrice').val()
         let limitVolume = (is_bid == 0) ? $('#limitAskVolume').val() : $('#limitBidVolume').val()
         let assetID = (is_bid == 0) ? $('#limitAskAssetID').val() : $('#limitBidAssetID').val()
+        console.log('limit', assetID)
         if (limitPrice == undefined || limitPrice <= 0 || assetID <= 0 ) {
             errorField.css("display", "inline-block")
             return // If you care about misspecified orders in your data, you may uncomment the return, it will be pushed back by the server

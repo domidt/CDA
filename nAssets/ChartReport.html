@@ -13,10 +13,9 @@
     })
 
     function drawReportChart(series) {
-        console.log(series)
-        //Highcharts.setOptions({
-        //    colors: ['rgba(5,141,199,0.5)', 'rgba(80,180,50,0.5)', 'rgba(237,86,27,0.5)']
-        //});
+        Highcharts.setOptions({
+            colors: ['rgba(5,141,199,0.5)', 'rgba(80,180,50,0.5)', 'rgba(237,86,27,0.5)']
+        });
         Highcharts.chart('adminChart', {
             chart: {
                 type: 'scatter',
@@ -44,7 +43,7 @@
             plotOptions: {
                 scatter: {
                     marker: {
-                        radius: 4,
+                        radius: 2.5,
                         symbol: 'circle',
                         states: {
                             hover: {
@@ -54,21 +53,12 @@
                     states: {
                         hover: {
                             marker: {
-                                enabled: false,
+                                enabled: false
                         }}}},
-                 series: {
-                    line: {
-                        marker: {
-                           enabled: false,
-                           radius: 0,
-                        }},
-                     states: {
-                        hover: {
-                            enabled: false
-                }
-            }}
-                        },
+            },
+
             series: series,
+
             credits: {
                 enabled: false
             }

@@ -44,14 +44,14 @@ Continuous double auction market - pre market information
     </table>
     </div>
         {{ if not player.isObserver }}
-    <div class="holdings col-sm div_box">
+    <div class="holdingsDiv col-sm div_box">
         <h4>Initial asset endowment</h4>
-        <table id="assetsHoldings" class="table_box"><thead><tr><th></th></tr></thead><tbody></tbody></table>
+        <table id="assetsHoldings" class="table_box"><thead><tr><th></th><th></th></tr></thead><tbody></tbody></table>
     </div>
     {{ if player.allowShort }}
     <div class="capShort col-sm div_box">
         <h4>Your short selling limit</h4>
-        <table id="capShort" class="table_box"><thead><tr><th></th></tr></thead><tbody></tbody></table>
+        <table id="capShort" class="table_box"><thead><tr><th></th><th></th></tr></thead><tbody></tbody></table>
     </div>
         {{ else }} {{ endif }}
         {{ else }} {{ endif }}
