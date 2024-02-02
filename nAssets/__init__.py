@@ -153,11 +153,13 @@ def define_assets_in_round(group: Group):
     for r in assets_sequence[group.round_number]:
         group.numAssetsInRound += 1
 
+
 def define_asset_value(group: Group):
     ## this method describes the BBV structure of an this round.
     asset_ids = literal_eval(group.assetsInRound)
     values = {a: round(random.uniform(a=C.FV_MIN, b=C.FV_MAX), C.decimals) for a in asset_ids}
     group.assetValues = str(values)
+
 
 def count_participants(group: Group):
     if group.round_number == 1:
@@ -350,7 +352,7 @@ def initiate_player(player: Player):
         player.assetsHolding = str(initial_assets)
         player.allowShort = short_allowed(player=player)
         player.capShort = str(asset_short_limit(player=player))
-        group.numAssets = str(num_assets)
+    group.numAssets = str(num_assets)
 
 
 def set_player(player: Player):
@@ -360,6 +362,7 @@ def set_player(player: Player):
 
 
 def live_method(player: Player, data):
+    print(data)
     if not data or 'operationType' not in data:
         return
     key = data['operationType']
@@ -375,16 +378,16 @@ def live_method(player: Player, data):
         transaction(player, data)
     offers = Limit.filter(group=group)
     transactions = Transaction.filter(group=group)
+    assets_in_round = literal_eval(group.assetsInRound)
     if transactions:
-        for i in range(1, NUM_ASSETS + 1):
+        for i in assets_in_round:
             hc_data = [{'x': tx.transactionTime, 'y': tx.price, 'name': ASSET_NAMES[tx.assetID - 1]} for tx in Transaction.filter(group=group, assetID=i)]
             highcharts_series.append({'name': ASSET_NAMES[i - 1], 'data': hc_data})
     else:
         highcharts_series = []
     best_bids = literal_eval(group.field_maybe_none('bestBids'))
     best_asks = literal_eval(group.field_maybe_none('bestAsks'))
-    print(best_bids)
-    for i in range(1, NUM_ASSETS + 1):
+    for i in assets_in_round:
         if best_bids[i]:
             best_bid = best_bids[i]
         else:
@@ -409,7 +412,7 @@ def live_method(player: Player, data):
     # to do limit amount of offers in table
     asks = sorted([[offer.price, offer.remainingVolume, offer.offerID, offer.makerID, offer.assetID, False] for offer in offers if offer.isActive and not offer.isBid], key=itemgetter(0))
     msgs = News.filter(group=group)
-    for i in range(1, NUM_ASSETS + 1):
+    for i in assets_in_round:
         asks_asset = [[p, vol, offer_id, maker_ID, asset_ID, is_best] for p, vol, offer_id, maker_ID, asset_ID, is_best in asks if asset_ID == i]
         if asks_asset:
             best_ask = asks_asset[0][0]

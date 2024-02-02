@@ -47,6 +47,7 @@ class AssetsPartitions(ExtraModel):
 
 
 def vars_for_admin_report(subsession):
+    ## this function defines the values sent to the admin report page
     groups = subsession.get_groups()
     period = subsession.round_number
     payoffs = sorted([p.payoff for p in subsession.get_players()])
@@ -76,6 +77,7 @@ class Group(BaseGroup):
     estNumTraders = models.IntegerField()
     numInformed = models.IntegerField()
     assetNames = models.LongStringField()
+    assetsInRound = models.LongStringField()
     assetNamesInRound = models.LongStringField()
     numAssetsInRound = models.IntegerField(initial=0)
     aggAssetsValue = models.LongStringField()
@@ -84,7 +86,6 @@ class Group(BaseGroup):
     valueStructureValueUnits = models.LongStringField()
     bestAsks = models.LongStringField()
     bestBids = models.LongStringField()
-    assetsInRound = models.LongStringField()
     roleList = models.LongStringField()
     roleStructure = models.LongStringField()
     roleInfoStructure = models.LongStringField()
@@ -110,16 +111,6 @@ def random_types(group: Group):
 
 def num_traders(group: Group):
     return group.session.config['est_num_traders']
-
-
-def define_assets_in_round(group: Group):
-    ## this function defines the assets available to trade in each round
-    assets_in_round = read_csv('_parameters/assetsInRound.csv', AssetsInRound)
-    group.assetsInRound = str([r['assetID'] for r in assets_in_round if r['round_number'] == group.round_number])
-    group.assetNamesInRound = str([ASSET_NAMES[r['assetID'] - 1] for r in assets_in_round if r['round_number'] == group.round_number])
-    for r in assets_in_round:
-        if r['round_number'] == group.round_number:
-            group.numAssetsInRound += 1
 
 
 def define_role_structure(group: Group):
@@ -182,9 +173,19 @@ def assign_types(group: Group):
             p.roleID = p.participant.vars['roleID']
 
 
+def define_assets_in_round(group: Group):
+    ## this function defines the assets available to trade in each round
+    assets_in_round = read_csv('_parameters/assetsInRound.csv', AssetsInRound)
+    group.assetsInRound = str([r['assetID'] for r in assets_in_round if r['round_number'] == group.round_number])
+    group.assetNamesInRound = str([ASSET_NAMES[r['assetID'] - 1] for r in assets_in_round if r['round_number'] == group.round_number])
+    for r in assets_in_round:
+        if r['round_number'] == group.round_number:
+            group.numAssetsInRound += 1
+
+
 def define_asset_value(group: Group):
     ## this code is run when all participants are ready and the market is about to start via the initiate group function
-    asset_ids = group.assetsInRound
+    asset_ids = literal_eval(group.assetsInRound)
     assets_partition = read_csv('_parameters/assetsPartitions.csv', AssetsPartitions)
     units = {r['assetID']: {r['partitionID']: r['amount']} for r in assets_partition if r['assetID'] in asset_ids}
     ## the next line determine the amount of coins or each value and each asset
@@ -225,7 +226,9 @@ def initiate_group(group: Group):
     define_role_structure(group=group)
     define_role_information_structure(group=group)
     assign_types(group=group)
-    group.numAssets = str(set_initial(0, group.assetsInRound))
+    initialize_vars(group=group)
+    assets_in_round = literal_eval(group.assetsInRound)
+    group.numAssets = str(set_initial(0, assets_in_round))
 
 
 def get_max_time(group: Group):
@@ -234,7 +237,7 @@ def get_max_time(group: Group):
 
 def initialize_vars(group: Group):
     # set initial values in groups to zero resp. None
-    asset_ids = group.assetsInRound
+    asset_ids = literal_eval(group.assetsInRound)
     group.transactions = str(set_initial(0, asset_ids))
     group.marketBuyOrders = str(set_initial(0, asset_ids))
     group.marketSellOrders = str(set_initial(0, asset_ids))
@@ -330,7 +333,7 @@ class Player(BasePlayer):
 
 def asset_endowment(player: Player):
     group = player.group
-    asset_ids = group.assetsInRound
+    asset_ids = literal_eval(group.assetsInRound)
     return {asset_id: int(random.uniform(a=C.num_assets_MIN, b=C.num_assets_MAX)) for asset_id in asset_ids}
 
 
@@ -348,12 +351,13 @@ def asset_short_limit(player: Player):
     if player.allowShort:
         return literal_eval(player.initialAssets)
     else:
-        return 0
+        asset_ids = literal_eval(player.group.assetsInRound)
+        return set_initial(0, asset_ids)
 
 
 def cash_endowment(player: Player):
     group = player.group
-    assets_in_round = group.assetsInRound
+    assets_in_round = literal_eval(group.assetsInRound)
     sum_asset_value = 0
     num_assets = 0
     for i in assets_in_round:
@@ -404,7 +408,8 @@ def initiate_player(player: Player):
         player.capLong = cash_long_limit(player=player)
         initial_assets = asset_endowment(player=player)
         player.initialAssets = str(initial_assets)
-        for i in group.assetsInRound:
+        assets_in_round = literal_eval(group.assetsInRound)
+        for i in assets_in_round:
             num_assets[i] += initial_assets[i]
         player.assetsHolding = str(initial_assets)
         player.allowShort = short_allowed(player=player)
@@ -519,13 +524,17 @@ def calcPeriodProfits (player: Player):
     assets_holding = literal_eval(player.assetsHolding)
     initial_endowment = player.initialCash
     end_endowment = player.cashHolding
-    for i in range(1, NUM_ASSETS + 1):
+    assets_in_round = literal_eval(player.group.assetsInRound)
+    for i in assets_in_round:
         initial_endowment += asset_values[i] * initial_assets[i]
         end_endowment += asset_values[i] * assets_holding[i]
     player.initialEndowment = initial_endowment
     player.endEndowment = end_endowment
     player.tradingProfit = end_endowment - initial_endowment
-    player.wealthChange = (end_endowment - initial_endowment) / initial_endowment
+    if not player.isObserver:
+        player.wealthChange = (end_endowment - initial_endowment) / initial_endowment
+    else:
+        player.wealthChange = 0
     player.payoff = max(C.base_payment + C.multiplier * player.wealthChange, C.min_payment_in_round)
 
 
@@ -601,7 +610,17 @@ def limit_order(player: Player, data):
     maker_id = player.id_in_group
     group = player.group
     period = group.round_number
-    assets_in_round = group.assetsInRound
+    if player.isObserver:
+        News.create(
+            player=player,
+            playerID=maker_id,
+            group=group,
+            Period=period,
+            msg='Order rejected: you are an observer who cannot place a limit order.',
+            msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
+        )
+        return
+    assets_in_round = literal_eval(group.assetsInRound)
     if not (data['isBid'] >= 0 and data['limitPrice'] and data['limitVolume'] and data['assetID']):
         News.create(
             player=player,
@@ -782,13 +801,23 @@ def cancel_limit(player: Player, data):
     maker_id = int(data['makerID'])
     group = player.group
     period = group.round_number
+    if player.isObserver:
+        News.create(
+            player=player,
+            playerID=maker_id,
+            group=group,
+            Period=period,
+            msg='Order rejected: you are an observer who cannot withdraw a limit order.',
+            msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
+        )
+        return
     if maker_id != player.id_in_group:
         News.create(
             player=player,
             playerID=maker_id,
             group=group,
             Period=period,
-            msg='Order rejected: you can cancel your own orders only.',
+            msg='Order rejected: you can withdraw your own orders only.',
             msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
         )
         return
@@ -796,7 +825,7 @@ def cancel_limit(player: Player, data):
     # update Limit db entry
     offers = [o for o in Limit.filter(group=group) if o.offerID == offer_id]
     if not offers or len(offers) != 1:
-        print('Error: too few or too many limits found while cancelling.')
+        print('Error: too few or too many limits found while withdrawing.')
         return
     offers[0].isActive = False
     is_bid = offers[0].isBid
@@ -923,6 +952,16 @@ def transaction(player: Player, data):
     taker_id = player.id_in_group
     group = player.group
     period = group.round_number
+    if player.isObserver:
+        News.create(
+            player=player,
+            playerID=taker_id,
+            group=group,
+            Period=period,
+            msg='Order rejected: you are an observer who cannot accept a market order.',
+            msgTime=round(float(time.time() - player.group.marketStartTime), C.decimals)
+        )
+        return
     limit_entry = Limit.filter(group=group, offerID=offer_id)
     if len(limit_entry) > 1:
         print('Limit entry is not well-defined: multiple entries with the same ID')
@@ -1176,7 +1215,6 @@ class PreMarket(Page):
     def js_vars(player: Player):
         group = player.group
         return dict(
-            id_in_group=player.id_in_group,
             informed=player.informed,
             information=literal_eval(player.information),
             allowShort=player.allowShort,
@@ -1186,7 +1224,7 @@ class PreMarket(Page):
             assetsHolding=literal_eval(player.assetsHolding),
             numAssetsInRound=group.numAssetsInRound,
             assetNames=ASSET_NAMES,
-            assetNamesInRound=group.assetNamesInRound,
+            assetNamesInRound=literal_eval(group.assetNamesInRound),
         )
 
 
@@ -1215,7 +1253,7 @@ class Market(Page):
             assetsHolding=literal_eval(player.assetsHolding),
             numAssetsInRound=group.numAssetsInRound,
             assetNames=ASSET_NAMES,
-            assetNamesInRound=group.assetNamesInRound,
+            assetNamesInRound=literal_eval(group.assetNamesInRound),
         )
 
     @staticmethod
@@ -1250,7 +1288,7 @@ class Results(Page):
             cashHolding=player.cashHolding,
             assetsHolding=literal_eval(player.assetsHolding),
             numAssetsInRound=group.numAssetsInRound,
-            assetNamesInRound=group.assetNamesInRound,
+            assetNamesInRound=literal_eval(group.assetNamesInRound),
             assetValues=literal_eval(player.assetValues)
         )
 

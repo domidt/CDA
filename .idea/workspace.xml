@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bc9b68dc-2d95-433c-b2a4-618f8f984096" name="Changes" comment="" />
+    <list default="true" id="bc9b68dc-2d95-433c-b2a4-618f8f984096" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/nAssets/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nAssets/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nAssetsPartitionCDA/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsPartitionCDA/__init__.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -109,6 +114,9 @@
       <workItem from="1706698601435" duration="1509000" />
       <workItem from="1706700127633" duration="16297000" />
       <workItem from="1706780646935" duration="23865000" />
+      <workItem from="1706813260815" duration="75000" />
+      <workItem from="1706813521558" duration="42000" />
+      <workItem from="1706824752698" duration="5523000" />
     </task>
     <servers />
   </component>
