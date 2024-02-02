@@ -1227,6 +1227,7 @@ class Results(Page):
             cashHolding=player.cashHolding,
             assetsHolding=literal_eval(player.assetsHolding),
             numAssetsInRound=group.numAssetsInRound,
+            assetNames=ASSET_NAMES,
             assetNamesInRound=literal_eval(group.assetNamesInRound),
             assetValues=literal_eval(player.assetValues)
         )

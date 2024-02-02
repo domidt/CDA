@@ -9,9 +9,9 @@
     // set endowment table
     $(document).ready(function () {
         // for uninformed traders assetValues is undefined (for js) in stages before the result but should be visible in results
-        console.log('veryfirstcheck', Object.entries(assetsHolding))
+        console.log('veryfirstcheck', assetNames, assetsHolding)
         elAssetsHoldingBody.html(Object.entries(assetsHolding).map(e => `<tr id='holdingAssetID${e[0]}' value=${e[0]}><td value=${e[1]}>${e[1]}</td><td value=${e[0]}> of ${assetNames[e[0] - 1]}</td></tr>`).join(''))
-        console.log('firstcheck', assetsHolding)
+
         if (typeof js_vars.assetValues !== 'undefined' && js_vars.assetValues !== null) {
             console.log('secondcheck', elAssetsHoldingBody)
             let assetValues = js_vars.assetValues
