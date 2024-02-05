@@ -24,7 +24,7 @@
     })
 
 
-    // to close the window with information about missing inputs when orders are not correctly specified
+    // Closes the window with information about missing inputs when orders are not correctly specified
     $('#errorBidOffer, #errorAskOffer, #errorBidMarket, #errorAskMarket, #errorBidCancel, #errorAskCancel').on('click', 'button', function () {
         $(this).parent().css('display', 'none')
     })
@@ -104,7 +104,7 @@
         if (! checkSelection(errorField, is_bid, prevSelected)) {
             return
         }
-        if (makerIDSelected != my_id ) {
+        if (makerIDSelected != my_id ) {  // checks whether the participant selected an own order to withdraw
             errorField.css("display", "inline-block")
             return false // If you care about misspecified orders in your data, you may uncomment the return
         }
@@ -114,16 +114,16 @@
     }
 
     function checkSelection(errorField, is_bid, prevSelected) {
-        if (selID === undefined) {
+        if (selID === undefined) { // checks whether an order is selected
             errorField.css("display", "inline-block")
             return false // If you care about misspecified orders in your data, you may uncomment the return
         }
-        if (prevSelected === undefined || prevSelected.length == 0) {
+        if (prevSelected === undefined || prevSelected.length == 0) { // checks whether the selected order has an entry
             errorField.css("display", "inline-block")
             return false // If you care about misspecified orders in your data, you may uncomment the return
         }
         let limitIsBidSelected = prevSelected.attr('data-custom')
-        if (limitIsBidSelected != is_bid ) {
+        if (limitIsBidSelected != is_bid ) {  // checks whether the selected order corresponds to the request
             errorField.css("display", "inline-block")
             return false // If you care about misspecified orders in your data, you may uncomment the return
         }

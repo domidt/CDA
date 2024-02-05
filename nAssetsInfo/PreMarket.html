@@ -19,7 +19,7 @@ Continuous double auction market - pre market information
 
 <p>Soon, round nr. {{ player.round_number }} starts.</p>
 
-<div id="endowmentDiv" class="endowment-container row" style="margin-bottom: 35px">
+<div id="endowmentDiv" class="endowment-container row">
     <div class="endowment-div col-sm div_box">
     <table id="endowmentTable">
     <tr>
@@ -56,13 +56,16 @@ Continuous double auction market - pre market information
     </div>
         {{ else }} {{ endif }}
         {{ else }} {{ endif }}
-    {{ if player.informed }}
+</div>
+{{ if player.informed }}
+<div id="endowmentInfo" class="endowment-container row">
     <div class="assetValues col-sm div_box">
         <h4>Your information about coins</h4>
         <table id="information" class="table_box"><thead><tr><th>Asset name</th><th>Amount</th><th>Nominal value</th><th>Product</th></tr></thead><tbody></tbody></table>
     </div>
-    {{ else }} {{ endif }}
 </div>
+{{ else }} {{ endif }}
+<br>
 
     {{ next_button }}
 {{ endblock }}

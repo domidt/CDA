@@ -4,7 +4,7 @@ SESSION_CONFIGS = [
     dict(
         name='sPartitions',
         display_name='single asset: Aggregation mechanisms for crowd predictions on partitions',
-        app_sequence=['singleAssetPartitionCDA'],
+        app_sequence=['singleAssetInfo'],
         num_demo_participants=4,
         market_time=300,
         randomise_types=True,
@@ -14,7 +14,7 @@ SESSION_CONFIGS = [
     dict(
         name='nPartitions',
         display_name='n assets: Aggregation mechanisms for crowd predictions with multiple assets on partitions',
-        app_sequence=['nAssetsPartitionCDA'],
+        app_sequence=['nAssetsInfo'],
         num_demo_participants=4,
         market_time=210,
         randomise_types=True,

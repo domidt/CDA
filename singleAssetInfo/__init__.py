@@ -22,7 +22,7 @@ class C(BaseConstants):
     num_assets_MIN = 20
     num_assets_MAX = 35
     decimals = 2
-    marketTime = 210  ## needed to initialize variables but exchanged by session_config
+    marketTime = 210  ## needed to initialize variables but will be exchanged by session_config
 
 
 class Subsession(BaseSubsession):
@@ -1082,7 +1082,6 @@ class FinalResults(Page):
             wealthChange=[round(p.wealthChange, C.decimals) for p in player.in_all_rounds()],
 
         )
-
 
 
 page_sequence = [Instructions, WaitToStart, PreMarket, WaitingMarket, Market, ResultsWaitPage, Results, FinalResults, ResultsWaitPage]

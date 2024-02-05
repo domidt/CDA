@@ -126,16 +126,24 @@ def define_role_structure(group: Group):
 def define_role_information_structure(group: Group):
     ## for each role, this function specifies the partitions a role is informed for each asset
     group.roleInfoStructure = str({'I0': {1: {'2E': 0, '1E': 0, '50c': 0, '20c': 0, '10c': 0, '5c': 0, '2c': 0, '1c': 0},
-                                          2: {'2E': 0, '1E': 0, '50c': 0, '20c': 0, '10c': 0, '5c': 0, '2c': 0, '1c': 0}
+                                          2: {'2E': 0, '1E': 0, '50c': 0, '20c': 0, '10c': 0, '5c': 0, '2c': 0, '1c': 0},
+                                          3: {'2E': 0, '1E': 0, '50c': 0, '20c': 0, '10c': 0, '5c': 0, '2c': 0, '1c': 0},
+                                          4: {'2E': 0, '1E': 0, '50c': 0, '20c': 0, '10c': 0, '5c': 0, '2c': 0, '1c': 0}
                                           },
                                    'I1': {1: {'2E': 0, '1E': 1, '50c': 0, '20c': 0, '10c': 0, '5c': 0, '2c': 0, '1c': 0},
-                                          2: {'2E': 0, '1E': 1, '50c': 0, '20c': 1, '10c': 0, '5c': 0, '2c': 0, '1c': 0}
+                                          2: {'2E': 0, '1E': 1, '50c': 0, '20c': 1, '10c': 0, '5c': 0, '2c': 0, '1c': 0},
+                                          3: {'2E': 0, '1E': 1, '50c': 0, '20c': 0, '10c': 0, '5c': 0, '2c': 0, '1c': 0},
+                                          4: {'2E': 0, '1E': 1, '50c': 0, '20c': 1, '10c': 0, '5c': 0, '2c': 0, '1c': 0}
                                           },
                                    'I2': {1: {'2E': 0, '1E': 1, '50c': 0, '20c': 1, '10c': 0, '5c': 0, '2c': 0, '1c': 0},
-                                          2: {'2E': 0, '1E': 1, '50c': 0, '20c': 1, '10c': 0, '5c': 1, '2c': 0, '1c': 0}
+                                          2: {'2E': 0, '1E': 1, '50c': 0, '20c': 1, '10c': 0, '5c': 1, '2c': 0, '1c': 0},
+                                          3: {'2E': 0, '1E': 1, '50c': 0, '20c': 1, '10c': 0, '5c': 0, '2c': 0, '1c': 0},
+                                          4: {'2E': 0, '1E': 1, '50c': 0, '20c': 1, '10c': 0, '5c': 1, '2c': 0, '1c': 0}
                                           },
                                    'I3': {1: {'2E': 1, '1E': 1, '50c': 0, '20c': 1, '10c': 0, '5c': 1, '2c': 0, '1c': 0},
-                                          2: {'2E': 1, '1E': 1, '50c': 0, '20c': 0, '10c': 0, '5c': 0, '2c': 0, '1c': 0}
+                                          2: {'2E': 1, '1E': 1, '50c': 0, '20c': 0, '10c': 0, '5c': 0, '2c': 0, '1c': 0},
+                                          3: {'2E': 1, '1E': 1, '50c': 0, '20c': 1, '10c': 0, '5c': 1, '2c': 0, '1c': 0},
+                                          4: {'2E': 1, '1E': 1, '50c': 0, '20c': 0, '10c': 0, '5c': 0, '2c': 0, '1c': 0}
                                           },
                                    })
 
@@ -385,6 +393,7 @@ def get_role_attr(player: Player, role_id):
     elif role_id in group.roleList:
         player.participant.vars['isObserver'] = False
         player.participant.vars['informed'] = True
+        print(role_info_structure[role_id])
         info = [[a, partition, value_units[a][partition], num_units[a][partition], round(value_units[a][partition] * num_units[a][partition], C.decimals)] for a in asset_ids for partition in PARTITIONS_NAMES if role_info_structure[role_id][a][partition] == 1]
     return info
 
