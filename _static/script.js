@@ -10,8 +10,17 @@
 
     // set endowment table
     $(document).ready(function () {
-            elCashHolding.html(cu(cashHolding))
-            elCapLong.html(cu(elCapLong.html()))
+        elCashHolding.html(cu(cashHolding))
+        elCapLong.html(cu(elCapLong.html()))
+        // for pages before results assetValues is undefined (for js) but should be visible in results
+        if (typeof js_vars.assetValue !== 'undefined' && js_vars.assetValue !== null) {
+            let elAssetsValue = $('#assetsValue')
+            elAssetsValue.html(cu(elAssetsValue.html()))
+        }
+        $('#assetsValue tbody tr').filter(function() {
+            return isNaN($(this).children('td').eq(0).attr('value'));
+        }).html(`<td colSpan="2"> </td>`);
+
     })
 
     function cu(amount) {

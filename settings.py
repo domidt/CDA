@@ -6,8 +6,6 @@ SESSION_CONFIGS = [
         display_name='single asset: Aggregation mechanisms for crowd predictions on partitions',
         app_sequence=['singleAssetPartitionCDA'],
         num_demo_participants=4,
-        est_num_traders=30,
-        num_shares_in_market=100,
         market_time=300,
         randomise_types=True,
         short_selling=True,
@@ -17,8 +15,7 @@ SESSION_CONFIGS = [
         name='nPartitions',
         display_name='n assets: Aggregation mechanisms for crowd predictions with multiple assets on partitions',
         app_sequence=['nAssetsPartitionCDA'],
-        num_demo_participants=30,
-        num_traders=30,
+        num_demo_participants=4,
         market_time=210,
         randomise_types=True,
         short_selling=True,
@@ -29,7 +26,6 @@ SESSION_CONFIGS = [
         display_name='Single asset: Continuous double auction',
         app_sequence=['singleAsset'],
         num_demo_participants=4,
-        num_traders=3,
         market_time=210,
         randomise_types=True,
         short_selling=True,
@@ -40,7 +36,6 @@ SESSION_CONFIGS = [
         display_name='n assets: Continuous double auction',
         app_sequence=['nAssets'],
         num_demo_participants=5,
-        num_traders=4,
         market_time=210,
         randomise_types=True,
         short_selling=True,
@@ -57,7 +52,7 @@ SESSION_CONFIG_DEFAULTS = dict(
     real_world_currency_per_point=1.00, participation_fee=0.00, doc=""
 )
 
-PARTICIPANT_FIELDS = ['roleID', 'isActive', 'informed']
+PARTICIPANT_FIELDS = ['roleID', 'isObserver', 'isPArticipating', 'informed']
 SESSION_FIELDS = ['numParticipants']
 
 # ISO-639 code

@@ -1,20 +1,15 @@
     const COIN_LABEL = "&euro;"  // "taler" , "\$", points
 
     let elInformationBody = $('#information tbody')
-    // set endowment table
+    // set information table
     $(document).ready(function () {
-        // for pages before results assetValues is undefined (for js) but should be visible in results
-        if (typeof js_vars.assetValue !== 'undefined' && js_vars.assetValue !== null) {
-            let elAssetsValue = $('#assetsValue')
-            elAssetsValue.html(cu(elAssetsValue.html()))
-        }
         // var information is sent to informed traders
         if (typeof js_vars.informed !== 'undefined' && js_vars.informed === true) {
             let information = js_vars.information
-            elInformationBody.html(Object.entries(information).map(e => `<tr id='coin${e[0]}' value=${e[1][0]}><td value=${e[1][1]}>${e[1][1]} coins of &nbsp;</td><td value=${e[1][0]}>&nbsp; ${coin([e[1][0]])} </td><td>${coin(e[1][2])}</td></tr>`).join(''))
+            elInformationBody.html(information.map(e => `<tr id='$asset${e[0]}coin${e[1]}' value=${e[0]}><td value=${e[2]}>${assetNames[e[0] - 1]}:</td><td>${e[3]} coins of &nbsp;</td><td value=${e[2]}>&nbsp; ${coin([e[2]])} </td><td>${coin(e[4])}</td></tr>`).join(''))
         }
 
-        $('#assetsValue tbody tr, #information tbody tr').filter(function() {
+        $('#information tbody tr').filter(function() {
             return isNaN($(this).children('td').eq(0).attr('value'));
         }).html(`<td colSpan="2"> </td>`);
 

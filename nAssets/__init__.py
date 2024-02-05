@@ -339,7 +339,6 @@ def assign_role_attr(player: Player, role_id):
 def initiate_player(player: Player):
     group = player.group
     num_assets = literal_eval(group.numAssets)
-    ## isObserver and isParticipating are set here since there is no function which assigns roles after the first round. These variables can be useful to exclude slow or inactive participants from role assignments.
     if not player.isObserver:
         initial_cash = cash_endowment(player=player)
         player.initialCash = initial_cash

@@ -55,7 +55,6 @@ class Group(BaseGroup):
     randomisedTypes = models.BooleanField()
     numAssets = models.IntegerField(initial=0)
     numParticipants = models.IntegerField(initial=0)
-    estNumTraders = models.IntegerField()
     numActiveParticipants = models.IntegerField(initial=0)
     assetNames = models.LongStringField()
     aggAssetsValue = models.FloatField()
@@ -80,10 +79,6 @@ class Group(BaseGroup):
 
 def random_types(group: Group):
     return group.session.config['randomise_types']
-
-
-def num_traders(group: Group):
-    return group.session.config['est_num_traders']
 
 
 def assign_types(group: Group):

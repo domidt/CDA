@@ -76,7 +76,6 @@ class Group(BaseGroup):
     randomisedTypes = models.BooleanField()
     numAssets = models.LongStringField()
     numParticipants = models.IntegerField(initial=0)
-    estNumTraders = models.IntegerField()
     numActiveParticipants = models.IntegerField(initial=0)
     numInformed = models.IntegerField()
     assetNames = models.LongStringField()
@@ -112,15 +111,9 @@ def random_types(group: Group):
     return group.session.config['randomise_types']
 
 
-def num_traders(group: Group):
-    return group.session.config['est_num_traders']
-
-
 def define_role_structure(group: Group):
     ## this code is run when all individuals arrived
     group.roleList = str(['I3', 'I2', 'I1', 'I0', 'observer'])  # ordered accourding to importance, i.e., the are filled accordingly
-    est_num_traders = num_traders(group=group)
-    group.estNumTraders = est_num_traders
     num_participants = group.numParticipants
     num_I3 = int(round(1/4*num_participants, 0))  # informed about A: 5c, 20c, and E1; and B: E1
     num_I2 = int(round(1/4*num_participants, 0))  # informed about A; 20c, and E1; and B: 5c, 20c, and E1
@@ -141,8 +134,8 @@ def define_role_information_structure(group: Group):
                                    'I2': {1: {'2E': 0, '1E': 1, '50c': 0, '20c': 1, '10c': 0, '5c': 0, '2c': 0, '1c': 0},
                                           2: {'2E': 0, '1E': 1, '50c': 0, '20c': 1, '10c': 0, '5c': 1, '2c': 0, '1c': 0}
                                           },
-                                   'I3': {1: {'2E': 0, '1E': 1, '50c': 0, '20c': 1, '10c': 0, '5c': 1, '2c': 0, '1c': 0},
-                                          2: {'2E': 0, '1E': 1, '50c': 0, '20c': 0, '10c': 0, '5c': 0, '2c': 0, '1c': 0}
+                                   'I3': {1: {'2E': 1, '1E': 1, '50c': 0, '20c': 1, '10c': 0, '5c': 1, '2c': 0, '1c': 0},
+                                          2: {'2E': 1, '1E': 1, '50c': 0, '20c': 0, '10c': 0, '5c': 0, '2c': 0, '1c': 0}
                                           },
                                    })
 
@@ -190,22 +183,21 @@ def define_asset_value(group: Group):
     ## this code is run when all participants are ready and the market is about to start via the initiate group function
     asset_ids = literal_eval(group.assetsInRound)
     assets_partition = read_csv('_parameters/assetsPartitions.csv', AssetsPartitions)
-    units = {r['assetID']: {r['partitionID']: r['amount']} for r in assets_partition if r['assetID'] in asset_ids}
+    units = {asset: {r['partitionID']: r['amount'] for r in assets_partition if r['assetID'] == asset} for asset in asset_ids}
     ## the next line determine the amount of coins or each value and each asset
-    num_units = {asset_id: {PARTITIONS_NAMES[partition_id - 1]: 0 for partition_id in range(1, len(PARTITIONS_NAMES) + 1)} for asset_id in asset_ids}
+    num_units = {asset_id: {PARTITIONS_NAMES[partition_id]: 0 for partition_id in range(len(PARTITIONS_NAMES))} for asset_id in asset_ids}
     for asset_id in asset_ids:
-        for p in range(1, len(PARTITIONS_NAMES) + 1):
-            num_units[asset_id][PARTITIONS_NAMES[p - 1]] = units[asset_id][p]
+        for p in range(len(PARTITIONS_NAMES)):
+            num_units[asset_id][PARTITIONS_NAMES[p]] = units[asset_id][p + 1]
     group.valueStructureNumUnits = str(num_units)
-    value_units = {asset_id: {PARTITIONS_NAMES[i]: PARTITIONS_UNIT_VALUES[i]} for i, asset_id in zip(range(len(PARTITIONS_NAMES)), range(1, NUM_ASSETS + 1))}
+    value_units = {asset_id: {PARTITIONS_NAMES[i]: PARTITIONS_UNIT_VALUES[i] for i in range(len(PARTITIONS_NAMES))} for asset_id in asset_ids}
     group.valueStructureValueUnits = str(value_units)
-    total_value = 0
-    asset_values = {}
-    for asset_id in range(1, NUM_ASSETS + 1):
+    total_value = {asset_id: 0 for asset_id in asset_ids}
+    for asset_id in asset_ids:
         for name in PARTITIONS_NAMES:
-            total_value += value_units[name] * num_units[name]
-    group.aggAssetsValue = total_value
-    group.assetValue = group.aggAssetsValue  ## / group.numAssets ## The asset should actually just have the value according to the outstanding assets, but this information is negligable for a in-class
+            total_value[asset_id] += value_units[asset_id][name] * num_units[asset_id][name]
+    group.aggAssetsValue = str(total_value)
+    group.assetValues = group.aggAssetsValue  ## / group.numAssets ## The asset should actually just have the value according to the outstanding assets, but this information is negligable for a in-class
 
 
 def count_participants(group: Group):
@@ -379,11 +371,11 @@ def cash_long_limit(player: Player):
 
 def get_role_attr(player: Player, role_id):
     group = player.group
-    asset_ids = group.assetsInRound
+    asset_ids = literal_eval(group.assetsInRound)
     role_info_structure = literal_eval(group.roleInfoStructure)
     num_units = literal_eval(group.valueStructureNumUnits)
     value_units = literal_eval(group.valueStructureValueUnits)
-    info = {a: {name: [value_units[name], num_units[name], value_units[name] * num_units[name]] for name in PARTITIONS_NAMES} for a in asset_ids}
+    info = []
     if role_id == 'observer':
         player.participant.vars['isObserver'] = True
         player.participant.vars['informed'] = False
@@ -393,10 +385,7 @@ def get_role_attr(player: Player, role_id):
     elif role_id in group.roleList:
         player.participant.vars['isObserver'] = False
         player.participant.vars['informed'] = True
-        for a in asset_ids:
-            for partition in PARTITIONS_NAMES:
-                if role_info_structure[role_id][a][partition] != 1:
-                    info[a][partition] = [None, None, None]
+        info = [[a, partition, value_units[a][partition], num_units[a][partition], round(value_units[a][partition] * num_units[a][partition], C.decimals)] for a in asset_ids for partition in PARTITIONS_NAMES if role_info_structure[role_id][a][partition] == 1]
     return info
 
 
@@ -477,7 +466,7 @@ def live_method(player: Player, data):
     # to do limit amount of offers in table
     asks = sorted([[offer.price, offer.remainingVolume, offer.offerID, offer.makerID, offer.assetID, False] for offer in offers if offer.isActive and not offer.isBid], key=itemgetter(0))
     msgs = News.filter(group=group)
-    for i in range(1, NUM_ASSETS + 1):
+    for i in assets_in_round:
         asks_asset = [[p, vol, offer_id, maker_ID, asset_ID, is_best] for p, vol, offer_id, maker_ID, asset_ID, is_best in asks if asset_ID == i]
         if asks_asset:
             best_ask = asks_asset[0][0]
@@ -1293,6 +1282,7 @@ class Results(Page):
             cashHolding=player.cashHolding,
             assetsHolding=literal_eval(player.assetsHolding),
             numAssetsInRound=group.numAssetsInRound,
+            assetNames=ASSET_NAMES,
             assetNamesInRound=literal_eval(group.assetNamesInRound),
             assetValues=literal_eval(player.assetValues)
         )

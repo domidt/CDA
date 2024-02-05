@@ -58,7 +58,6 @@ class Group(BaseGroup):
     randomisedTypes = models.BooleanField()
     numAssets = models.IntegerField(initial=0)
     numParticipants = models.IntegerField(initial=0)
-    estNumTraders = models.IntegerField()
     numInformed = models.IntegerField()
     numActiveParticipants = models.IntegerField(initial=0)
     assetNames = models.LongStringField()
@@ -91,15 +90,9 @@ def random_types(group: Group):
     return group.session.config['randomise_types']
 
 
-def num_traders(group: Group):
-    return group.session.config['est_num_traders']
-
-
 def define_role_structure(group: Group):
     ## this code is run when all individuals arrived
     group.roleList = str(['I3', 'I2', 'I1', 'I0', 'observer'])  # ordered accourding to importance, i.e., the are filled accordingly
-    est_num_traders = num_traders(group=group)
-    group.estNumTraders = est_num_traders
     num_participants = group.numParticipants
     num_I3 = int(round(1/4 * num_participants, 0))  # informed about 5c, 20c, and E1
     num_I2 = int(round(1/4 * num_participants, 0))  # informed about 20c and E1
@@ -292,7 +285,7 @@ def get_role_attr(player: Player, role_id):
     role_info_structure = literal_eval(group.roleInfoStructure)
     num_units = literal_eval(group.valueStructureNumUnits)
     value_units = literal_eval(group.valueStructureValueUnits)
-    info = {name: [value_units[name], num_units[name], value_units[name] * num_units[name]] for name in PARTITIONS_NAMES}
+    info = []
     if role_id == 'observer':
         player.participant.vars['isObserver'] = True
         player.participant.vars['informed'] = False
@@ -302,9 +295,7 @@ def get_role_attr(player: Player, role_id):
     elif role_id in group.roleList:
         player.participant.vars['isObserver'] = False
         player.participant.vars['informed'] = True
-        for partition in PARTITIONS_NAMES:
-            if role_info_structure[role_id][partition] != 1:
-                info[partition] = [None, None, None]
+        info = [[partition, value_units[partition], num_units[partition], round(value_units[partition] * num_units[partition], C.decimals)] for partition in PARTITIONS_NAMES if role_info_structure[role_id][partition] == 1]
     return info
 
 
