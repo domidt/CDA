@@ -5,31 +5,40 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc9b68dc-2d95-433c-b2a4-618f8f984096" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/README_nAssetInfo.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README_JavaScript.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/_parameters/assets.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/_parameters/assetsInRound.csv" beforeDir="false" afterPath="$PROJECT_DIR$/_parameters/assetsInRound.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/_static/highcharts/highcharts.js" beforeDir="false" afterPath="$PROJECT_DIR$/_static/highcharts/highcharts.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/_static/highcharts/highcharts_accessibility.js" beforeDir="false" afterPath="$PROJECT_DIR$/_static/highcharts/highcharts_accessibility.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/_static/nCDAstatic/highcharts/highcharts.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/_static/nCDAstatic/highcharts/highcharts_accessibility.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/_static/nCDAstatic/scriptnAssets.js" beforeDir="false" afterPath="$PROJECT_DIR$/_static/nCDAstatic/scriptnAssets.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/_static/sCDAstatic/highcharts/highcharts.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/_static/sCDAstatic/highcharts/highcharts_accessibility.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/_static/sCDAstatic/scriptSAssetInfo.js" beforeDir="false" afterPath="$PROJECT_DIR$/_static/sCDAstatic/scriptSAssetInfo.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/_static/sCDAstatic/scriptSAssetMarket.js" beforeDir="false" afterPath="$PROJECT_DIR$/_static/sCDAstatic/scriptSAssetMarket.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/_static/scriptMarket.js" beforeDir="false" afterPath="$PROJECT_DIR$/_static/scriptMarket.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/nAssetsPartitionCDA/Chart.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsInfo/Chart.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nAssetsPartitionCDA/ChartReport.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsInfo/ChartReport.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nAssetsPartitionCDA/FinalResults.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsInfo/FinalResults.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nAssetsPartitionCDA/Instructions.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsInfo/Instructions.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nAssetsPartitionCDA/Market.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsInfo/Market.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nAssetsPartitionCDA/PreMarket.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsInfo/PreMarket.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nAssetsPartitionCDA/Results.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsInfo/Results.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nAssetsPartitionCDA/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsInfo/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nAssetsPartitionCDA/admin_report.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsInfo/admin_report.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/_templates/instructions.html" beforeDir="false" afterPath="$PROJECT_DIR$/_templates/instructions.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nAssets/Chart.html" beforeDir="false" afterPath="$PROJECT_DIR$/_static/chart.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nAssets/ChartReport.html" beforeDir="false" afterPath="$PROJECT_DIR$/_templates/chartReport.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nAssets/FinalResults.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssets/FinalResults.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nAssets/Market.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssets/Market.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nAssets/PreMarket.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssets/PreMarket.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nAssets/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nAssets/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nAssets/admin_report.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssets/admin_report.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nAssetsInfo/Chart.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/nAssetsInfo/ChartReport.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/nAssetsInfo/Market.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsInfo/Market.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nAssetsInfo/Results.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsInfo/Results.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nAssetsInfo/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsInfo/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nAssetsInfo/admin_report.html" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsInfo/admin_report.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetPartitionCDA/Chart.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetInfo/Chart.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetPartitionCDA/ChartReport.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetInfo/ChartReport.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetPartitionCDA/FinalResults.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetInfo/FinalResults.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetPartitionCDA/Instructions.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetInfo/Instructions.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetPartitionCDA/Market.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetInfo/Market.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetPartitionCDA/PreMarket.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetInfo/PreMarket.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetPartitionCDA/Results.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetInfo/Results.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetPartitionCDA/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetInfo/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetPartitionCDA/admin_report.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetInfo/admin_report.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/singleAsset/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/singleAsset/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/singleAssetInfo/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetInfo/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/singleAssetInfo/admin_report.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetInfo/admin_report.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,6 +49,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="HTML File" />
+        <option value="JavaScript File" />
       </list>
     </option>
   </component>
@@ -67,7 +77,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/dschmidt/Documents/GitHub/CDA",
+    "last_opened_file_path": "C:/Users/dschmidt/Documents/GitHub/CDA/_static/sCDAstatic",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -80,18 +90,18 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\dschmidt\Documents\GitHub\CDA\_static\sCDAstatic" />
       <recent name="C:\Users\dschmidt\Documents\GitHub\CDA" />
       <recent name="C:\Users\dschmidt\Documents\GitHub\CDA\_static\nCDAstatic" />
       <recent name="C:\Users\domin\Documents\GitHub\CDA\nAssets" />
       <recent name="C:\Users\domin\Documents\GitHub\CDA" />
-      <recent name="C:\Users\domin\Documents\GitHub\CDA\singleAsset" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\dschmidt\Documents\GitHub\CDA\_templates" />
+      <recent name="C:\Users\dschmidt\Documents\GitHub\CDA\_static" />
       <recent name="C:\Users\dschmidt\Documents\GitHub\CDA\_static\sCDAstatic" />
       <recent name="C:\Users\domin\Documents\GitHub\CDA\_static\sCDAstatic" />
       <recent name="C:\Users\domin\Documents\GitHub\CDA\_static" />
-      <recent name="C:\Users\domin\Documents\GitHub\CDA" />
-      <recent name="C:\Users\domin\Documents\GitHub\CDA\singleAssetCrowdPartitions" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -142,7 +152,7 @@
       <workItem from="1706872649225" duration="13039000" />
       <workItem from="1706893148320" duration="75000" />
       <workItem from="1706916727939" duration="27312000" />
-      <workItem from="1707134992044" duration="15007000" />
+      <workItem from="1707134992044" duration="39657000" />
     </task>
     <servers />
   </component>

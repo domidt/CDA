@@ -12,7 +12,6 @@
         elAssetsHoldingBody.html(Object.entries(assetsHolding).map(e => `<tr id='holdingAssetID${e[0]}' value=${e[0]}><td value=${e[1]}>${e[1]}</td><td value=${e[0]}> of ${assetNames[e[0] - 1]}</td></tr>`).join(''))
 
         if (typeof js_vars.assetValues !== 'undefined' && js_vars.assetValues !== null) {
-            console.log('secondcheck', elAssetsHoldingBody)
             let assetValues = js_vars.assetValues
             elAssetValuesBody.html(Object.entries(assetValues).map(e => `<tr id='valueAssetID${e[0]}' value=${e[0]}><td value=${e[0]}>${assetNames[e[0] - 1]} is worth </td><td value=${e[1]}>${cu(e[1])}</td></tr>`).join(''))
         }

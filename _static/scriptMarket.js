@@ -36,7 +36,6 @@
         }, 10000)
     }
 
-
     function trade_desc(seller_id) {
         if(seller_id == my_id) {
             return 'You sold '
@@ -49,6 +48,8 @@
         liveSend({'operationType': 'market_start'})
     }
 
+
+    // Initializes order book sending the corresponding command to the server
     $(window).on ('load', function () {
         market_start ()
         defaultHeadWidth = $('#bidsTable th').eq(0).width()
@@ -86,7 +87,7 @@
     }
 
 
-
+    // Checks whether the volume is a positive integer
     function checkVolume(errorField, Volume) {
         if (Volume == undefined || Volume <= 0 || !Number.isInteger(parseFloat(Volume))) {
             errorField.css("display", "inline-block")
@@ -96,7 +97,7 @@
     }
 
 
-    // when
+    // Sends the command to withdraw an own order after some basic checks. These checks are repeated on the server but you may want to limit the amount of misspecified requests.
     function cancelLimit(is_bid) {
         let errorField = (is_bid == 0)? $('#errorAskCancel') : $('#errorBidCancel')
         let prevSelected = $('#offerID' + selID)

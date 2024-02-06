@@ -1,7 +1,6 @@
-<div id="highchart" class="div_box"></div>
+let marketTime = js_vars.marketTime
 
-<script>
-    function redrawChart(series) {
+function redrawChart(series) {
         Highcharts.chart('highchart', {
 
             title: {
@@ -17,32 +16,24 @@
                     text: 'Time (seconds)'
                 },
                 min: 0,
-                max: {{ group.marketTime }},
+                max: marketTime ,
             },
             legend: {
-                enabled: false
+                enabled: true
             },
 
             plotOptions: {
                 series: {
                     label: {
-                        enabled: false
+                        enabled: true
                     },
                 }
             },
 
-            series: [{
-                name: 'Trades',
-                data: series,
-                type: 'scatter'
-
-            }],
+            series: series,
 
             credits: {
                 enabled: false
             }
-
         });
     }
-
-</script>

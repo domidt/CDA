@@ -14,7 +14,7 @@ PARTITIONS_UNIT_VALUES = [2, 1, .5, .2, .1, .05, .02, .01]
 
 
 class C(BaseConstants):
-    NAME_IN_URL = 'npartitionCDA'
+    NAME_IN_URL = 'nCDAInfo'
     PLAYERS_PER_GROUP = None
     num_trial_rounds = 1
     NUM_ROUNDS = 12  ## incl. trial periods
@@ -56,7 +56,7 @@ def vars_for_admin_report(subsession):
     highcharts_series = []
     for i in range(1, NUM_ASSETS + 1):
         trade_data = [{'x': tx.transactionTime, 'y': tx.price, 'name': ASSET_NAMES[tx.assetID - 1]} for tx in Transaction.filter() if tx.Period == period and tx.group in groups and tx.assetID == i]
-        highcharts_series.append({'name': ASSET_NAMES[i - 1], 'data': trade_data, 'type': 'scatter', 'id': 'trades', 'marker': {'symbol': 'circle'}})
+        highcharts_series.append({'name': 'Trades' + ASSET_NAMES[i - 1], 'data': trade_data, 'type': 'scatter', 'id': 'trades', 'marker': {'symbol': 'circle'}})
         bids_data = [{'x': b.BATime, 'y': b.bestBid, 'name': ASSET_NAMES[b.assetID - 1]} for b in BidAsks.filter() if b.Period == period and b.group in groups and b.assetID == i and b.BATime and b.bestBid]
         highcharts_series.append({'name': 'Bids ' + ASSET_NAMES[i - 1], 'data': bids_data, 'type': 'line', 'id': 'bids', 'lineWidth': 2})
         asks_data = [{'x': a.BATime, 'y': a.bestAsk, 'name': ASSET_NAMES[a.assetID - 1]} for a in BidAsks.filter() if a.Period == period and a.group in groups and a.assetID == i and a.BATime and a.bestAsk]
@@ -113,7 +113,7 @@ def random_types(group: Group):
 
 def define_role_structure(group: Group):
     ## this code is run when all individuals arrived
-    group.roleList = str(['I3', 'I2', 'I1', 'I0', 'observer'])  # ordered accourding to importance, i.e., the are filled accordingly
+    group.roleList = str(['I3', 'I2', 'I1', 'I0', 'observer'])  # ordered according to importance, i.e., the are filled accordingly
     num_participants = group.numParticipants
     num_I3 = int(round(1/4*num_participants, 0))  # informed about A: 5c, 20c, and E1; and B: E1
     num_I2 = int(round(1/4*num_participants, 0))  # informed about A; 20c, and E1; and B: 5c, 20c, and E1
@@ -205,7 +205,7 @@ def define_asset_value(group: Group):
         for name in PARTITIONS_NAMES:
             total_value[asset_id] += value_units[asset_id][name] * num_units[asset_id][name]
     group.aggAssetsValue = str(total_value)
-    group.assetValues = group.aggAssetsValue  ## / group.numAssets ## The asset should actually just have the value according to the outstanding assets, but this information is negligable for a in-class
+    group.assetValues = group.aggAssetsValue  ## / group.numAssets ## The asset should actually just have the value according to the outstanding assets, but this information is negligible for a in-class
 
 
 def count_participants(group: Group):
@@ -366,8 +366,11 @@ def cash_endowment(player: Player):
     for i in assets_in_round:
         num_assets += 1
         sum_asset_value += literal_eval(group.assetValues)[i]
-    avg_asset_value = sum_asset_value / num_assets
-    return float(round(random.uniform(a=C.num_assets_MIN, b=C.num_assets_MAX) * avg_asset_value, C.decimals))  ## the multiplication with the asset value garanties a cash to asset ratio of 1 in the market
+    if num_assets > 0:
+        avg_asset_value = sum_asset_value / num_assets
+    else:
+        avg_asset_value = 1
+    return float(round(random.uniform(a=C.num_assets_MIN, b=C.num_assets_MAX) * avg_asset_value, C.decimals))  ## the multiplication with the asset value guaranties a cash to asset ratio of 1 in the market
 
 
 def cash_long_limit(player: Player):
@@ -377,7 +380,7 @@ def cash_long_limit(player: Player):
         return 0
 
 
-def get_role_attr(player: Player, role_id):
+def assign_role_attr(player: Player, role_id):
     group = player.group
     asset_ids = literal_eval(group.assetsInRound)
     role_info_structure = literal_eval(group.roleInfoStructure)
@@ -393,9 +396,8 @@ def get_role_attr(player: Player, role_id):
     elif role_id in group.roleList:
         player.participant.vars['isObserver'] = False
         player.participant.vars['informed'] = True
-        print(role_info_structure[role_id])
         info = [[a, partition, value_units[a][partition], num_units[a][partition], round(value_units[a][partition] * num_units[a][partition], C.decimals)] for a in asset_ids for partition in PARTITIONS_NAMES if role_info_structure[role_id][a][partition] == 1]
-    return info
+    player.information = str(info)
 
 
 def initiate_player(player: Player):
@@ -420,7 +422,7 @@ def initiate_player(player: Player):
 
 def set_player_info(player: Player):
     ## before this function, role_structure and within this function get_role_att is run
-    player.information = str(get_role_attr(player=player, role_id=player.field_maybe_none('roleID')))
+    assign_role_attr(player=player, role_id=player.field_maybe_none('roleID'))
     player.isObserver = player.participant.vars['isObserver']
     player.informed = player.participant.vars['informed']
 
@@ -1199,6 +1201,13 @@ class Instructions(Page):
     def is_displayed(player: Player):
         return player.round_number == 1
 
+    @staticmethod
+    def vars_for_template(player: Player):
+        return dict(
+            numTrials=C.num_trial_rounds,
+            numRounds=C.NUM_ROUNDS - C.num_trial_rounds,
+        )
+
 
 class WaitToStart(WaitPage):
     @staticmethod
@@ -1257,6 +1266,7 @@ class Market(Page):
             assetNames=ASSET_NAMES,
             assetNamesInRound=literal_eval(group.assetNamesInRound),
             assetsInRound=literal_eval(group.assetsInRound),
+            marketTime=group.marketTime,
         )
 
     @staticmethod

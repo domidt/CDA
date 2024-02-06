@@ -34,17 +34,17 @@ def vars_for_admin_report(subsession):
     period = subsession.round_number
     payoffs = sorted([p.payoff for p in subsession.get_players()])
     market_times = sorted([g.marketTime for g in groups])
-    trades = [[tx.transactionTime, tx.price] for tx in Transaction.filter() if tx.Period == period]
-    bids = [[bx.BATime, bx.bestBid] for bx in BidAsks.filter() if bx.Period == period]
-    bids = ['null' if b[1] is None else b for b in bids]
-    asks = [[ax.BATime, ax.bestAsk] for ax in BidAsks.filter() if ax.Period == period]
-    asks = ['null' if a[1] is None else a for a in asks]
+    highcharts_series = []
+    trades = [{'x': tx.transactionTime, 'y': tx.price, 'name': 'Trades'} for tx in Transaction.filter() if tx.Period == period and tx.group in groups]
+    highcharts_series.append({'name': 'Trades', 'data': trades, 'type': 'scatter', 'id': 'trades', 'marker': {'symbol': 'circle'}})
+    bids = [{'x': bx.BATime, 'y': bx.bestBid, 'name': 'Bids'} for bx in BidAsks.filter() if bx.Period == period and bx.BATime and bx.bestBid]
+    highcharts_series.append({'name': 'Bids', 'data': bids, 'type': 'line', 'id': 'bids', 'lineWidth': 2})
+    asks = [{'x': ax.BATime, 'y': ax.bestAsk, 'name': 'Asks'} for ax in BidAsks.filter() if ax.Period == period and ax.BATime and ax.bestAsk]
+    highcharts_series.append({'name': 'Asks', 'data': asks, 'type': 'line', 'id': 'bids', 'lineWidth': 2})
     return dict(
         marketTimes=market_times,
         payoffs=payoffs,
-        trades=trades,
-        bids=bids,
-        asks=asks,
+        series=highcharts_series,
     )
 
 
@@ -110,9 +110,9 @@ def assign_types(group: Group):
             p.roleID = p.participant.vars['roleID']
 
 
-
 def define_asset_value(group: Group):
     ## this method describes the BBV structure of an experiment and shares the information in the players table.
+    ## this code is run when all participants are ready and the market is about to start via the initiate group function
     asset_value = round(random.uniform(a=C.FV_MIN, b=C.FV_MAX), C.decimals)
     group.assetValue = asset_value
 
@@ -218,7 +218,6 @@ def cash_long_limit(player: Player):
 
 
 def assign_role_attr(player: Player, role_id):
-    group = player.group
     if role_id == 'observer':
         player.participant.vars['isObserver'] = True
     elif role_id == 'trader':
@@ -708,10 +707,9 @@ def transaction(player: Player, data):
     remaining_volume = int(limit_entry.remainingVolume)
     limit_volume = int(limit_entry.limitVolume)
     if not (price > 0 and transaction_volume > 0): # check whether data is valid
-        ## print('Player', taker_id, 'tried to accept via an odd order', data)
         News.create(
             player=player,
-            playerID=maker_id,
+            playerID=taker_id,
             group=group,
             Period=period,
             msg='Order rejected: misspecified volume.',
@@ -907,6 +905,13 @@ class Instructions(Page):
     def is_displayed(player: Player):
         return player.round_number == 1
 
+    @staticmethod
+    def vars_for_template(player: Player):
+        return dict(
+            numTrials=C.num_trial_rounds,
+            numRounds=C.NUM_ROUNDS - C.num_trial_rounds,
+        )
+
 
 class WaitToStart(WaitPage):
     @staticmethod
@@ -923,7 +928,6 @@ class WaitToStart(WaitPage):
 class PreMarket(Page):
     @staticmethod
     def js_vars(player: Player):
-        group = player.group
         return dict(
             allowShort=player.allowShort,
             capShort=player.capShort,
@@ -981,6 +985,12 @@ class Results(Page):
             payoff=cu(round(player.payoff, C.decimals)),
         )
 
+    @staticmethod
+    def js_vars(player: Player):
+        return dict(
+            assetValue=round(player.assetValue, C.decimals),
+        )
+
 
 class FinalResults(Page):
 
@@ -996,7 +1006,6 @@ class FinalResults(Page):
             tradingProfit=[round(p.tradingProfit, C.decimals) for p in player.in_all_rounds()],
             wealthChange=[round(p.wealthChange, C.decimals) for p in player.in_all_rounds()],
         )
-
 
 
 page_sequence = [Instructions, WaitToStart, PreMarket, WaitingMarket, Market, ResultsWaitPage, Results, FinalResults, ResultsWaitPage]

@@ -3,8 +3,9 @@
         <script src="{{ static 'nCDAstatic/scriptnAssets.js' }}"></script>
         <script src="{{ static 'scriptMarket.js' }}"></script>
         <script src="{{ static 'nCDAstatic/scriptnAssetsMarket.js' }}"></script>
-        <script src="{{ static 'nCDAstatic/highcharts/highcharts.js' }}"></script>
-        <script src="{{ static 'nCDAstatic/highcharts/highcharts_accessibility.js' }}"></script>
+        <script src="{{ static 'highcharts/highcharts.js' }}"></script>
+        <script src="{{ static 'highcharts/highcharts_accessibility.js' }}"></script>
+        <script src="{{ static 'chart.js' }}"></script>
 {{ endblock }}
 
 {{ block global_styles }}
@@ -29,7 +30,7 @@ Continuous double auction market
             {{ if player.isObserver }} Inactive observer {{ else }} Trader {{ endif }}
         </td>
     </tr>
-    {{ if not player.isObserver }}
+        {{ if not player.isObserver }}
     <tr>
         <th>Money holding</th>
         <td id="cashHolding">{{ player.cashHolding }}</td>
@@ -37,12 +38,16 @@ Continuous double auction market
         {{ if player.allowLong }}
     <tr>
         <th>Your credit limit</th>
-        <td id="capLong">{{ player.capLong }}</td>
+        <td id="capLong">
+            {{ player.capLong }}
+        </td>
     </tr>
+        {{ else }} {{ endif }}
         {{ else }} {{ endif }}
     </table>
     </div>
-    <div class="holdings col-sm div_box">
+        {{ if not player.isObserver }}
+    <div class="holdingsDiv col-sm div_box">
         <h4>Asset holdings</h4>
         <table id="assetsHoldings" class="table_box"><thead><tr><th></th><th></th></tr></thead><tbody></tbody></table>
     </div>
@@ -52,7 +57,7 @@ Continuous double auction market
         <table id="capShort" class="table_box"><thead><tr><th></th><th></th></tr></thead><tbody></tbody></table>
     </div>
         {{ else }} {{ endif }}
-    {{ else }} {{ endif }}
+        {{ else }} {{ endif }}
 </div>
 
 <div class="limit_container row">
@@ -158,7 +163,7 @@ Continuous double auction market
     </div>
 </div>
 
-{{ include 'nAssets/Chart.html' }}
+<div id="highchart" class="div_box"></div>
 
 <div class="trades_container div_box alert-success">
     <h4>Trades</h4>

@@ -1,5 +1,5 @@
 {{ block title }}
-    Page title
+    Result
 {{ endblock }}
 
 {{ block content }}
@@ -8,15 +8,6 @@
 
     <p>In this experiment, you receive {{ payoff }}.</p>
 
-    <table class="table_box">
-        <tr>
-            <th>Your trading profit</th><td>{{ tradingProfit }}</td>
-            <th>Winning bid</th><td>{{ wealthChange }}</td>
-            <th>Your payoff</th><td>{{ periodPayoff }}</td>
-        </tr>
-    </table>
-
-    {{ next_button }}
 {{ endblock }}
 
 

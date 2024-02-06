@@ -52,7 +52,7 @@ SESSION_CONFIG_DEFAULTS = dict(
     real_world_currency_per_point=1.00, participation_fee=0.00, doc=""
 )
 
-PARTICIPANT_FIELDS = ['roleID', 'isObserver', 'isPArticipating', 'informed']
+PARTICIPANT_FIELDS = ['roleID', 'isObserver', 'isParticipating', 'informed']
 SESSION_FIELDS = ['numParticipants']
 
 # ISO-639 code

@@ -11,7 +11,7 @@ PARTITIONS_UNIT_VALUES = [2, 1, .5, .2, .1, .05, .02, .01]
 
 
 class C(BaseConstants):
-    NAME_IN_URL = 'sPartitionCDA'
+    NAME_IN_URL = 'sCDAInfo'
     PLAYERS_PER_GROUP = None
     num_trial_rounds = 1
     NUM_ROUNDS = 2  ## incl. trial periods
@@ -22,7 +22,7 @@ class C(BaseConstants):
     num_assets_MIN = 20
     num_assets_MAX = 35
     decimals = 2
-    marketTime = 210  ## needed to initialize variables but will be exchanged by session_config
+    marketTime = 210  ## needed to initialize variables but exchanged by session_config
 
 
 class Subsession(BaseSubsession):
@@ -37,17 +37,17 @@ def vars_for_admin_report(subsession):
     period = subsession.round_number
     payoffs = sorted([p.payoff for p in subsession.get_players()])
     market_times = sorted([g.marketTime for g in groups])
-    trades = [[tx.transactionTime, tx.price] for tx in Transaction.filter() if tx.Period == period]
-    bids = [[bx.BATime, bx.bestBid] for bx in BidAsks.filter() if bx.Period == period]
-    bids = ['null' if b[1] is None else b for b in bids]
-    asks = [[ax.BATime, ax.bestAsk] for ax in BidAsks.filter() if ax.Period == period]
-    asks = ['null' if a[1] is None else a for a in asks]
+    highcharts_series = []
+    trades = [{'x': tx.transactionTime, 'y': tx.price, 'name': 'Trades'} for tx in Transaction.filter() if tx.Period == period and tx.group in groups]
+    highcharts_series.append({'name': 'Trades', 'data': trades, 'type': 'scatter', 'id': 'trades', 'marker': {'symbol': 'circle'}})
+    bids = [{'x': bx.BATime, 'y': bx.bestBid, 'name': 'Bids'} for bx in BidAsks.filter() if bx.Period == period and bx.BATime and bx.bestBid]
+    highcharts_series.append({'name': 'Bids', 'data': bids, 'type': 'line', 'id': 'bids', 'lineWidth': 2})
+    asks = [{'x': ax.BATime, 'y': ax.bestAsk, 'name': 'Asks'} for ax in BidAsks.filter() if ax.Period == period and ax.BATime and ax.bestAsk]
+    highcharts_series.append({'name': 'Asks', 'data': asks, 'type': 'line', 'id': 'bids', 'lineWidth': 2})
     return dict(
         marketTimes=market_times,
         payoffs=payoffs,
-        trades=trades,
-        bids=bids,
-        asks=asks,
+        series=highcharts_series,
     )
 
 
@@ -141,6 +141,7 @@ def assign_types(group: Group):
 
 
 def define_asset_value(group: Group):
+    ## this method describes the BBV structure of an experiment and shares the information in the players table.
     ## this code is run when all participants are ready and the market is about to start via the initiate group function
     units = {names: None for names in PARTITIONS_NAMES}
     ## the next lines determine the amount of coins or each value in each round,
@@ -280,7 +281,7 @@ def cash_long_limit(player: Player):
         return 0
 
 
-def get_role_attr(player: Player, role_id):
+def assign_role_attr(player: Player, role_id):
     group = player.group
     role_info_structure = literal_eval(group.roleInfoStructure)
     num_units = literal_eval(group.valueStructureNumUnits)
@@ -296,7 +297,7 @@ def get_role_attr(player: Player, role_id):
         player.participant.vars['isObserver'] = False
         player.participant.vars['informed'] = True
         info = [[partition, value_units[partition], num_units[partition], round(value_units[partition] * num_units[partition], C.decimals)] for partition in PARTITIONS_NAMES if role_info_structure[role_id][partition] == 1]
-    return info
+    player.information = str(info)
 
 
 def initiate_player(player: Player):
@@ -317,7 +318,7 @@ def initiate_player(player: Player):
 
 def set_player_info(player: Player):
     ## before this function, role_structure and within this function get_role_att is run
-    player.information = str(get_role_attr(player=player, role_id=player.field_maybe_none('roleID')))
+    assign_role_attr(player=player, role_id=player.field_maybe_none('roleID'))
     player.isObserver = player.participant.vars['isObserver']
     player.informed = player.participant.vars['informed']
 
@@ -980,6 +981,13 @@ class Instructions(Page):
     def is_displayed(player: Player):
         return player.round_number == 1
 
+    @staticmethod
+    def vars_for_template(player: Player):
+        return dict(
+            numTrials=C.num_trial_rounds,
+            numRounds=C.NUM_ROUNDS - C.num_trial_rounds,
+        )
+
 
 class WaitToStart(WaitPage):
     @staticmethod
@@ -989,16 +997,14 @@ class WaitToStart(WaitPage):
         players = group.get_players()
         for p in players:
             set_player_info(player=p)
-            initiate_player(player=p)
             p.assetValue = group.assetValue
+            initiate_player(player=p)
 
 
 class PreMarket(Page):
     @staticmethod
     def js_vars(player: Player):
-        group = player.group
         return dict(
-            id_in_group=player.id_in_group,
             informed=player.informed,
             information=literal_eval(player.information),
             allowShort=player.allowShort,
@@ -1031,7 +1037,6 @@ class Market(Page):
             capLong=player.capLong,  # round(player.capLong, 2)
             cashHolding=player.cashHolding,
             assetsHolding=player.assetsHolding,
-            numAssets=group.numAssets,
         )
 
     @staticmethod
@@ -1080,7 +1085,6 @@ class FinalResults(Page):
             periodPayoff=[round(p.payoff, C.decimals) for p in player.in_all_rounds()],
             tradingProfit=[round(p.tradingProfit, C.decimals) for p in player.in_all_rounds()],
             wealthChange=[round(p.wealthChange, C.decimals) for p in player.in_all_rounds()],
-
         )
 
 

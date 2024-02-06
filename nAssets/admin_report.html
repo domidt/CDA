@@ -1,7 +1,7 @@
-<script src="{{ static 'nCDAstatic/highcharts/highcharts.js' }}"></script>
-<script src="{{ static 'nCDAstatic/highcharts/highcharts_accessibility.js' }}"></script>
+<script src="{{ static 'highcharts/highcharts.js' }}"></script>
+<script src="{{ static 'highcharts/highcharts_accessibility.js' }}"></script>
 
-<link rel="stylesheet" href="{{ static 'nCDAstatic/styleResults.css' }}">
+<link rel="stylesheet" href="{{ static 'styleResults.css' }}">
 
 <ul>
     {{ for payoff in payoffs }}
@@ -9,4 +9,4 @@
     {{ endfor }}
 </ul>
 
-{{ include 'nAssets/ChartReport.html' }}
+{{ include '_templates/chartReport.html' }}

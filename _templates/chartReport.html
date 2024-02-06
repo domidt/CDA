@@ -9,10 +9,10 @@
 <script>
 
     $(document).ready(function () {
-        drawReportChart({{ trades }}, {{ bids }}, {{ asks }})
+        drawReportChart({{ series }})
     })
 
-    function drawReportChart(trades, bids, asks) {
+    function drawReportChart(series) {
         Highcharts.setOptions({
             colors: ['rgba(5,141,199,0.5)', 'rgba(80,180,50,0.5)', 'rgba(237,86,27,0.5)']
         });
@@ -54,31 +54,11 @@
                         hover: {
                             marker: {
                                 enabled: false
-                        }}}}
+                        }}}},
             },
-            series: [{
-                name: 'Trades',
-                data: trades,
-                type: 'scatter',
-                id: 'trades',
-                marker: {
-                    symbol: 'circle'
-                }},
-                {
-                name: 'Bids',
-                data: bids,
-                type: 'line',
-                lineWidth: 2,
-                id: 'bids',
-                },
-                {
-                name: 'Asks',
-                data: asks,
-                type: 'line',
-                lineWidth: 2,
-                id: 'asks',
-                },
-            ],
+
+            series: series,
+
             credits: {
                 enabled: false
             }

@@ -50,7 +50,7 @@ def vars_for_admin_report(subsession):
     highcharts_series = []
     for i in range(1, NUM_ASSETS + 1):
         trade_data = [{'x': tx.transactionTime, 'y': tx.price, 'name': ASSET_NAMES[tx.assetID - 1]} for tx in Transaction.filter() if tx.Period == period and tx.group in groups and tx.assetID == i]
-        highcharts_series.append({'name': ASSET_NAMES[i - 1], 'data': trade_data, 'type': 'scatter', 'id': 'trades', 'marker': {'symbol': 'circle'}})
+        highcharts_series.append({'name': 'Trades' + ASSET_NAMES[i - 1], 'data': trade_data, 'type': 'scatter', 'id': 'trades', 'marker': {'symbol': 'circle'}})
         bids_data = [{'x': b.BATime, 'y': b.bestBid, 'name': ASSET_NAMES[b.assetID - 1]} for b in BidAsks.filter() if b.Period == period and b.group in groups and b.assetID == i and b.BATime and b.bestBid]
         highcharts_series.append({'name': 'Bids ' + ASSET_NAMES[i - 1], 'data': bids_data, 'type': 'line', 'id': 'bids', 'lineWidth': 2})
         asks_data = [{'x': a.BATime, 'y': a.bestAsk, 'name': ASSET_NAMES[a.assetID - 1]} for a in BidAsks.filter() if a.Period == period and a.group in groups and a.assetID == i and a.BATime and a.bestAsk]
@@ -317,8 +317,11 @@ def cash_endowment(player: Player):
     for i in assets_in_round:
         num_assets += 1
         sum_asset_value += literal_eval(group.assetValues)[i]
-    avg_asset_value = sum_asset_value / num_assets
-    return float(round(random.uniform(a=C.num_assets_MIN, b=C.num_assets_MAX) * avg_asset_value, C.decimals))  ## the multiplication with the asset value garanties a cash to asset ratio of 1 in the market
+    if num_assets > 0:
+        avg_asset_value = sum_asset_value / num_assets
+    else:
+        avg_asset_value = 1
+    return float(round(random.uniform(a=C.num_assets_MIN, b=C.num_assets_MAX) * avg_asset_value, C.decimals))  ## the multiplication with the asset value guaranties a cash to asset ratio of 1 in the market
 
 
 def cash_long_limit(player: Player):
@@ -1138,6 +1141,13 @@ class Instructions(Page):
     def is_displayed(player: Player):
         return player.round_number == 1
 
+    @staticmethod
+    def vars_for_template(player: Player):
+        return dict(
+            numTrials=C.num_trial_rounds,
+            numRounds=C.NUM_ROUNDS - C.num_trial_rounds,
+        )
+
 
 class WaitToStart(WaitPage):
     @staticmethod
@@ -1192,6 +1202,7 @@ class Market(Page):
             assetNames=ASSET_NAMES,
             assetNamesInRound=literal_eval(group.assetNamesInRound),
             assetsInRound=literal_eval(group.assetsInRound),
+            marketTime=group.marketTime,
         )
 
     @staticmethod

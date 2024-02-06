@@ -11,13 +11,11 @@
             return
         }
         // javascript destructuring assignment
-        let {bids, asks, trades, cashHolding, assetsHolding, highcharts_series, news, bestAsks, bestBids} = data;
+        let {bids, asks, trades, cashHolding, assetsHolding, highcharts_series, news} = data;
 
         elCashHolding.html(cu(cashHolding))
         elAssetsHolding.html(assetsHolding)
-        //if ( cashHolding + capLong == 0) {
-        //    elBidOffer.disabled = true;
-        //}
+
         // value describes the offerID and data-value the makerID
         elBidsTableBody.html(bids.map(e => `<tr id='offerID${e[2]}' value=${e[2]} data-value=${e[3]} data-custom="1"><td value=${e[1]}>${e[1]} for </td><td value=${e[0]}>${cu(e[0])}</td></tr>`).join(''))
         elAsksTableBody.html(asks.map(e => `<tr id='offerID${e[2]}' value=${e[2]} data-value=${e[3]} data-custom="0"><td value=${e[1]}>${e[1]} for </td><td value=${e[0]}>${cu(e[0])}</td></tr>`).join(''))
