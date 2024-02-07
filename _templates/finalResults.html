@@ -6,7 +6,17 @@
 
     <p>Thank you for participating in this experiment</p>
 
-    <p>In this experiment, you receive {{ payoff }}.</p>
+    <p>In this experiment, you receive {{ payoff }} which is your payoff from round nr. {{ player.selectedRound }}.</p>
+
+<table id="periodPayoffTable">
+    {{ for p in periodPayoff }}
+        <tr>
+            <th>Period</th><th>Period profit</th><th>Trading profit</th><th>Wealth change</th>
+                <td>{{ p[1] }}</td>
+            {{ endfor }}
+        </tr>
+    {{ endfor }}
+</table>
 
 {{ endblock }}
 

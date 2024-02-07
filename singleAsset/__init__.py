@@ -9,7 +9,7 @@ class C(BaseConstants):
     NAME_IN_URL = 'sCDA'
     PLAYERS_PER_GROUP = None
     num_trial_rounds = 1
-    NUM_ROUNDS = 12  ## incl. trial periods
+    NUM_ROUNDS = 3  ## incl. trial periods
     base_payment = cu(25)
     multiplier = 90
     min_payment_in_round = cu(0)
@@ -182,6 +182,8 @@ class Player(BasePlayer):
     assetsOffered = models.IntegerField(initial=0, min=0)
     tradingProfit = models.FloatField(initial=0)
     wealthChange = models.FloatField(initial=0)
+    finalPayoff = models.CurrencyField(initial=0)
+    selectedRound = models.IntegerField(initial=1)
 
 
 def asset_endowment(player: Player):
@@ -319,7 +321,7 @@ def live_method(player: Player, data):
     }
 
 
-def calcPeriodProfits (player: Player):
+def calc_period_profits(player: Player):
     initial_endowment = player.initialCash + player.assetValue * player.initialAssets
     end_endowment = player.cashHolding + player.assetValue * player.assetsHolding
     player.initialEndowment = initial_endowment
@@ -330,6 +332,15 @@ def calcPeriodProfits (player: Player):
     else:
         player.wealthChange = 0
     player.payoff = max(C.base_payment + C.multiplier * player.wealthChange, C.min_payment_in_round)
+
+
+def calc_final_profit(player: Player):
+    period_payoffs = [p.payoff for p in player.in_all_rounds()]
+    r = int(round(random.uniform(a=0, b=1) * (C.NUM_ROUNDS - C.num_trial_rounds), 0) + C.num_trial_rounds)
+    if r == 0:
+        r = 1
+    player.selectedRound = r
+    player.finalPayoff = period_payoffs[r]
 
 
 def custom_export(players):
@@ -925,7 +936,21 @@ class WaitToStart(WaitPage):
             initiate_player(player=p)
 
 
+class EndOfTrialRounds(Page):
+    template_name = "_templates/endOfTrialRounds.html"
+
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.round_number == C.num_trial_rounds + 1 and C.num_trial_rounds > 0
+
+
 class PreMarket(Page):
+    @staticmethod
+    def vars_for_template(player: Player):
+        return dict(
+            round=player.round_number - C.num_trial_rounds,
+        )
+
     @staticmethod
     def js_vars(player: Player):
         return dict(
@@ -970,7 +995,7 @@ class ResultsWaitPage(WaitPage):
     def after_all_players_arrive(group: Group):
         players = group.get_players()
         for p in players:
-            calcPeriodProfits(player=p)
+            calc_period_profits(player=p)
 
 
 class Results(Page):
@@ -1000,12 +1025,13 @@ class FinalResults(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
+        calc_final_profit(player=player)
         return dict(
-            payoff=cu(round(player.participant.payoff / C.NUM_ROUNDS, 0)),
+            payoff=cu(round(player.finalPayoff, 0)),
             periodPayoff=[round(p.payoff, C.decimals) for p in player.in_all_rounds()],
             tradingProfit=[round(p.tradingProfit, C.decimals) for p in player.in_all_rounds()],
             wealthChange=[round(p.wealthChange, C.decimals) for p in player.in_all_rounds()],
         )
 
 
-page_sequence = [Instructions, WaitToStart, PreMarket, WaitingMarket, Market, ResultsWaitPage, Results, FinalResults, ResultsWaitPage]
+page_sequence = [Instructions, WaitToStart, EndOfTrialRounds, PreMarket, WaitingMarket, Market, ResultsWaitPage, Results, FinalResults, ResultsWaitPage]

@@ -15,7 +15,7 @@ Continuous double auction market - pre market information
     <div id="jsError">ERROR: this page runs only with javascript enabled</div>
 </noscript>
 
-<p>Soon, round nr. {{ player.round_number }} starts.</p>
+<p>Soon, {{ if player.round_number <= C.num_trial_rounds }} trial round nr. {{ player.round_number }} {{ else }} round nr. {{ round }} {{ endif }} starts.</p>
 
 <div id="endowmentDiv" class="endowment-container row" style="margin-bottom: 35px">
     <div class="endowment-div col-sm div_box">

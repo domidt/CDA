@@ -73,12 +73,12 @@ It may be advisable to set a timeout for this page.
 
 ### Market page
 In the market page the information of the pre-market page is shown again. 
-In addition the entire market place is displayed, i.e., where participants can place a limit order, the order book that allows to accept market orders, and a graphic time series of the market transaction prices.
+In addition, the entire marketplace is displayed, i.e., where participants can place a limit order, the order book that allows to accept market orders, and a graphic time series of the market transaction prices.
 There is also a box with information about the last own transactions and messages about order rejections.
 
 ### Results page
 After the market timeout, participants see the result page, which provides information about the actual buyback value of the asset and the final profit.
-I specify the payout function in the function **calcPeriodProfits()** which reads:
+I specify the payout function in the function **calc_period_profits()** which reads:
 
 $$ 
 \pi=\max(\{\text{base payment} + \text{multiplier} * \text{wealthChange}, \text{minimum payment in round}\}). 
@@ -88,20 +88,25 @@ $$ \text{wealthChange}=\frac{\text{final endowment}}{\text{initial endowment}} $
 
 
 ### Final results page
+In the end of the very last round, participants see a summary of their payoff.
+The final payoff is a random draw of the previous period payoffs defined in the function **calc_final_profit()**.
 
+
+### Admin report
+I implemented a [customised admin report](https://otree.readthedocs.io/en/latest/admin.html#customizing-the-admin-interface-admin-reports) that 
 
 ## Data download
-I implemented data download of limit orders, transactions, and order, as like as recordings on the bid-ask spread and a general protocol in line with [ExtraModel](https://otree.readthedocs.io/en/latest/misc/advanced.html#extramodel).
+I implemented data download of limit orders, transactions, and all kind of orders, as I implemented the download of recordings of the bid-ask spread and a general protocol in line with [ExtraModel](https://otree.readthedocs.io/en/latest/misc/advanced.html#extramodel).
+Especially for the applications with multiple assets, I register entries as stings in JSON format, i.e., {assetID: entry}.
+These variables may need some attention to decode.
+Currently, I use the package [jsonlite](https://cran.r-project.org/web/packages/jsonlite/index.html).
 
-
-Several adaption options are implemented. For example in the file ``settings.py`` in ``SESSION_CONFIGS`` you can easily change the duration of a market, whether trader types are randomised between periods, the number of active/inactive as well as the number of informed/uninformed traders. These settings can also be changed ad-hoc in class when creating a session.
 Furthermore, in file ``__init__.py`` you can specify the names of the assets, in the n-assets app via the list ``ASSET_NAMES``. 
-The constants in ``__init__.py`` do also include the limits of the random variables which determine the asset and cash endowment at the beginning of the period and constants include the number of decimals and whether short selling and buys on margin are allowed.
 
 
 Disclaimer: The code is provided for educational and academic purposes and you agree that you use such code entirely at your own risk.
 
-- *<a id="Chen2016" href=https://doi.org/10.1016/j.jbef.2015.12.001" >Chen, Daniel L., Martin Schonger, Chris Wickens</a>*. 2016. **oTree—An open-source platform for laboratory, online, and field experiments**. *Journal of Behavioral and Experimental Finance* 9 88-97.
+- *<a id="Chen2016" href="https://doi.org/10.1016/j.jbef.2015.12.001"> Chen, Daniel L., Martin Schonger, Chris Wickens</a>*. 2016. **oTree—An open-source platform for laboratory, online, and field experiments**. *Journal of Behavioral and Experimental Finance* 9 88-97.
 [![DOI:10.1016/j.jbef.2015.12.001](https://zenodo.org/badge/DOI/10.1016/j.jbef.2015.12.001.svg)](https://doi.org/10.1016/j.jbef.2015.12.001)
 
 - *<a id="Merl2023" href="https://doi.org/10.1016/j.finmar.2023.100839"> Merl, Robert, Stefan Palan, Dominik Schmidt, Thomas Stöckl</a>*.  2023. **Insider trading legislation and trader migration**. *Journal of Financial Markets* 66.
@@ -110,5 +115,4 @@ Disclaimer: The code is provided for educational and academic purposes and you a
 - *<a id="Palan2020" href="https://doi.org/10.1016/j.finmar.2023.100839">Palan, Stefan, Jürgen Huber, Larissa Senninger</a>*. 2020. **Aggregation mechanisms for crowd predictions**. *Experimental Economics* 23 (3) 788-814. 
 [![DOI:10.1007/s10683-019-09631-0](https://zenodo.org/badge/DOI/10.1007/s10683-019-09631-0.svg)](https://doi.org/10.1007/s10683-019-09631-0)
 
-MIT copyrigh license
 
