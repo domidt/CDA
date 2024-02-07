@@ -51,9 +51,9 @@ def vars_for_admin_report(subsession):
     for i in range(1, NUM_ASSETS + 1):
         trade_data = [{'x': tx.transactionTime, 'y': tx.price, 'name': ASSET_NAMES[tx.assetID - 1]} for tx in Transaction.filter() if tx.Period == period and tx.group in groups and tx.assetID == i]
         highcharts_series.append({'name': 'Trades' + ASSET_NAMES[i - 1], 'data': trade_data, 'type': 'scatter', 'id': 'trades', 'marker': {'symbol': 'circle'}})
-        bids_data = [{'x': b.BATime, 'y': b.bestBid, 'name': ASSET_NAMES[b.assetID - 1]} for b in BidAsks.filter() if b.Period == period and b.group in groups and b.assetID == i and b.BATime and b.bestBid]
+        bids_data = [{'x': bx.BATime, 'y': bx.bestBid, 'name': ASSET_NAMES[bx.assetID - 1]} for bx in BidAsks.filter() if bx.Period == period and bx.group in groups and bx.assetID == i and bx.BATime and bx.bestBid]
         highcharts_series.append({'name': 'Bids ' + ASSET_NAMES[i - 1], 'data': bids_data, 'type': 'line', 'id': 'bids', 'lineWidth': 2})
-        asks_data = [{'x': a.BATime, 'y': a.bestAsk, 'name': ASSET_NAMES[a.assetID - 1]} for a in BidAsks.filter() if a.Period == period and a.group in groups and a.assetID == i and a.BATime and a.bestAsk]
+        asks_data = [{'x': ax.BATime, 'y': ax.bestAsk, 'name': ASSET_NAMES[ax.assetID - 1]} for ax in BidAsks.filter() if ax.Period == period and ax.group in groups and ax.assetID == i and ax.BATime and ax.bestAsk]
         highcharts_series.append({'name': 'Asks ' + ASSET_NAMES[i - 1], 'data': asks_data, 'type': 'line', 'id': 'bids', 'lineWidth': 2})
     return dict(
         numAssetsInRound=num_assets_in_round,
@@ -98,10 +98,6 @@ class Group(BaseGroup):
 
 def random_types(group: Group):
     return group.session.config['randomise_types']
-
-
-def num_traders(group: Group):
-    return group.session.config['est_num_traders']
 
 
 def assign_types(group: Group):
@@ -1257,7 +1253,6 @@ class FinalResults(Page):
             tradingProfit=[round(p.tradingProfit, C.decimals) for p in player.in_all_rounds()],
             wealthChange=[round(p.wealthChange, C.decimals) for p in player.in_all_rounds()],
         )
-
 
 
 page_sequence = [Instructions, WaitToStart, PreMarket, WaitingMarket, Market, ResultsWaitPage, Results, FinalResults, ResultsWaitPage]

@@ -1,32 +1,46 @@
 # CDA
-This application provides a widely adaptable Continuous Double Auction (CDA) in oTree v6 via a complete implementation of an experimental asset market with mutliple continuously operating traders and multiple assets. 
+This applications provide a widely adaptable Continuous Double Auction (CDA) in oTree v6 via a complete implementation of an experimental asset market with mutliple continuously operating traders and multiple assets. 
 Permission to use this software is granted for educational and academic purpose with the requirement of citation.
 
 ## Overview
 This continuous double auction software is provided in four apps. 
 The applications ``singleAsset`` and ``singleAssetInfo`` cover markets with a single asset while ``nAssets`` and ``nAssetsInfo`` cover market environments with multiple (n) assets.
 Meanwhile, ``singleAsset`` and ``nAssets`` provide baseline applications with all market functionalities that target users who require intensive modifications.
-``singleAssetInfo`` and ``nAssetsInfo`` provide versions, in which participants are acquainted with information about the buyback value(s).
+``singleAssetInfo`` and ``nAssetsInfo`` provide versions, in which participants are acquainted with private information about the buyback value(s).
+The latter applications mimic the experiment in [Palan et al. (2020)](#Palan2020), in which the buyback value is defined by coins in a jar and private information consists of accurate information about a partition of coins.
 
 There are existing, well-developed packages for CDA markets, notable examples are [otree_markets](https://github.com/Leeps-Lab/otree_markets) which uses [LEEPS lab's redwood framework](https://github.com/Leeps-Lab/otree-redwood), [high frequency trading](https://github.com/Leeps-Lab/high_frequency_trading/), [otree-double-auction](https://github.com/IOP-Experiments/otree-double-auction), and [otree etf cda](https://github.com/jacopomagnani/otree_etf_cda).
 However, to the best of my knowledge, there is no software which is supported by the new oTree version 6 and thus not supported by newer python version without a virtual environment. 
 This is why, I started to create this app primarily for classroom games.
 
 ### JavaScript
-Given the contemporaneous placement of limit orders and acceptance via market orders, these applications use [live pages](https://otree.readthedocs.io/en/latest/live.html?highlight=script) extensively.
-As a consequence, I do also us JavaScript and call the functions **_liveSend()_** and **_liveRecv()_**.
-The corresponding files are placed in the ``_static`` folder, they must be loaded at the beginning of a html in the **_global_scripts_** block.
-As another consequence, an error window pops up on clients screen via **\<noscript\>**, when scripts are blocked.
+Given the simultaneous placement of limit orders and acceptance via market orders, these applications use [live pages](https://otree.readthedocs.io/en/latest/live.html?highlight=script) extensively.
+As a consequence, I do also use JavaScript and call the functions **_liveSend()_** and **_liveRecv()_**.
+The corresponding files are placed in the ``_static`` folder, which must be loaded at the beginning of a html in the **_global_scripts_** block.
+As another consequence, an error window pops up on clients screen via **\<noscript\>**, when JavaScripts are blocked.
 
-The purposes of individual script files are depicted in [README_JavaScript.md](README_JavaScript.md).
+The purposes of individual JavaScript files are depicted in [README_JavaScript.md](README_JavaScript.md).
 
 ## Installation
 These applications are developed with oTree 6.0.0 using python 3.11.5. 
 Running an online or classroom session, you may follow the instructions in [ExpEcoWorkflow_course_repository](https://ploteo.github.io/ExpEcoWorkflow_course_repository).
-To make adaptions to these applications, you may need to download both python, which is available free of charge at [https://www.python.org/downloads/](https://www.python.org/downloads/), and oTree via the terminal as described by [oTree Setup](https://otree.readthedocs.io/en/latest/install-nostudio.html#install-nostudio) with: 
+To make adaptions to these applications, you may need to download both python, which is available free of charge at [python.org/downloads/](https://www.python.org/downloads/), and oTree via the terminal as described by [oTree Setup](https://otree.readthedocs.io/en/latest/install-nostudio.html#install-nostudio) with: 
 ```
 pip3 install -U otree
 ```
+
+Note that developers of oTree do not recommended the use of text editors and provide oTree Studio instead.
+However, to the best of my knowledge there is no easy workaround for continuous transmission of orders such that the order book works as it should. 
+Since my background is not quite computer science, I guess that most code is straightforward to understand.
+This said, I am humble enough to add that I have a very talented, sophisticated, and patient brother who explained this new world to me.
+Finally, with the **_live_method()_** Chris implemented a very powerful and easily applicable tool for continuous communication between client and server.
+
+To run CDA online, you need an online deployment via some server.
+It is recommended to use the *heroku* server, which now charges a little fee.
+The current free way to go is via a *github* account and the cloud service [render.com](https://www.render.com).
+For more detailed instructions you are invited to visit [oTree: Online Deployment](https://ploteo.github.io/ExpEcoWorkflow_course_repository/7/oTree_deployment_printout.html).
+The latter server shall be fine for little classroom demonstrations; however, the latter is not optimal for  as the *heroku* server is such that there are some more risks involved.
+
 
 ## Sequence
 
@@ -62,13 +76,20 @@ In the market page the information of the pre-market page is shown again.
 In addition the entire market place is displayed, i.e., where participants can place a limit order, the order book that allows to accept market orders, and a graphic time series of the market transaction prices.
 There is also a box with information about the last own transactions and messages about order rejections.
 
-### Result page
+### Results page
 After the market timeout, participants see the result page, which provides information about the actual buyback value of the asset and the final profit.
 I specify the payout function in the function **calcPeriodProfits()** which reads:
 
 $$ 
 \pi=\max(\{\text{base payment} + \text{multiplier} * \text{wealthChange}, \text{min payment in round}\}). 
 $$
+
+
+### Final results page
+
+
+## Data download
+
 
 
 Several adaption options are implemented. For example in the file ``settings.py`` in ``SESSION_CONFIGS`` you can easily change the duration of a market, whether trader types are randomised between periods, the number of active/inactive as well as the number of informed/uninformed traders. These settings can also be changed ad-hoc in class when creating a session.
@@ -83,3 +104,6 @@ Disclaimer: The code is provided for educational and academic purposes and you a
 
 - *<a id="Palan2020" href="https://doi.org/10.1016/j.finmar.2023.100839">Palan, Stefan, Jürgen Huber, Larissa Senninger</a>*. 2020. **Aggregation mechanisms for crowd predictions**. *Experimental Economics* 23 (3) 788-814. 
 [![DOI:10.1007/s10683-019-09631-0](https://zenodo.org/badge/DOI/10.1007/s10683-019-09631-0.svg)](https://doi.org/10.1007/s10683-019-09631-0)
+
+MIT copyrigh license
+
