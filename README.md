@@ -29,24 +29,24 @@ To make adaptions to these applications, you may need to download both python, w
 pip3 install -U otree
 ```
 
-Note that developers of oTree do not recommended the use of text editors and provide oTree Studio instead.
+Note that developers of oTree do not recommended the use of text editors to most users and provide [oTree Studio](https://www.otreehub.com) instead.
 However, to the best of my knowledge there is no easy workaround for continuous transmission of orders such that the order book works as it should. 
 Since my background is not quite computer science, I guess that most code is straightforward to understand.
-This said, I am humble enough to add that I have a very talented, sophisticated, and patient brother who explained this new world to me.
-Finally, with the **_live_method()_** Chris implemented a very powerful and easily applicable tool for continuous communication between client and server.
+This said, I am humble enough to add that I benefited sharing the name with a very talented, sophisticated, and patient brother who explained this new world to me.
+Finally, the otree Team implemented a very powerful and easily applicable tool for continuous communication between client and server via the **_live_method()_**.
 
-To run CDA online, you need an online deployment via some server.
-It is recommended to use the *heroku* server, which now charges a little fee.
-The current free way to go is via a *github* account and the cloud service [render.com](https://www.render.com).
+To run CDA online, you need an online deployment via some [server setup](https://otree.readthedocs.io/en/latest/server/intro.html).
+The oTree team recommends the use of the [heroku server](https://www.heroku.com/), which now charges a little fee.
+The current free way to go is via a [github account](https://github.com/) and the cloud service [render.com](https://www.render.com).
 For more detailed instructions you are invited to visit [oTree: Online Deployment](https://ploteo.github.io/ExpEcoWorkflow_course_repository/7/oTree_deployment_printout.html).
-The latter server shall be fine for little classroom demonstrations; however, the latter is not optimal for  as the *heroku* server is such that there are some more risks involved.
+The latter free instances shall be fine for little classroom demonstrations, however risky for experimental sessions.
 
 
 ## Sequence
 
 ### Instruction page
 Instructions are inspired by [Palan et al. (2020)](#Palan2020) and [Merl et al. (2023)](#Merl2023).
-The corresponding file that is loaded and includes most of the text is placed at ``_templates/instructions.html``.
+The corresponding file that is loaded in ``Instructions.html`` and includes most of the text is placed at ``_templates/instructions.html``.
 I focus on markets with a single asset and private information provision such that information consists of accurate information about the amount of coins of specific coin values in a jar.
 
 One information is gathered at the end of the instruction page, which is the number of actual participants.
@@ -81,15 +81,17 @@ After the market timeout, participants see the result page, which provides infor
 I specify the payout function in the function **calcPeriodProfits()** which reads:
 
 $$ 
-\pi=\max(\{\text{base payment} + \text{multiplier} * \text{wealthChange}, \text{min payment in round}\}). 
+\pi=\max(\{\text{base payment} + \text{multiplier} * \text{wealthChange}, \text{minimum payment in round}\}). 
 $$
+
+$$ \text{wealthChange}=\frac{\text{final endowment}}{\text{initial endowment}} $$
 
 
 ### Final results page
 
 
 ## Data download
-
+I implemented data download of limit orders, transactions, and order, as like as recordings on the bid-ask spread and a general protocol in line with [ExtraModel](https://otree.readthedocs.io/en/latest/misc/advanced.html#extramodel).
 
 
 Several adaption options are implemented. For example in the file ``settings.py`` in ``SESSION_CONFIGS`` you can easily change the duration of a market, whether trader types are randomised between periods, the number of active/inactive as well as the number of informed/uninformed traders. These settings can also be changed ad-hoc in class when creating a session.
@@ -98,6 +100,9 @@ The constants in ``__init__.py`` do also include the limits of the random variab
 
 
 Disclaimer: The code is provided for educational and academic purposes and you agree that you use such code entirely at your own risk.
+
+- *<a id="Chen2016" href=https://doi.org/10.1016/j.jbef.2015.12.001" >Chen, Daniel L., Martin Schonger, Chris Wickens</a>*. 2016. **oTree—An open-source platform for laboratory, online, and field experiments**. *Journal of Behavioral and Experimental Finance* 9 88-97.
+[![DOI:10.1016/j.jbef.2015.12.001](https://zenodo.org/badge/DOI/10.1016/j.jbef.2015.12.001.svg)](https://doi.org/10.1016/j.jbef.2015.12.001)
 
 - *<a id="Merl2023" href="https://doi.org/10.1016/j.finmar.2023.100839"> Merl, Robert, Stefan Palan, Dominik Schmidt, Thomas Stöckl</a>*.  2023. **Insider trading legislation and trader migration**. *Journal of Financial Markets* 66.
 [![DOI:10.1016/j.finmar.2023.100839](https://zenodo.org/badge/DOI/10.1016/j.finmar.2023.100839.svg)](https://doi.org/10.1016/j.finmar.2023.100839)
