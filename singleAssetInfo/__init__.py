@@ -411,10 +411,12 @@ def calc_period_profits(player: Player):
 
 def calc_final_profit(player: Player):
     period_payoffs = [p.payoff for p in player.in_all_rounds()]
-    r = int(round(random.uniform(a=0, b=1) * (C.NUM_ROUNDS - C.num_trial_rounds), 0) + C.num_trial_rounds)
-    if r == 0:
-        r = 1
-    player.selectedRound = r
+    r = int(round(random.uniform(a=0, b=1) * (C.NUM_ROUNDS - C.num_trial_rounds), 0) + C.num_trial_rounds - 1)
+    if r < C.num_trial_rounds:
+        r = C.num_trial_rounds
+    elif r >= C.NUM_ROUNDS:
+        r = C.NUM_ROUNDS - 1
+    player.selectedRound = r - C.num_trial_rounds
     player.finalPayoff = period_payoffs[r]
 
 
@@ -1097,6 +1099,7 @@ class Results(Page):
 
 
 class FinalResults(Page):
+    template_name = "_templates/finalResults.html"
 
     @staticmethod
     def is_displayed(player):
@@ -1107,7 +1110,7 @@ class FinalResults(Page):
         calc_final_profit(player=player)
         return dict(
             payoff=cu(round(player.finalPayoff, 0)),
-            periodPayoff=[[p.round_number, round(p.payoff, C.decimals), round(p.tradingProfit, C.decimals), round(p.wealthChange, C.decimals)] for p in player.in_all_rounds()],
+            periodPayoff=[[p.round_number - C.num_trial_rounds, round(p.payoff, C.decimals), round(p.tradingProfit, C.decimals), round(p.wealthChange, C.decimals) * 100] for p in player.in_all_rounds() if p.round_number > C.num_trial_rounds],
             tradingProfit=[round(p.tradingProfit, C.decimals) for p in player.in_all_rounds()],
             wealthChange=[round(p.wealthChange, C.decimals) for p in player.in_all_rounds()],
         )

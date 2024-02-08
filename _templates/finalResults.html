@@ -2,17 +2,24 @@
     Result
 {{ endblock }}
 
+{{ block global_styles }}
+        <link rel="stylesheet" href="{{ static 'styleResults.css' }}">
+{{ endblock }}
+
 {{ block content }}
 
     <p>Thank you for participating in this experiment</p>
 
     <p>In this experiment, you receive {{ payoff }} which is your payoff from round nr. {{ player.selectedRound }}.</p>
+<br>
 
-<table id="periodPayoffTable">
+<h5>Period Details</h5>
+<table id="periodPayoffTable" align="center">
+    <tr><th style="padding:0 0px 0 15px;">Period</th><th style="padding:0 0px 0 15px;">Period income</th><th style="padding:0 0px 0 15px;">Trading profit</th><th style="padding:0 0px 0 15px;">Wealth change (in %)</th></tr>
     {{ for p in periodPayoff }}
         <tr>
-            <th>Period</th><th>Period profit</th><th>Trading profit</th><th>Wealth change</th>
-                <td>{{ p[1] }}</td>
+            {{ for e in p }}
+                <td align="right">{{ e }}</td>
             {{ endfor }}
         </tr>
     {{ endfor }}

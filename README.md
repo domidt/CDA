@@ -46,7 +46,7 @@ The latter free instances shall be fine for little classroom demonstrations, how
 
 ### Instruction page
 Instructions are inspired by [Palan et al. (2020)](#Palan2020) and [Merl et al. (2023)](#Merl2023).
-The corresponding file that is loaded in ``Instructions.html`` and includes most of the text is placed at ``_templates/instructions.html``.
+The corresponding files that are loaded in ``Instructions.html`` and include most of the text is placed at ``_templates/instructions*.html``.
 I focus on markets with a single asset and private information provision such that information consists of accurate information about the amount of coins of specific coin values in a jar.
 
 One information is gathered at the end of the instruction page, which is the number of actual participants.
@@ -67,6 +67,9 @@ Changes of the role or information structure, i.e. number of participants of a p
 Within the function **set_player_info()**, I distribute information according to the information structure in function **assign_role_attr()**.
 Within the function **initiate_player()**, I distribute initial endowments.
 
+### End-of-trial-rounds page
+Just at the very beginning of the first payoff-relevant period, a short reminder is shown that asks for any further open question.
+
 ### Pre-market page
 Before the market starts, participants receive information about their future role, their endowment, and private information in tabular form.
 It may be advisable to set a timeout for this page.
@@ -77,30 +80,36 @@ In addition, the entire marketplace is displayed, i.e., where participants can p
 There is also a box with information about the last own transactions and messages about order rejections.
 
 ### Results page
-After the market timeout, participants see the result page, which provides information about the actual buyback value of the asset and the final profit.
-I specify the payout function in the function **calc_period_profits()** which reads:
+After the market timeout, participants see the result page, which provides information about the actual buyback value of the asset and the period income.
+I specify the profit function in the function **calc_period_profits()** which reads:
 
 $$ 
-\pi=\max(\{\text{base payment} + \text{multiplier} * \text{wealthChange}, \text{minimum payment in round}\}). 
+\pi=\max(\{\text{base payment} + \text{multiplier} * \text{wealth change}, \text{minimum payment in round}\}). 
 $$
 
-$$ \text{wealthChange}=\frac{\text{final endowment}}{\text{initial endowment}} $$
+$$ \text{wealth change}=\frac{\text{final endowment}}{\text{initial endowment}} $$
 
 
 ### Final results page
-In the end of the very last round, participants see a summary of their payoff.
+In the end of the very last round, participants see a summary of their payoff and a table including each period income.
 The final payoff is a random draw of the previous period payoffs defined in the function **calc_final_profit()**.
 
 
 ### Admin report
-I implemented a [customised admin report](https://otree.readthedocs.io/en/latest/admin.html#customizing-the-admin-interface-admin-reports) that 
+I implemented a [customised admin report](https://otree.readthedocs.io/en/latest/admin.html#customizing-the-admin-interface-admin-reports) that includes participants period profits and a graphic.
+The graphic visualises time series of trading activity in means of best bid, best ask, and transaction prices.
+The entries are defined in the function **vars_for_admin_report()** in ``__init__.py`` and the report's layout is defined in ``_templates/admin_report.html``.
 
 ## Data download
-I implemented data download of limit orders, transactions, and all kind of orders, as I implemented the download of recordings of the bid-ask spread and a general protocol in line with [ExtraModel](https://otree.readthedocs.io/en/latest/misc/advanced.html#extramodel).
-Especially for the applications with multiple assets, I register entries as stings in JSON format, i.e., {assetID: entry}.
-These variables may need some attention to decode.
-Currently, I use the package [jsonlite](https://cran.r-project.org/web/packages/jsonlite/index.html).
+I implemented [special data tables](https://otree.readthedocs.io/en/latest/misc/advanced.html#extramodel) for limit orders, transactions, and all kind of orders, as I implemented the tables for recordings of the bid-ask spread and a general protocol.
+For these tables, I define [customised data download](https://otree.readthedocs.io/en/latest/admin.html#custom-data-exports) in the respective ``__init__.py`` files.
+Thus, changes in the customised data structure of orders require adjustments of the download process too.
 
+Especially for the applications with multiple assets, I register entries as stings in JSON format, for example {assetID: entry}.
+These variables may need some attention to decode.
+Currently, I use the package [jsonlite](https://cran.r-project.org/web/packages/jsonlite/index.html) in [R](https://www.r-project.org/).
+
+## Settings and parametrisation
 Furthermore, in file ``__init__.py`` you can specify the names of the assets, in the n-assets app via the list ``ASSET_NAMES``. 
 
 
