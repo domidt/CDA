@@ -6,8 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="bc9b68dc-2d95-433c-b2a4-618f8f984096" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README_nAssetInfo.md" beforeDir="false" afterPath="$PROJECT_DIR$/README_nAssetInfo.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README_nAssetInfo.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/_parameters/assetsInRound.csv" beforeDir="false" afterPath="$PROJECT_DIR$/_parameters/assetsInRound.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nAssets/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nAssets/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nAssetsInfo/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsInfo/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/singleAsset/Market.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAsset/Market.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/singleAsset/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/singleAsset/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/singleAssetInfo/Market.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetInfo/Market.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/singleAssetInfo/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetInfo/__init__.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,8 +24,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="JavaScript File" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -39,24 +46,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/dschmidt/Documents/CDA/CreateWebService.png",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "run.code.analysis.last.selected.profile": "aDefault",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/dschmidt/Documents/CDA/CreateWebService.png&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;aDefault&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\dschmidt\Documents\GitHub\CDA\_templates" />
@@ -126,7 +133,8 @@
       <workItem from="1707260075094" duration="5586000" />
       <workItem from="1707304965593" duration="14891000" />
       <workItem from="1707386344646" duration="10580000" />
-      <workItem from="1707470135073" duration="1869000" />
+      <workItem from="1707470135073" duration="2037000" />
+      <workItem from="1707480103967" duration="17571000" />
     </task>
     <servers />
   </component>

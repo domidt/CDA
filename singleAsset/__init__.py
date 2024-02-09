@@ -19,7 +19,7 @@ class C(BaseConstants):
     num_assets_MIN = 20
     num_assets_MAX = 35
     decimals = 2
-    marketTime = 210  ## needed to initialize variables but exchanged by session_config
+    marketTime = 210  # needed to initialize variables but exchanged by session_config
 
 
 class Subsession(BaseSubsession):
@@ -29,7 +29,7 @@ class Subsession(BaseSubsession):
 
 
 def vars_for_admin_report(subsession):
-    ## this function defines the values sent to the admin report page
+    # this function defines the values sent to the admin report page
     groups = subsession.get_groups()
     period = subsession.round_number
     payoffs = sorted([p.payoff for p in subsession.get_players()])
@@ -78,12 +78,14 @@ class Group(BaseGroup):
 
 
 def random_types(group: Group):
+    # this code is run at the first WaitToStart page when all participants arrived
+    # this function returns a binary variable to the group table whether roles should be randomised between periods.
     return group.session.config['randomise_types']
 
 
 def assign_types(group: Group):
-    # this method allocates traders' types at the beginning of the session or when randomised.
-    ## this code is run when all participants arrived via the initiate group function
+    # this code is run at the first WaitToStart page, within the initiate_group() function, when all participants arrived
+    # this function allocates traders' types at the beginning of the session or when randomised.
     players = group.get_players()
     if group.randomisedTypes or Subsession.round_number == 1:
         ii = group.numParticipants  # number of traders without type yet
@@ -111,18 +113,20 @@ def assign_types(group: Group):
 
 
 def define_asset_value(group: Group):
-    ## this method describes the BBV structure of an experiment and shares the information in the players table.
-    ## this code is run when all participants are ready and the market is about to start via the initiate group function
+    # this code is run at the first WaitToStart page, within the initiate_group() function, when all participants arrived
+    # this function determines the BBV and shares the information to the players table.
     asset_value = round(random.uniform(a=C.FV_MIN, b=C.FV_MAX), C.decimals)
     group.assetValue = asset_value
 
 
 def count_participants(group: Group):
+    # this code is run at the first WaitToStart page, within the initiate_group() function, when all participants arrived
+    # this function determines the number of actual participants.
     if group.round_number == 1:
         for p in group.get_players():
             if p.isParticipating == 1:
                 group.numParticipants += 1
-    else:  ## since player.isParticipating is not newly assign with a value by a click or a timeout, I take the value from the previous round
+    else:  # since player.isParticipating is not newly assign with a value by a click or a timeout, I take the value from the previous round
         for p in group.get_players():
             pr = p.in_round(group.round_number - 1)
             p.isParticipating = pr.isParticipating
@@ -131,14 +135,17 @@ def count_participants(group: Group):
 
 
 def initiate_group(group: Group):
-    ## this code is run when everyone arrived and the market is about to start
+    # this code is run at the first WaitToStart page when all participants arrived
+    # this function starts substantial calculations on group level.
     count_participants(group=group)
     define_asset_value(group=group)
     assign_types(group=group)
 
 
 def get_max_time(group: Group):
-    return group.session.config['market_time']
+    # this code is run at the WaitingMarket page just before the market page when all participants arrived
+    # this function returns the duration time of a market.
+    return group.session.config['market_time']  # currently the binary value is retrieved from the config variables
 
 
 class Player(BasePlayer):
@@ -187,39 +194,53 @@ class Player(BasePlayer):
 
 
 def asset_endowment(player: Player):
+    # this code is run at the first WaitToStart page, within the initiate_player() function, when all participants arrived
+    # this function returns a participant's initial asset endowment
     return int(random.uniform(a=C.num_assets_MIN, b=C.num_assets_MAX))
 
 
 def short_allowed(player: Player):
+    # this code is run at the first WaitToStart page, within the initiate_player() function, when all participants arrived
+    # this function returns a binary variable whether short selling is allowed
     group = player.group
-    return group.session.config['short_selling']
+    return group.session.config['short_selling']  # currently the binary value is retrieved from the config variables
 
 
 def long_allowed(player: Player):
+    # this code is run at the first WaitToStart page, within the initiate_player() function, when all participants arrived
+    # this function returns a binary variable whether buying on margin is allowed
     group = player.group
-    return group.session.config['margin_buying']
+    return group.session.config['margin_buying']  # currently the binary value is retrieved from the config variables
 
 
 def asset_short_limit(player: Player):
+    # this code is run at the first WaitToStart page, within the initiate_player() function, when all participants arrived
+    # this function returns a participant's short selling limits if that is allowed
     if player.allowShort:
-        return player.initialAssets
+        return player.initialAssets  # currently the short selling limit is set equal to the asset endowment
     else:
         return 0
 
 
 def cash_endowment(player: Player):
+    # this code is run at the first WaitToStart page, within the initiate_player() function, when all participants arrived
+    # this function returns a participant's initial cash endowment
     group = player.group
     return float(round(random.uniform(a=C.num_assets_MIN, b=C.num_assets_MAX) * group.assetValue, C.decimals))  ## the multiplication with the asset value garanties a cash to asset ratio of 1 in the market
 
 
 def cash_long_limit(player: Player):
+    # this code is run at the first WaitToStart page, within the initiate_player() function, when all participants arrived
+    # this function returns a participant's buying on margin limits if that is allowed
     if player.allowLong:
-        return player.initialCash
+        return player.initialCash  # currently the buying on margin limit is set equal to the cash endowment
     else:
         return 0
 
 
 def assign_role_attr(player: Player, role_id):
+    # this code is run at the first WaitToStart page, within the set_player_info() function, when all participants arrived
+    # this function determines a participant's attributes in terms of being active or observer, and distributes information
     if role_id == 'observer':
         player.participant.vars['isObserver'] = True
     elif role_id == 'trader':
@@ -227,8 +248,9 @@ def assign_role_attr(player: Player, role_id):
 
 
 def initiate_player(player: Player):
+    # this code is run at the first WaitToStart page when all participants arrived
+    # this function starts substantial calculations on player level.
     group = player.group
-    ## isObserver and isParticipating are set here since there is no function which assigns roles. These variables can be useful to exclude slow or inactive participants from role assignments.
     if not player.isObserver:
         initial_cash = cash_endowment(player=player)
         player.initialCash = initial_cash
@@ -244,12 +266,15 @@ def initiate_player(player: Player):
 
 
 def set_player(player: Player):
-    ## before this function, role_structure and within this function get_role_att is run
+    # this code is run at the first WaitToStart page when all participants arrived.
+    # this function initiates the information distribution process and retrieves player characteristics from the participants table.
     assign_role_attr(player=player, role_id=player.field_maybe_none('roleID'))
     player.isObserver = player.participant.vars['isObserver']
 
 
 def live_method(player: Player, data):
+    # this code is run at the market page whenever a participants updates the page or a new order is created.
+    # this function receives orders and processes them, furthermore, it sends the new order book to participant.
     if not data or 'operationType' not in data:
         return
     key = data['operationType']
@@ -271,7 +296,7 @@ def live_method(player: Player, data):
         highcharts_series = []
     best_bid = group.field_maybe_none('bestBid')
     best_ask = group.field_maybe_none('bestAsk')
-    BidAsks.create(# observe Bids and Asks of respective asset before the request
+    BidAsks.create(  # observe Bids and Asks of respective asset before the request
         group=group,
         Period=period,
         orderID=group.subsession.orderID,
@@ -282,7 +307,6 @@ def live_method(player: Player, data):
         operationType=key,
     )
     bids = sorted([[offer.price, offer.remainingVolume, offer.offerID, offer.makerID] for offer in offers if offer.isActive and offer.isBid], reverse=True, key=itemgetter(0))
-    # to do limit amount of offers in table
     asks = sorted([[offer.price, offer.remainingVolume, offer.offerID, offer.makerID] for offer in offers if offer.isActive and not offer.isBid], key=itemgetter(0))
     msgs = News.filter(group=group)
     if asks:
@@ -295,7 +319,7 @@ def live_method(player: Player, data):
         group.bestBid = best_bid
     else:
         best_bid = None
-    BidAsks.create(# observe Bids and Asks after the request
+    BidAsks.create(  # observe Bids and Asks of respective asset after the request
         group=group,
         Period=period,
         orderID=group.subsession.orderID,
@@ -307,7 +331,7 @@ def live_method(player: Player, data):
     )
     if key == 'market_start':
         players = [player]
-    return {
+    return {  # the next lines define the information send to participants
         p.id_in_group: dict(
             bids=bids,
             asks=asks,
@@ -322,12 +346,14 @@ def live_method(player: Player, data):
 
 
 def calc_period_profits(player: Player):
+    # this code is run at the results wait page.
+    # this function assesses a participant's initial and final endowment and calculates the period income.
     initial_endowment = player.initialCash + player.assetValue * player.initialAssets
     end_endowment = player.cashHolding + player.assetValue * player.assetsHolding
     player.initialEndowment = initial_endowment
     player.endEndowment = end_endowment
     player.tradingProfit = end_endowment - initial_endowment
-    if not player.isObserver:
+    if not player.isObserver or initial_endowment == 0:
         player.wealthChange = (end_endowment - initial_endowment) / initial_endowment
     else:
         player.wealthChange = 0
@@ -335,6 +361,8 @@ def calc_period_profits(player: Player):
 
 
 def calc_final_profit(player: Player):
+    # this code is run at the final results page.
+    # this function performs a random draw of period income and calculates a participant's payoff.
     period_payoffs = [p.payoff for p in player.in_all_rounds()]
     r = int(round(random.uniform(a=0, b=1) * (C.NUM_ROUNDS - C.num_trial_rounds), 0) + C.num_trial_rounds - 1)
     if r < C.num_trial_rounds:
@@ -346,31 +374,32 @@ def calc_final_profit(player: Player):
 
 
 def custom_export(players):
-    # Export all ExtraModels for Limits
+    # this function defines the variables that are downloaded in customised tables
+    # Export Limits
     yield ['TableName', 'sessionID', 'offerID', 'group', 'Period', 'maker', 'price', 'limitVolume', 'isBid', 'offerID', 'orderID', 'offerTime', 'remainingVolume', 'isActive', 'bestAskBefore', 'bestBidBefore', 'bestAskAfter', 'bestBidAfter']
     limits = Limit.filter()
     for l in limits:
         yield ['Limits', l.group.session.code, l.offerID, l.group.id_in_subsession, l.group.round_number, l.makerID, l.price, l.limitVolume, l.isBid, l.orderID, l.offerTime, l.remainingVolume, l.isActive, l.bestAskBefore, l.bestBidBefore, l.bestAskAfter, l.bestBidAfter]
 
-    # Export all ExtraModels for Trades
+    # Export Transactions
     yield ['TableName', 'sessionID', 'transactionID', 'group', 'Period', 'maker', 'taker', 'price', 'transactionVolume', 'limitVolume', 'sellerID', 'buyerID', 'isBid', 'offerID', 'orderID', 'offerTime', 'transactionTime', 'remainingVolume', 'isActive', 'bestAskBefore', 'bestBidBefore', 'bestAskAfter', 'bestBidAfter']
     trades = Transaction.filter()
     for t in trades:
         yield ['Transactions', t.group.session.code, t.transactionID, t.group.id_in_subsession, t.group.round_number, t.makerID, t.takerID, t.price, t.transactionVolume, t.limitVolume, t.sellerID, t.buyerID, t.isBid, t.offerID, t.orderID, t.offerTime, t.transactionTime, t.remainingVolume, t.isActive, t.bestAskBefore, t.bestBidBefore, t.bestAskAfter, t.bestBidAfter]
 
-    # Export all ExtraModels for Orders
+    # Export Orders
     yield ['TableName', 'sessionID', 'orderID', 'orderType', 'group', 'Period', 'maker', 'taker', 'price', 'transactionVolume', 'limitVolume', 'sellerID', 'buyerID', 'isBid', 'offerID', 'transactionID', 'offerTime', 'transactionTime', 'remainingVolume', 'isActive', 'bestAskBefore', 'bestBidBefore', 'bestAskAfter', 'bestBidAfter']
     orders = Order.filter()
     for o in orders:
         yield ['Orders', o.group.session.code, o.orderID, o.orderType, o.group.id_in_subsession, o.group.round_number, o.makerID, o.takerID, o.price, o.transactionVolume, o.limitVolume, o.sellerID, o.buyerID, o.isBid, o.offerID, o.transactionID, o.offerTime, o.transactionTime, o.remainingVolume, o.isActive, o.bestAskBefore, o.bestBidBefore, o.bestAskAfter, o.bestBidAfter]
 
-    # Export all ExtraModels for BidAsk
+    # Export BidAsk
     yield ['TableName', 'sessionID', 'orderID', 'operationType', 'group', 'Period', 'bestAsk', 'bestBid', 'BATime', 'timing']
     bidasks = BidAsks.filter()
     for b in bidasks:
         yield ['BidAsks', b.group.session.code, b.orderID, b.operationType, b.group.id_in_subsession, b.group.round_number, b.bestAsk, b.bestBid, b.BATime, b.timing]
 
-    # Export all ExtraModels for News
+    # Export News
     yield ['TableName', 'sessionID', 'message', 'group', 'Period', 'playerID', 'msgTime']
     news = News.filter()
     for n in news:
@@ -399,7 +428,8 @@ class Limit(ExtraModel):
 
 
 def limit_order(player: Player, data):
-    # handle an enter message sent from the frontend to create a limit order
+    # this code is run at the market page, within the live_method(), whenever a participants aimes to create a limit order.
+    # this function processes limit orders and creates new entries in the Limit and Order tables.
     maker_id = player.id_in_group
     group = player.group
     period = group.round_number
@@ -470,14 +500,12 @@ def limit_order(player: Player, data):
         return
     offer_id = player.subsession.offerID + 1
     player.subsession.offerID += 1
-    # to prevent duplicates in offerID
-    while len(Limit.filter(group=group, offerID=offer_id)) > 0:
+    while len(Limit.filter(group=group, offerID=offer_id)) > 0:  # to prevent duplicates in offerID
         offer_id += 1
     offer_time = round(float(time.time() - player.group.marketStartTime), C.decimals)
     order_id = player.subsession.orderID + 1
     player.subsession.orderID += 1
-    # to prevent duplicates in orderID
-    while len(Order.filter(group=group, offerID=order_id)) > 0:
+    while len(Order.filter(group=group, offerID=order_id)) > 0:  # to prevent duplicates in orderID
         order_id += 1
     if best_ask_before:
         best_ask_after = best_ask_before
@@ -552,9 +580,10 @@ def limit_order(player: Player, data):
 
 
 def cancel_limit(player: Player, data):
+    # this code is run at the market page, within the live_method(), whenever a participants aimes to create a limit order.
+    # this function processes limit order withdrawals and creates new entries in the Order table.
     if 'offerID' not in data:
         return
-    # handle an enter message sent from the frontend to cancel a limit order
     maker_id = int(data['makerID'])
     group = player.group
     period = group.round_number
@@ -579,7 +608,7 @@ def cancel_limit(player: Player, data):
         )
         return
     offer_id = int(data['offerID'])
-    # update Limit db entry
+    # we need to update Limit table entry
     offers = [o for o in Limit.filter(group=group) if o.offerID == offer_id]
     if not offers or len(offers) != 1:
         print('Error: too few or too many limits found while withdrawing.')
@@ -595,8 +624,7 @@ def cancel_limit(player: Player, data):
         print('Odd request when player', maker_id, 'cancelled an order', data)
     order_id = player.subsession.orderID + 1
     player.subsession.orderID += 1
-    # to prevent duplicates in orderID
-    while len(Order.filter(group=group, offerID=order_id)) > 0:
+    while len(Order.filter(group=group, offerID=order_id)) > 0:  # to prevent duplicates in orderID
         order_id += 1
     best_ask_before = group.field_maybe_none('bestAsk')
     best_bid_before = group.field_maybe_none('bestBid')
@@ -692,9 +720,10 @@ class Transaction(ExtraModel):
 
 
 def transaction(player: Player, data):
+    # this code is run at the market page, within the live_method(), whenever a participants aimes to acccept a limit order, i.e., when a market order is made.
+    # this function processes market orders and creates new entries in the Transaction and Order tables, and updates the Limit table.
     if 'offerID' not in data:
         return
-    # handle an enter message sent from the frontend to cancel a limit order
     offer_id = int(data['offerID'])
     taker_id = player.id_in_group
     group = player.group
@@ -804,13 +833,11 @@ def transaction(player: Player, data):
         buyer_id = seller.id_in_group
     transaction_id = player.subsession.transactionID + 1
     player.subsession.transactionID += 1
-    # to prevent duplicates in orderID
-    while len(Transaction.filter(group=group, offerID=transaction_id)) > 0:
+    while len(Transaction.filter(group=group, offerID=transaction_id)) > 0:  # to prevent duplicates in transactionID
         transaction_id += 1
     order_id = player.subsession.orderID + 1
     player.subsession.orderID += 1
-    # to prevent duplicates in orderID
-    while len(Order.filter(group=group, offerID=order_id)) > 0:
+    while len(Order.filter(group=group, offerID=order_id)) > 0:  # to prevent duplicates in orderID
         order_id += 1
     transaction_time = round(float(time.time() - group.marketStartTime), C.decimals)
     limit_entry.transactedVolume += transaction_volume
@@ -984,6 +1011,7 @@ class Market(Page):
             capLong=player.capLong,  # round(player.capLong, 2)
             cashHolding=player.cashHolding,
             assetsHolding=player.assetsHolding,
+            marketTime=group.marketTime,
         )
 
     @staticmethod
