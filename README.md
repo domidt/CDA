@@ -112,6 +112,8 @@ Currently, I use the package [jsonlite](https://cran.r-project.org/web/packages/
 ## Settings and parametrisation
 Furthermore, in file ``__init__.py`` you can specify the names of the assets, in the n-assets app via the list ``ASSET_NAMES``. 
 
+### Information and partitions denomination
+
 
 Disclaimer: The code is provided for educational and academic purposes and you agree that you use such code entirely at your own risk.
 
