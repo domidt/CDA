@@ -239,7 +239,7 @@ def cash_long_limit(player: Player):
 
 
 def assign_role_attr(player: Player, role_id):
-    # this code is run at the first WaitToStart page, within the set_player_info() function, when all participants arrived
+    # this code is run at the first WaitToStart page, within the set_player() function, when all participants arrived
     # this function determines a participant's attributes in terms of being active or observer, and distributes information
     if role_id == 'observer':
         player.participant.vars['isObserver'] = True
@@ -267,7 +267,7 @@ def initiate_player(player: Player):
 
 def set_player(player: Player):
     # this code is run at the first WaitToStart page when all participants arrived.
-    # this function initiates the information distribution process and retrieves player characteristics from the participants table.
+    # this function retrieves player characteristics from the participants table.
     assign_role_attr(player=player, role_id=player.field_maybe_none('roleID'))
     player.isObserver = player.participant.vars['isObserver']
 

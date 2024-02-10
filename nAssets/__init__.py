@@ -387,7 +387,7 @@ def initiate_player(player: Player):
 
 def set_player(player: Player):
     # this code is run at the first WaitToStart page when all participants arrived.
-    # this function initiates the information distribution process and retrieves player characteristics from the participants table.
+    # this function retrieves player characteristics from the participants table.
     assign_role_attr(player=player, role_id=player.field_maybe_none('roleID'))
     player.isObserver = player.participant.vars['isObserver']
 

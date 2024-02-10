@@ -39,7 +39,7 @@ To run CDA online, you need an online deployment via some [server setup](https:/
 The oTree team recommends the use of the [heroku server](https://www.heroku.com/), which now charges a little fee.
 The current free way to go is via a [github account](https://github.com/) and the cloud service [render.com](https://www.render.com).
 For more detailed instructions you are invited to visit [oTree: Online Deployment](https://ploteo.github.io/ExpEcoWorkflow_course_repository/7/oTree_deployment_printout.html).
-The latter free instances shall be fine for little classroom demonstrations, however risky for experimental sessions.
+The latter free instances should be fine for little classroom demonstrations, however risky for experimental sessions.
 
 
 ## Sequence
@@ -47,24 +47,28 @@ The latter free instances shall be fine for little classroom demonstrations, how
 ### Instruction page
 Instructions are inspired by [Palan et al. (2020)](#Palan2020) and [Merl et al. (2023)](#Merl2023).
 The corresponding files that are loaded in ``Instructions.html`` and include most of the text is placed at ``_templates/instructions*.html``.
-I focus on markets with a single asset and private information provision such that information consists of accurate information about the amount of coins of specific coin values in a jar.
+In the instructions, I focus on markets with a single asset and private information provision such that information consists of accurate information about the amount of coins of specific coin values in a jar.
 
 One information is gathered at the end of the instruction page, which is the number of actual participants.
-By clicking the 'I read and understand the instructions' button, participants are sent to the waiting page but they are also set to be participating.
-This allows to start a session with a much higher number of participant links in otree, although just a fraction is actually participating. 
+By clicking the *'I read and understand the instructions'* button, participants are sent to the waiting page but they are also set to be actively participating.
+This allows classroom instructors to start a session with a much higher number of participant links in otree, although just a fraction is actually participating. 
 Given that some student come late to classes, this can be an advantage.
 
 ### Wait-to-start page
-As all participants arrive in the *waiting page*, i.e., when the experimenter *'advances'* non-participating users to the waiting page, some material variables are initialised.
-First, I retrieve from the *config* variable, that is specified before the start of a session, whether participants roles are fixed or can change in each round.
+As all participants arrive in the *waiting page*, i.e., when the experimenter *'advances'* non-participating users to the waiting page, some substantial variables are initialised.
+First, I retrieve from the *config* variables, which are specified when a nes session is created, whether participants roles are fixed or can change in each round.
 All participates can either be inactive observers or traders with distinguishable private information.
+There are multiple further substantial variables defined in the wait-to-start page:
 
 #### Initialise group
-Within the function **initiate_group()**, participants are counted (**count_participants()**), the asset value is defined (**define_asset_value()**), the role structure (**define_role_structure()**) and role information (**define_role_information_structure()**) is defined in information apps as well as roles assigned (**assign_types()**) in round 1 or when roles are randomly assigned each round.
+Within the function **initiate_group()**, participants are counted (**count_participants()**) and the asset value is defined (**define_asset_value()**).
+Within apps with private information, the role structure (**define_role_structure()**) and role information (**define_role_information_structure()**) is defined.
+Participants' roles are also assigned (**assign_types()**) in round 1 or when roles are randomly assigned each round.
 Changes of the role or information structure, i.e. number of participants of a particular role, the information content, overlaps, etc. are set in these functions.
 
 #### Initialise participants
-Within the function **set_player_info()**, I distribute information according to the information structure in function **assign_role_attr()**.
+Within the function **set_player_info()**, I distribute information according to the information structure in function **assign_role_attr()** and distribute participant characteristics.
+Respectively in apps without information distribution, the function **set_player()** distributes participant characteristics only, i.e., whether they are active traders or inactive observers.
 Within the function **initiate_player()**, I distribute initial endowments.
 
 ### End-of-trial-rounds page
@@ -74,10 +78,16 @@ Just at the very beginning of the first payoff-relevant period, a short reminder
 Before the market starts, participants receive information about their future role, their endowment, and private information in tabular form.
 It may be advisable to set a timeout for this page.
 
+### Waiting-market page
+This page makes sure that all participants start simultaneously, saves the market start time, and sets the market end time.
+
 ### Market page
 In the market page the information of the pre-market page is shown again. 
 In addition, the entire marketplace is displayed, i.e., where participants can place a limit order, the order book that allows to accept market orders, and a graphic time series of the market transaction prices.
 There is also a box with information about the last own transactions and messages about order rejections.
+
+### Results-wait page
+In the waiting page before results, the period income and final payout is calculated. It is important to run these calculations before the actual result page as random number generators would be re-run with each reload of the page and change the result.
 
 ### Results page
 After the market timeout, participants see the result page, which provides information about the actual buyback value of the asset and the period income.
@@ -96,7 +106,7 @@ The final payoff is a random draw of the previous period payoffs defined in the 
 
 
 ### Admin report
-I implemented a [customised admin report](https://otree.readthedocs.io/en/latest/admin.html#customizing-the-admin-interface-admin-reports) that includes participants period profits and a graphic.
+I implemented a [customised admin report](https://otree.readthedocs.io/en/latest/admin.html#customizing-the-admin-interface-admin-reports) that includes participants' period profits and a graphic.
 The graphic visualises time series of trading activity in means of best bid, best ask, and transaction prices.
 The entries are defined in the function **vars_for_admin_report()** in ``__init__.py`` and the report's layout is defined in ``_templates/admin_report.html``.
 
@@ -110,6 +120,11 @@ These variables may need some attention to decode.
 Currently, I use the package [jsonlite](https://cran.r-project.org/web/packages/jsonlite/index.html) in [R](https://www.r-project.org/).
 
 ## Settings and parametrisation
+There are five market settings that are set when a new session is created.
+As usual in otree, you are asked to choose the application and set the number of participants.
+When clicking on *configurate session* you can set 4 more parameters, which are the market time in seconds, whether roles are randomised between rounds, whether short selling and buying on margin is allowed.
+
+Other settings and parameters are either set in the ``__init__.py`` file or transmitted via a table in comma separated format.
 Furthermore, in file ``__init__.py`` you can specify the names of the assets, in the n-assets app via the list ``ASSET_NAMES``. 
 
 ### Information and partitions denomination

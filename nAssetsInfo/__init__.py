@@ -177,7 +177,6 @@ def assign_types(group: Group):
                         p.roleID = str('not participating')
                         p.participant.vars['roleID'] = str('not participating')
     else:
-        print(group.round_number)
         for p in players:
             p.roleID = p.participant.vars['roleID']
 
