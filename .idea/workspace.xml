@@ -6,9 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="bc9b68dc-2d95-433c-b2a4-618f8f984096" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README_nAssetInfo.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/_parameters/assetsInRound.csv" beforeDir="false" afterPath="$PROJECT_DIR$/_parameters/assetsInRound.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/nAssets/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nAssets/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nAssetsInfo/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/nAssetsInfo/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/singleAsset/Market.html" beforeDir="false" afterPath="$PROJECT_DIR$/singleAsset/Market.html" afterDir="false" />
@@ -42,6 +41,9 @@
   &quot;associatedIndex&quot;: 3
 }</component>
   <component name="ProjectId" id="2S1kgE2C0H97n5Z89PdYVkiNHmJ" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -135,6 +137,7 @@
       <workItem from="1707386344646" duration="10580000" />
       <workItem from="1707470135073" duration="2037000" />
       <workItem from="1707480103967" duration="17571000" />
+      <workItem from="1707582995719" duration="396000" />
     </task>
     <servers />
   </component>

@@ -101,7 +101,7 @@ The graphic visualises time series of trading activity in means of best bid, bes
 The entries are defined in the function **vars_for_admin_report()** in ``__init__.py`` and the report's layout is defined in ``_templates/admin_report.html``.
 
 ## Data download
-I implemented [special data tables](https://otree.readthedocs.io/en/latest/misc/advanced.html#extramodel) for limit orders, transactions, and all kind of orders, as I implemented the tables for recordings of the bid-ask spread and a general protocol.
+I implemented [special data tables](https://otree.readthedocs.io/en/latest/misc/advanced.html#extramodel) for limit orders, transactions, and all kind of orders, as I implemented the tables for recordings of the bid-ask spread and a protocol of automatic messages.
 For these tables, I define [customised data download](https://otree.readthedocs.io/en/latest/admin.html#custom-data-exports) in the respective ``__init__.py`` files.
 Thus, changes in the customised data structure of orders require adjustments of the download process too.
 

@@ -291,7 +291,8 @@ def live_method(player: Player, data):
     offers = Limit.filter(group=group)
     transactions = Transaction.filter(group=group)
     if transactions:
-        highcharts_series = [[tx.transactionTime, tx.price] for tx in Transaction.filter(group=group)]
+        hc_data = [{'x': tx.transactionTime, 'y': tx.price, 'name': 'Trades'} for tx in Transaction.filter(group=group)]
+        highcharts_series.append({'name': 'Trades', 'data': hc_data})
     else:
         highcharts_series = []
     best_bid = group.field_maybe_none('bestBid')
@@ -364,13 +365,13 @@ def calc_final_profit(player: Player):
     # this code is run at the final results page.
     # this function performs a random draw of period income and calculates a participant's payoff.
     period_payoffs = [p.payoff for p in player.in_all_rounds()]
-    r = int(round(random.uniform(a=0, b=1) * (C.NUM_ROUNDS - C.num_trial_rounds), 0) + C.num_trial_rounds - 1)
+    r = int(round(random.uniform(a=0, b=1) * (C.NUM_ROUNDS - C.num_trial_rounds), 0) + C.num_trial_rounds)
     if r < C.num_trial_rounds:
         r = C.num_trial_rounds
     elif r >= C.NUM_ROUNDS:
-        r = C.NUM_ROUNDS - 1
+        r = C.NUM_ROUNDS
     player.selectedRound = r - C.num_trial_rounds
-    player.finalPayoff = period_payoffs[r]
+    player.finalPayoff = period_payoffs[r - 1]
 
 
 def custom_export(players):
@@ -1026,6 +1027,8 @@ class ResultsWaitPage(WaitPage):
         players = group.get_players()
         for p in players:
             calc_period_profits(player=p)
+            if group.round_number == C.NUM_ROUNDS:
+                calc_final_profit(player=p)
 
 
 class Results(Page):
@@ -1056,12 +1059,9 @@ class FinalResults(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
-        calc_final_profit(player=player)
         return dict(
             payoff=cu(round(player.finalPayoff, 0)),
-            periodPayoff=[[p.round_number - C.num_trial_rounds, round(p.payoff, C.decimals), round(p.tradingProfit, C.decimals), round(p.wealthChange, C.decimals) * 100] for p in player.in_all_rounds() if p.round_number > C.num_trial_rounds],
-            tradingProfit=[round(p.tradingProfit, C.decimals) for p in player.in_all_rounds()],
-            wealthChange=[round(p.wealthChange, C.decimals) for p in player.in_all_rounds()],
+            periodPayoff=[[p.round_number - C.num_trial_rounds, round(p.payoff, C.decimals), round(p.tradingProfit, C.decimals), round(p.wealthChange * 100, C.decimals)] for p in player.in_all_rounds() if p.round_number > C.num_trial_rounds],
         )
 
 
