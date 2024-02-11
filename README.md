@@ -2,14 +2,23 @@
 These applications provide a widely adaptable Continuous Double Auction (CDA) in oTree v6 via a complete implementation of an experimental asset market with multiple continuously operating traders and multiple assets. 
 Permission to use this software is granted for educational and academic purpose with the requirement of citation.
 
-[TOC]
+## Table of content
+1. [Overview](#overview)
+2. [JavaScript](#javascript)
+3. [Installation](#installation)
+4. [Sequence](#sequence)
+5. [Data download](#data-download)
+6. [Settings and parametrisation](#settings-and-parametrisation)
+7. [Disclaimer](#disclaimer)
+8. [References](#reference)
 
-## Overview 
+## Overview
 Continuous double auctions are provided in four apps. 
 The applications ``singleAsset`` and ``singleAssetInfo`` cover markets with a single asset while ``nAssets`` and ``nAssetsInfo`` cover market environments with multiple (n) assets.
 Meanwhile, ``singleAsset`` and ``nAssets`` provide baseline applications with all market functionalities that target users who require intensive modifications.
 ``singleAssetInfo`` and ``nAssetsInfo`` provide versions, in which participants are acquainted with private information about the buyback value(s).
 The latter applications mimic the experiment in [Palan et al. (2020)](#Palan2020), in which the buyback value is defined by coins in a jar and private information consists of accurate information about a partition of coins.
+To implement an application without major modifications of the code for classroom experiments, you may have a look at the [step-by-step description](https://github.com/domidt/CDA/blob/62daf6a2afdc56850f1641285b198ea5af638302/Step_by_step_CDA_otree.pdf).
 
 There are existing, well-developed packages for CDA markets, notable examples are [otree_markets](https://github.com/Leeps-Lab/otree_markets) which uses [LEEPS lab's redwood framework](https://github.com/Leeps-Lab/otree-redwood), [high frequency trading](https://github.com/Leeps-Lab/high_frequency_trading/), [otree-double-auction](https://github.com/IOP-Experiments/otree-double-auction), and [otree etf cda](https://github.com/jacopomagnani/otree_etf_cda).
 However, to the best of my knowledge, there is no software which is supported by the new oTree version 6 and thus not supported by newer python version without a virtual environment. 
@@ -18,8 +27,7 @@ This is why, I started to create this app primarily for classroom games.
 This application adds some more useful tools; for example, participants are now able to specify any volume they want to transact.
 
 
-
-### JavaScript
+## JavaScript
 Given the simultaneous placement of limit orders and acceptance via market orders, these applications use [live pages](https://otree.readthedocs.io/en/latest/live.html?highlight=script) extensively.
 As a consequence, I do also use JavaScript and call the functions **_liveSend()_** and **_liveRecv()_**.
 The corresponding files are placed in the ``_static`` folder, which must be loaded at the beginning of a html in the **_global_scripts_** block.
@@ -146,8 +154,10 @@ Modifications must consider various processes.
 There is the process how information is loaded in the function **define_asset_value()** and in the AssetsPartitions table, how roles are attributed with information in the function **define_role_information_structure()**, and how participants are attributed with information in function **assign_role_attr()**.
 It is also very important to adjust the way how information is visualised to participants in the respective JavaScript file, which is either ``_static/sCDAstatic/scriptSAssetInfo.js`` or ``_static/nCDAstatic/scriptnAssetsInfo.js``.
 
-### Disclaimer
+## Disclaimer
 The code is provided for educational and academic purposes and you agree that you use such code entirely at your own risk.
+
+## References
 
 - *<a id="Chen2016" href="https://doi.org/10.1016/j.jbef.2015.12.001"> Chen, Daniel L., Martin Schonger, Chris Wickens</a>*. 2016. **oTree—An open-source platform for laboratory, online, and field experiments**. *Journal of Behavioral and Experimental Finance* 9 88-97.
 [![DOI:10.1016/j.jbef.2015.12.001](https://zenodo.org/badge/DOI/10.1016/j.jbef.2015.12.001.svg)](https://doi.org/10.1016/j.jbef.2015.12.001)

@@ -5,11 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bc9b68dc-2d95-433c-b2a4-618f8f984096" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Step_by_step_CDA_otree.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/_static/scriptMarket.js" beforeDir="false" afterPath="$PROJECT_DIR$/_static/scriptMarket.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/singleAssetInfo/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/singleAssetInfo/__init__.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +49,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/domin/Documents/GitHub/CDA",
+    "last_opened_file_path": "C:/Users/domin/Documents/GitHub/pmQuestionnaire",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -133,7 +131,7 @@
       <workItem from="1707386344646" duration="10580000" />
       <workItem from="1707470135073" duration="2037000" />
       <workItem from="1707480103967" duration="17571000" />
-      <workItem from="1707582995719" duration="12372000" />
+      <workItem from="1707582995719" duration="14731000" />
     </task>
     <servers />
   </component>
