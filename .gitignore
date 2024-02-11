@@ -2,7 +2,7 @@ venv
 staticfiles
 ./db.sqlite3
 .idea
-*.idea
+*.idea*
 *~
 *.sqlite3
 _static_root
