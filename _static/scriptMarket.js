@@ -49,7 +49,7 @@
     }
 
 
-    // Initializes order book sending the corresponding command to the server
+    // Initialises order book sending the corresponding command to the server
     $(window).on ('load', function () {
         market_start ()
         defaultHeadWidth = $('#bidsTable th').eq(0).width()

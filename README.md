@@ -1,9 +1,11 @@
 # CDA
-This applications provide a widely adaptable Continuous Double Auction (CDA) in oTree v6 via a complete implementation of an experimental asset market with mutliple continuously operating traders and multiple assets. 
+These applications provide a widely adaptable Continuous Double Auction (CDA) in oTree v6 via a complete implementation of an experimental asset market with multiple continuously operating traders and multiple assets. 
 Permission to use this software is granted for educational and academic purpose with the requirement of citation.
 
-## Overview
-This continuous double auction software is provided in four apps. 
+[TOC]
+
+## Overview 
+Continuous double auctions are provided in four apps. 
 The applications ``singleAsset`` and ``singleAssetInfo`` cover markets with a single asset while ``nAssets`` and ``nAssetsInfo`` cover market environments with multiple (n) assets.
 Meanwhile, ``singleAsset`` and ``nAssets`` provide baseline applications with all market functionalities that target users who require intensive modifications.
 ``singleAssetInfo`` and ``nAssetsInfo`` provide versions, in which participants are acquainted with private information about the buyback value(s).
@@ -12,6 +14,10 @@ The latter applications mimic the experiment in [Palan et al. (2020)](#Palan2020
 There are existing, well-developed packages for CDA markets, notable examples are [otree_markets](https://github.com/Leeps-Lab/otree_markets) which uses [LEEPS lab's redwood framework](https://github.com/Leeps-Lab/otree-redwood), [high frequency trading](https://github.com/Leeps-Lab/high_frequency_trading/), [otree-double-auction](https://github.com/IOP-Experiments/otree-double-auction), and [otree etf cda](https://github.com/jacopomagnani/otree_etf_cda).
 However, to the best of my knowledge, there is no software which is supported by the new oTree version 6 and thus not supported by newer python version without a virtual environment. 
 This is why, I started to create this app primarily for classroom games.
+
+This application adds some more useful tools; for example, participants are now able to specify any volume they want to transact.
+
+
 
 ### JavaScript
 Given the simultaneous placement of limit orders and acceptance via market orders, these applications use [live pages](https://otree.readthedocs.io/en/latest/live.html?highlight=script) extensively.
@@ -30,10 +36,10 @@ pip3 install -U otree
 ```
 
 Note that developers of oTree do not recommended the use of text editors to most users and provide [oTree Studio](https://www.otreehub.com) instead.
-However, to the best of my knowledge there is no easy workaround for continuous transmission of orders such that the order book works as it should. 
+However, to the best of my knowledge there is no easy workaround such that the order book is continuously updated and such that orders can be transmitted continuously without using the text editor. 
 Since my background is not quite computer science, I guess that most code is straightforward to understand.
 This said, I am humble enough to add that I benefited sharing the name with a very talented, sophisticated, and patient brother who explained this new world to me.
-Finally, the otree Team implemented a very powerful and easily applicable tool for continuous communication between client and server via the **_live_method()_**.
+Finally, the otree team implemented a very powerful and easily applicable tool for continuous communication between client and server via the **_live_method()_**.
 
 To run CDA online, you need an online deployment via some [server setup](https://otree.readthedocs.io/en/latest/server/intro.html).
 The oTree team recommends the use of the [heroku server](https://www.heroku.com/), which now charges a little fee.
@@ -121,16 +127,27 @@ Currently, I use the package [jsonlite](https://cran.r-project.org/web/packages/
 
 ## Settings and parametrisation
 There are five market settings that are set when a new session is created.
-As usual in otree, you are asked to choose the application and set the number of participants.
+As usual in oTree, you are asked to choose the application and set the number of participants.
 When clicking on *configurate session* you can set 4 more parameters, which are the market time in seconds, whether roles are randomised between rounds, whether short selling and buying on margin is allowed.
 
-Other settings and parameters are either set in the ``__init__.py`` file or transmitted via a table in comma separated format.
-Furthermore, in file ``__init__.py`` you can specify the names of the assets, in the n-assets app via the list ``ASSET_NAMES``. 
+Other settings and parameters are either set in the respective ``__init__.py`` file or transmitted via a table in comma separated format.
+For example, the number of (trial) rounds, the endowment and payment parameters are set in the constants ([C](https://otree.readthedocs.io/en/latest/models.html?highlight=constants#constants)) table.
+Furthermore, with n assets you can specify in the ``__init__.py`` file the names of the assets via the list *ASSET_NAMES*. 
+For more substantial changes, e.g. changes of the role, endowment, or profit structures, please adapt the respective functions.
 
 ### Information and partitions denomination
+I think I found a quite convenient approach to distribute information.
+This approach is based on information partitions and truthful disclosure of partitions.
+The partition names are specified in the ``__init__.py`` file via the list *PARTITIONS_NAMES* and the unit value via the list *PARTITIONS_UNIT_VALUES*.
+The amount of units of each partition is specified in comma separated format in the ``_parameters/assetPartition.csv`` file.
 
+Different information structures can similarly be implemented.
+Modifications must consider various processes.
+There is the process how information is loaded in the function **define_asset_value()** and in the AssetsPartitions table, how roles are attributed with information in the function **define_role_information_structure()**, and how participants are attributed with information in function **assign_role_attr()**.
+It is also very important to adjust the way how information is visualised to participants in the respective JavaScript file, which is either ``_static/sCDAstatic/scriptSAssetInfo.js`` or ``_static/nCDAstatic/scriptnAssetsInfo.js``.
 
-Disclaimer: The code is provided for educational and academic purposes and you agree that you use such code entirely at your own risk.
+### Disclaimer
+The code is provided for educational and academic purposes and you agree that you use such code entirely at your own risk.
 
 - *<a id="Chen2016" href="https://doi.org/10.1016/j.jbef.2015.12.001"> Chen, Daniel L., Martin Schonger, Chris Wickens</a>*. 2016. **oTree—An open-source platform for laboratory, online, and field experiments**. *Journal of Behavioral and Experimental Finance* 9 88-97.
 [![DOI:10.1016/j.jbef.2015.12.001](https://zenodo.org/badge/DOI/10.1016/j.jbef.2015.12.001.svg)](https://doi.org/10.1016/j.jbef.2015.12.001)

@@ -103,9 +103,9 @@ def define_role_structure(group: Group):
     # this function determines the number of participants of each role
     group.roleList = str(['I3', 'I2', 'I1', 'I0', 'observer'])  # ordered accourding to importance, i.e., the are filled accordingly
     num_participants = group.numParticipants
-    num_I3 = int(round(1/4 * num_participants, 0))  # informed about 5c, 20c, and E1
-    num_I2 = int(round(1/4 * num_participants, 0))  # informed about 20c and E1
-    num_I1 = int(round(1/4 * num_participants, 0))  # informed about 1E
+    num_I3 = int(round(1/4 * num_participants, 0))  # 1/4 is informed about 50c, 20c, and 10c
+    num_I2 = int(round(1/4 * num_participants, 0))  # 1/4 is informed about 2E and 2c
+    num_I1 = int(round(1/4 * num_participants, 0))  # 1/4 is informed about 1E and 5c
     num_observer = 0
     num_I0 = max(0, num_participants - num_I3 - num_I2 - num_I1 - num_observer)  # uninformed traders
     group.roleStructure = str({'observer': num_observer, 'I0': num_I0, 'I1': num_I1, 'I2': num_I2, 'I3': num_I3})
