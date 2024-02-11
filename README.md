@@ -18,9 +18,9 @@ The applications ``singleAsset`` and ``singleAssetInfo`` cover markets with a si
 Meanwhile, ``singleAsset`` and ``nAssets`` provide baseline applications with all market functionalities that target users who require intensive modifications.
 ``singleAssetInfo`` and ``nAssetsInfo`` provide versions, in which participants are acquainted with private information about the buyback value(s).
 The latter applications mimic the experiment in [Palan et al. (2020)](#Palan2020), in which the buyback value is defined by coins in a jar and private information consists of accurate information about a partition of coins.
-To implement an application without major modifications of the code for classroom experiments, you may have a look at the [step-by-step description](https://github.com/domidt/CDA/blob/62daf6a2afdc56850f1641285b198ea5af638302/Step_by_step_CDA_otree.pdf).
+To implement an application without major modifications of the code for classroom experiments, you may have a look at the <a href="https://github.com/domidt/CDA/blob/62daf6a2afdc56850f1641285b198ea5af638302/Step_by_step_CDA_otree.pdf" target="_blank">step-by-step description</a>.
 
-There are existing, well-developed packages for CDA markets, notable examples are [otree_markets](https://github.com/Leeps-Lab/otree_markets) which uses [LEEPS lab's redwood framework](https://github.com/Leeps-Lab/otree-redwood), [high frequency trading](https://github.com/Leeps-Lab/high_frequency_trading/), [otree-double-auction](https://github.com/IOP-Experiments/otree-double-auction), and [otree etf cda](https://github.com/jacopomagnani/otree_etf_cda).
+There are existing, well-developed packages for CDA markets, notable examples are <a href="https://github.com/Leeps-Lab/otree_markets" target="_blank">otree_markets</a> which uses <a href="https://github.com/Leeps-Lab/otree-redwood" target="_blank">LEEPS lab's redwood framework</a>, <a href="https://github.com/Leeps-Lab/high_frequency_trading/" target="_blank">high frequency trading</a>, <a href="https://github.com/IOP-Experiments/otree-double-auction" target="_blank">otree-double-auction</a>, and <a href="https://github.com/jacopomagnani/otree_etf_cda" target="_blank">otree etf cda</a>.
 However, to the best of my knowledge, there is no software which is supported by the new oTree version 6 and thus not supported by newer python version without a virtual environment. 
 This is why, I started to create this app primarily for classroom games.
 
@@ -28,7 +28,7 @@ This application adds some more useful tools; for example, participants are now 
 
 
 ## JavaScript
-Given the simultaneous placement of limit orders and acceptance via market orders, these applications use [live pages](https://otree.readthedocs.io/en/latest/live.html?highlight=script) extensively.
+Given the simultaneous placement of limit orders and acceptance via market orders, these applications use <a href="https://otree.readthedocs.io/en/latest/live.html?highlight=script" targer="_blank">live pages</a> extensively.
 As a consequence, I do also use JavaScript and call the functions **_liveSend()_** and **_liveRecv()_**.
 The corresponding files are placed in the ``_static`` folder, which must be loaded at the beginning of a html in the **_global_scripts_** block.
 As another consequence, an error window pops up on clients screen via **\<noscript\>**, when JavaScripts are blocked.
@@ -37,22 +37,22 @@ The purposes of individual JavaScript files are depicted in [README_JavaScript.m
 
 ## Installation
 These applications are developed with oTree 6.0.0 using python 3.11.5. 
-Running an online or classroom session, you may follow the instructions in [ExpEcoWorkflow_course_repository](https://ploteo.github.io/ExpEcoWorkflow_course_repository).
-To make adaptions to these applications, you may need to download both python, which is available free of charge at [python.org/downloads/](https://www.python.org/downloads/), and oTree via the terminal as described by [oTree Setup](https://otree.readthedocs.io/en/latest/install-nostudio.html#install-nostudio) with: 
+Running an online or classroom session, you may follow the instructions in <a href="https://ploteo.github.io/ExpEcoWorkflow_course_repository" target="_blank">ExpEcoWorkflow_course_repository</a>.
+To make adaptions to these applications, you may need to download both python, which is available free of charge at <a href="https://www.python.org/downloads/" target="_blank">python.org/downloads/</a>, and oTree via the terminal as described by <a href="https://otree.readthedocs.io/en/latest/install-nostudio.html#install-nostudio" target="_blank">oTree Setup</a> with: 
 ```
 pip3 install -U otree
 ```
 
-Note that developers of oTree do not recommended the use of text editors to most users and provide [oTree Studio](https://www.otreehub.com) instead.
+Note that developers of oTree do not recommended the use of text editors to most users and provide <a href="https://www.otreehub.com" target="_blank">oTree Studio</a> instead.
 However, to the best of my knowledge there is no easy workaround such that the order book is continuously updated and such that orders can be transmitted continuously without using the text editor. 
 Since my background is not quite computer science, I guess that most code is straightforward to understand.
 This said, I am humble enough to add that I benefited sharing the name with a very talented, sophisticated, and patient brother who explained this new world to me.
 Finally, the otree team implemented a very powerful and easily applicable tool for continuous communication between client and server via the **_live_method()_**.
 
-To run CDA online, you need an online deployment via some [server setup](https://otree.readthedocs.io/en/latest/server/intro.html).
-The oTree team recommends the use of the [heroku server](https://www.heroku.com/), which now charges a little fee.
-The current free way to go is via a [github account](https://github.com/) and the cloud service [render.com](https://www.render.com).
-For more detailed instructions you are invited to visit [oTree: Online Deployment](https://ploteo.github.io/ExpEcoWorkflow_course_repository/7/oTree_deployment_printout.html).
+To run CDA online, you need an online deployment via some <a href="https://otree.readthedocs.io/en/latest/server/intro.html" target="_blank">server setup</a>.
+The oTree team recommends the use of the <a href="https://www.heroku.com/" target="_blank">heroku server</a>, which now charges a little fee.
+The current free way to go is via a <a href="https://github.com/" target="_blank">github account</a> and the cloud service <a href="https://www.render.com" target="_blank">render.com</a>.
+For more detailed instructions you are invited to visit <a href="https://ploteo.github.io/ExpEcoWorkflow_course_repository/7/oTree_deployment_printout.html" target="_blank">oTree: Online Deployment</a>.
 The latter free instances should be fine for little classroom demonstrations, however risky for experimental sessions.
 
 
@@ -120,25 +120,25 @@ The final payoff is a random draw of the previous period payoffs defined in the 
 
 
 ### Admin report
-I implemented a [customised admin report](https://otree.readthedocs.io/en/latest/admin.html#customizing-the-admin-interface-admin-reports) that includes participants' period profits and a graphic.
+I implemented a <a href="https://otree.readthedocs.io/en/latest/admin.html#customizing-the-admin-interface-admin-reports" target="_blank">customised admin report</a> that includes participants' period profits and a graphic.
 The graphic visualises time series of trading activity in means of best bid, best ask, and transaction prices.
 The entries are defined in the function **vars_for_admin_report()** in ``__init__.py`` and the report's layout is defined in ``_templates/admin_report.html``.
 
 ## Data download
-I implemented [special data tables](https://otree.readthedocs.io/en/latest/misc/advanced.html#extramodel) for limit orders, transactions, and all kind of orders, as I implemented the tables for recordings of the bid-ask spread and a protocol of automatic messages.
-For these tables, I define [customised data download](https://otree.readthedocs.io/en/latest/admin.html#custom-data-exports) in the respective ``__init__.py`` files.
+I implemented <a href="https://otree.readthedocs.io/en/latest/misc/advanced.html#extramodel" target="_blank">special data tables</a> for limit orders, transactions, and all kind of orders, as I implemented the tables for recordings of the bid-ask spread and a protocol of automatic messages.
+For these tables, I define <a href="https://otree.readthedocs.io/en/latest/admin.html#custom-data-exports" target="_blank">customised data download</a> in the respective ``__init__.py`` files.
 Thus, changes in the customised data structure of orders require adjustments of the download process too.
 
 Especially for the applications with multiple assets, I register entries as stings in JSON format, for example {assetID: entry}.
 These variables may need some attention to decode.
-Currently, I use the package [jsonlite](https://cran.r-project.org/web/packages/jsonlite/index.html) in [R](https://www.r-project.org/).
+Currently, I use the package <a href="https://cran.r-project.org/web/packages/jsonlite/index.html" target="_blank">jsonlite</a> in <a href="https://www.r-project.org/" target="_blank">R</a>.
 
 ## Settings and parametrisation
 There are five market settings that are set when a new session is created.
 As usual in oTree, you are asked to choose the application and set the number of participants.
 When clicking on *configurate session* you can set 4 more parameters, which are the market time in seconds, whether roles are randomised between rounds, whether short selling and buying on margin is allowed.
 
-Other settings and parameters are either set in the respective ``__init__.py`` file or transmitted via a table in comma separated format.
+Other settings and parameters are either set in the respective ``__init__.py`` file or transmitted via in comma separated format.
 For example, the number of (trial) rounds, the endowment and payment parameters are set in the constants ([C](https://otree.readthedocs.io/en/latest/models.html?highlight=constants#constants)) table.
 Furthermore, with n assets you can specify in the ``__init__.py`` file the names of the assets via the list *ASSET_NAMES*. 
 For more substantial changes, e.g. changes of the role, endowment, or profit structures, please adapt the respective functions.
