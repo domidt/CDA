@@ -368,7 +368,7 @@ def initiate_player(player: Player):
     # this function starts substantial calculations on player level.
     group = player.group
     num_assets = literal_eval(group.numAssets)
-    if not player.isObserver:
+    if not player.isObserver and player.isParticipating:
         initial_cash = cash_endowment(player=player)
         player.initialCash = initial_cash
         player.cashHolding = initial_cash
@@ -389,7 +389,8 @@ def set_player(player: Player):
     # this code is run at the first WaitToStart page when all participants arrived.
     # this function retrieves player characteristics from the participants table.
     assign_role_attr(player=player, role_id=player.field_maybe_none('roleID'))
-    player.isObserver = player.participant.vars['isObserver']
+    if player.isParticipating:
+        player.isObserver = player.participant.vars['isObserver']
 
 
 def live_method(player: Player, data):
@@ -503,7 +504,7 @@ def calc_period_profits(player: Player):
     player.initialEndowment = initial_endowment
     player.endEndowment = end_endowment
     player.tradingProfit = end_endowment - initial_endowment
-    if not player.isObserver or initial_endowment == 0:
+    if not player.isObserver and player.isParticipating and initial_endowment != 0:
         player.wealthChange = (end_endowment - initial_endowment) / initial_endowment
     else:
         player.wealthChange = 0
@@ -1202,9 +1203,10 @@ class WaitToStart(WaitPage):
         initiate_group(group=group)
         players = group.get_players()
         for p in players:
-            set_player(player=p)
             p.assetValues = group.assetValues
-            initiate_player(player=p)
+            if p.isParticipating:
+                set_player(player=p)
+                initiate_player(player=p)
 
 
 class EndOfTrialRounds(Page):
@@ -1253,6 +1255,10 @@ class Market(Page):
     timeout_seconds = Group.marketTime
 
     @staticmethod
+    def is_displayed(player: Player):
+        return player.isParticipating
+
+    @staticmethod
     def js_vars(player: Player):
         group = player.group
         return dict(
@@ -1279,6 +1285,10 @@ class Market(Page):
 
 
 class ResultsWaitPage(WaitPage):
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.isParticipating == 1
+
     @staticmethod
     def after_all_players_arrive(group: Group):
         players = group.get_players()
