@@ -971,10 +971,14 @@ class EndOfTrialRounds(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.round_number == C.num_trial_rounds + 1 and C.num_trial_rounds > 0
+        return player.round_number == C.num_trial_rounds + 1 and C.num_trial_rounds > 0 and player.isParticipating == 1
 
 
 class PreMarket(Page):
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.isParticipating == 1
+
     @staticmethod
     def vars_for_template(player: Player):
         return dict(
@@ -1018,10 +1022,17 @@ class Market(Page):
     @staticmethod
     def get_timeout_seconds(player: Player):
         group = player.group
-        return group.marketStartTime + group.marketTime - time.time()
+        if player.isParticipating == 0:
+            return 1
+        else:
+            return group.marketStartTime + group.marketTime - time.time()
 
 
 class ResultsWaitPage(WaitPage):
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.isParticipating == 1
+
     @staticmethod
     def after_all_players_arrive(group: Group):
         players = group.get_players()
@@ -1032,6 +1043,10 @@ class ResultsWaitPage(WaitPage):
 
 
 class Results(Page):
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.isParticipating == 1
+
     @staticmethod
     def vars_for_template(player: Player):
         return dict(
@@ -1055,7 +1070,7 @@ class FinalResults(Page):
 
     @staticmethod
     def is_displayed(player):
-        return player.round_number == C.NUM_ROUNDS
+        return player.round_number == C.NUM_ROUNDS and player.isParticipating == 1
 
     @staticmethod
     def vars_for_template(player: Player):
