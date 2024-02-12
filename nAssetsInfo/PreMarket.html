@@ -1,0 +1,71 @@
+{{ block global_scripts }}
+        <script src="{{ static 'script.js' }}"></script>
+        <script src="{{ static 'nCDAstatic/scriptnAssets.js' }}"></script>
+        <script src="{{ static 'nCDAstatic/scriptnAssetsInfo.js' }}"></script>
+{{ endblock }}
+
+{{ block global_styles }}
+        <link rel="stylesheet" href="{{ static 'style.css' }}">
+{{ endblock }}
+
+{{ block title }}
+Continuous double auction market - pre market information
+{{ endblock }}
+
+{{ block content }}
+<noscript>
+    <div id="jsError">ERROR: this page runs only with javascript enabled</div>
+</noscript>
+
+<p>Soon, {{ if player.round_number <= C.num_trial_rounds }} trial round nr. {{ player.round_number }} {{ else }} round nr. {{ round }} {{ endif }} starts.</p>
+
+<div id="endowmentDiv" class="endowment-container row">
+    <div class="endowment-div col-sm div_box">
+    <table id="endowmentTable">
+    <tr>
+        <th>Your role</th>
+        <td id="traderRole">
+            {{ if player.isObserver }} Inactive observer {{ elif player.informed }} Informed trader {{ else }} Uninformed trader {{ endif }}
+        </td>
+    </tr>
+        {{ if not player.isObserver }}
+    <tr>
+        <th>Initial money endowment</th>
+        <td id="cashHolding">{{ player.cashHolding }}</td>
+    </tr>
+        {{ if player.allowLong }}
+    <tr>
+        <th>Your credit limit</th>
+        <td id="capLong">
+            {{ player.capLong }}
+        </td>
+    </tr>
+        {{ else }} {{ endif }}
+        {{ else }} {{ endif }}
+    </table>
+    </div>
+        {{ if not player.isObserver }}
+    <div class="holdingsDiv col-sm div_box">
+        <h4>Initial asset endowment</h4>
+        <table id="assetsHoldings" class="table_box"><thead><tr><th></th><th></th></tr></thead><tbody></tbody></table>
+    </div>
+    {{ if player.allowShort }}
+    <div class="capShort col-sm div_box">
+        <h4>Your short selling limit</h4>
+        <table id="capShort" class="table_box"><thead><tr><th></th><th></th></tr></thead><tbody></tbody></table>
+    </div>
+        {{ else }} {{ endif }}
+        {{ else }} {{ endif }}
+</div>
+{{ if player.informed }}
+<div id="endowmentInfo" class="endowment-container row">
+    <div class="assetValues col-sm div_box">
+        <h4>Your information about coins</h4>
+        <table id="information" class="table_box"><thead><tr><th>Asset name</th><th>Amount</th><th>Nominal value</th><th>Product</th></tr></thead><tbody></tbody></table>
+    </div>
+</div>
+{{ else }} {{ endif }}
+<br>
+
+    {{ next_button }}
+{{ endblock }}

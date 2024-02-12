@@ -1,0 +1,17 @@
+{{ block title }}
+    Instructions
+{{ endblock }}
+
+{{ block content }}
+
+{{ include '_templates/instructions.html' }}
+
+{{ include '_templates/instructionsInfo.html' }}
+
+{{ include '_templates/instructionsEndowmentProfitMechanism.html' }}
+
+    <div id="continue">
+      <button id="participationButton" name="isParticipating" value=1 class="btn btn-outline-info">I read and understand the instructions. Continue</button>
+    </div>
+
+{{ endblock }}

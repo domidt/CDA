@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "Using the data, please cite it as below."
+authors:
+- family-names: "Schmidt"
+  given-names: "Dominik"
+  orcid: "https://orcid.org/0000-0001-6758-618X"
+title: "oTree: Continuous double auction"
+version: 1.0.0
+year: 2024
+date-released: 2024-02-08
+url: "https://github.com/domidt/CDA"

@@ -1,0 +1,178 @@
+{{ block global_scripts }}
+        <script src="{{ static 'script.js' }}"></script>
+        <script src="{{ static 'nCDAstatic/scriptnAssets.js' }}"></script>
+        <script src="{{ static 'scriptMarket.js' }}"></script>
+        <script src="{{ static 'nCDAstatic/scriptnAssetsMarket.js' }}"></script>
+        <script src="{{ static 'highcharts/highcharts.js' }}"></script>
+        <script src="{{ static 'highcharts/highcharts_accessibility.js' }}"></script>
+        <script src="{{ static 'chart.js' }}"></script>
+{{ endblock }}
+
+{{ block global_styles }}
+        <link rel="stylesheet" href="{{ static 'style.css' }}">
+{{ endblock }}
+
+{{ block title }}
+Continuous double auction market
+{{ endblock }}
+
+{{ block content }}
+<noscript>
+    <div id="jsError">ERROR: this page runs only with javascript enabled</div>
+</noscript>
+
+<div id="endowmentDiv" class="endowment-container row" style="margin-bottom: 35px">
+    <div class="endowment-div col-sm div_box">
+    <table id="endowmentTable">
+    <tr>
+        <th>Your role</th>
+        <td id="traderRole">
+            {{ if player.isObserver }} Inactive observer {{ else }} Trader {{ endif }}
+        </td>
+    </tr>
+        {{ if not player.isObserver }}
+    <tr>
+        <th>Money holding</th>
+        <td id="cashHolding">{{ player.cashHolding }}</td>
+    </tr>
+        {{ if player.allowLong }}
+    <tr>
+        <th>Your credit limit</th>
+        <td id="capLong">
+            {{ player.capLong }}
+        </td>
+    </tr>
+        {{ else }} {{ endif }}
+        {{ else }} {{ endif }}
+    </table>
+    </div>
+        {{ if not player.isObserver }}
+    <div class="holdingsDiv col-sm div_box">
+        <h4>Asset holdings</h4>
+        <table id="assetsHoldings" class="table_box"><thead><tr><th></th><th></th></tr></thead><tbody></tbody></table>
+    </div>
+    {{ if player.allowShort }}
+    <div class="capShort col-sm div_box">
+        <h4>Your short selling limit</h4>
+        <table id="capShort" class="table_box"><thead><tr><th></th><th></th></tr></thead><tbody></tbody></table>
+    </div>
+        {{ else }} {{ endif }}
+        {{ else }} {{ endif }}
+</div>
+
+<div class="limit_container row">
+    <div class="limit_bid col-sm div_box">
+        <h4>Make bid offer</h4>
+        <select id="limitBidAssetID" class="otree-btn-next btn btn-outline-primary"><option value="">Please select an asset</option></select>
+        <table style="margin: auto">
+            <tr><th>Price (buy at)</th><td><input type="number" class="form-control small-numbers" inputmode="numeric" id="limitBidPrice" min="0"></td></tr>
+            <tr><th>Volume</th><td><input type="number" class="form-control small-numbers" inputmode="numeric" id="limitBidVolume" min="1"></td></tr>
+        </table>
+        <button type="button" onclick="sendOffer(is_bid=1)" id="bidOffer" class="otree-btn-next btn btn-primary">Place bid offer</button>
+        <div class="otree-form-errors alert alert-danger" id="errorBidOffer" style="display: none; text-align: left; margin-top: 35px">
+            <p>Please provide all necessary information to place a bid offer</p>
+            <ol>
+                <li>Select the asset which you want to buy.</li>
+                <li>Provide the desired volume (a positive valued integer).</li>
+                <li>Provide the desired price you offer to pay (a positive valued real number).</li>
+            </ol>
+            <button type="button" id="sendBidError" class="btn btn-outline-danger">I understood</button>
+        </div>
+    </div>
+    <div class="limit_ask col-sm div_box">
+        <h4>Make ask offer</h4>
+        <select id="limitAskAssetID" class="otree-btn-next btn btn-outline-primary"><option value="">Please select an asset</option></select>
+        <table style="margin: auto">
+            <tr><th>Price (sell at)</th><td><input type="number" class="form-control small-numbers" inputmode="numeric" id="limitAskPrice" min="0"></td></tr>
+            <tr><th>Volume</th><td><input type="number" class="form-control small-numbers" inputmode="numeric" id="limitAskVolume" min="1"></td></tr>
+        </table>
+        <button type="button" onclick="sendOffer(is_bid=0)" id="SendOffer" class="otree-btn-next btn btn-primary">Place ask offer</button>
+        <div class="otree-form-errors alert alert-danger" id="errorAskOffer" style="display: none; text-align: left; margin-top: 35px">
+            <p>Please provide all necessary information to place an ask offer</p>
+            <ol>
+                <li>Select the asset which you want to sell.</li>
+                <li>Provide the desired volume (a positive valued integer).</li>
+                <li>Provide the desired price you seek to receive (a positive valued real number).</li>
+            </ol>
+            <button type="button" id="sendAskError" class="btn btn-outline-danger">I understood</button>
+        </div>
+    </div>
+</div>
+
+<div id="bestOffers" class="endowment-container row">
+    <div class="bestBidsTable col-sm div_box">
+        <h4>Best bid offers</h4>
+        <table id="bestBidsTable" class="table_box"><thead><tr><th>Asset name</th><th>Offer</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="bestAsksTable col-sm div_box">
+        <h4>Best ask offers</h4>
+        <table id="bestAsksTable" class="table_box"><thead><tr><th>Asset name</th><th>Offer</th></tr></thead><tbody></tbody></table>
+    </div>
+</div>
+
+<div class="otree-form-errors alert-info" id="newsBox" style="display: none; text-align: left; margin-top: 35px">
+    <p id="news" style="color: green"></p>
+    <button type="button" id="newsError" class="btn btn-outline-info">I understood</button>
+</div>
+
+<div class="market_table row">
+    <select id="marketAssetID" class="otree-btn-next btn btn-outline-primary"><option value="">Please select the asset to show</option></select>
+    <div class="market_bid col-sm div_box">
+        <h4>Bids</h4>
+        <p style="text-align: center">Please, select the limit order and specify the volume you would like to sell here</p>
+        <input type="number" class="form-control small-numbers" inputmode="numeric" id="transactionBidVolume" min="1" style="display: inline-block;">
+        <button type="button" onclick="sendAcc(is_bid=1)" id="bidAccept" class="otree-btn-next btn btn-primary">Accept sale</button>
+        <table id="bidsTable" class="table_box"><thead><tr><th>Volume</th><th>Price</th></tr></thead><tbody></tbody></table>
+        <button type="button" onclick="cancelLimit(is_bid=1)" id="cancelBidLimit" class="btn btn-outline-danger">Withdraw own limit order</button>
+        <div class="otree-form-errors alert alert-danger" id="errorBidMarket" style="display: none; text-align: left; margin-top: 35px;">
+            <p>Please provide all necessary information to accept a bid offer</p>
+            <ol>
+                <li>Select the offer you wish to accept</li>
+                <li>The demanded offer shall not be one you placed but blue-framed instead.</li>
+                <li>The demanded offer shall be one with the best available price (placed at the top of the table).</li>
+                <li>Provide the desired volume you wish to take (a positive valued integer).</li>
+            </ol>
+            <button type="button" id="accBidError" class="btn btn-outline-danger">I understood</button>
+        </div>
+        <div class="otree-form-errors alert alert-danger" id="errorBidCancel" style="display: none; text-align: left; margin-top: 35px;">
+            <p>If you wish to withdraw one of your own (red-framed) bid offers, please select it first.</p>
+            <button type="button" id="cancelBidError" class="btn btn-outline-danger">I understood</button>
+        </div>
+    </div>
+    <div class="market_ask col-sm div_box">
+        <h4>Asks</h4>
+        <p style="text-align: center">Please, select the limit order and specify the volume you would like to purchase here</p>
+        <input type="number" class="form-control small-numbers" inputmode="numeric" id="transactionAskVolume" min="1" style="display: inline-block">
+        <button type="button" onclick="sendAcc(is_bid=0)" id="askAccept" class="otree-btn-next btn btn-primary">Accept purchase</button>
+        <table id="asksTable" class="table_box"><thead><tr><th>Volume</th><th>Price</th></tr></thead><tbody></tbody></table>
+        <button type="button" onclick="cancelLimit(is_bid=0)" id="cancelAskLimit" class="btn btn-outline-danger">Withdraw own limit order</button>
+        <div class="otree-form-errors alert alert-danger" id="errorAskMarket" style="display: none; text-align: left; margin-top: 35px">
+            <p>Please provide all necessary information to accept an ask offer</p>
+            <ol>
+                <li>Select the offer you wish to accept</li>
+                <li>The demanded offer shall not be one you placed but blue-framed instead.</li>
+                <li>The demanded offer shall be one with the best available price (placed at the top of the table).</li>
+                <li>Provide the desired volume you wish to take (a positive valued integer).</li>
+            </ol>
+            <button type="button" id="accAskError" class="btn btn-outline-danger">I understood</button>
+        </div>
+        <div class="otree-form-errors alert alert-danger" id="errorAskCancel" style="display: none; text-align: left; margin-top: 35px;">
+            <p>If you wish to withdraw one of your own (red-framed) ask offers, please select it first.</p>
+            <button type="button" id="cancelAskError" class="btn btn-outline-danger">I understood</button>
+        </div>
+    </div>
+</div>
+
+<div id="highchart" class="div_box"></div>
+
+<div class="trades_container div_box alert-success">
+    <h4>Trades</h4>
+    <table id="tradesTable" class="table_box"><tbody></tbody></table>
+</div>
+
+<div class="news_container div_box alert-warning">
+    <h4>Messages</h4>
+    <table id="newsTable" class="table_box"><tbody></tbody></table>
+</div>
+
+{{ endblock }}
